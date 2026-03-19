@@ -72,7 +72,25 @@ function saveApplicants(apps: Array<Record<string, unknown>>) {
 }
 
 function enrichApp(app: Application): EnrichedApplication {
-  return { ...app, job: jobsData.find((j) => j.id === app.jobId) };
+  const customJobs = (() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_JOBS) || '[]') as Array<{ id: number } & Record<string, unknown>>;
+      return stored.map((j) => ({
+        ...j,
+        verified: false,
+        tags: [],
+        spotsLeft: 1,
+        spotsTotal: 1,
+        featured: false,
+      }));
+    } catch {
+      return [] as Array<{ id: number } & Record<string, unknown>>;
+    }
+  })();
+
+  const allJobs = [...jobsData, ...customJobs] as Array<{ id: number } & Record<string, unknown>>;
+  const job = allJobs.find((j) => Number(j.id) === app.jobId);
+  return { ...app, job: job as EnrichedApplication['job'] };
 }
 
 /* ─── SUB-COMPONENTS ──────────────────────────────── */
@@ -108,7 +126,8 @@ function ApplicationCard({ app, onWithdraw, onRate, onSubmitTask, expanding, onT
   onToggleExpand: () => void;
 }) {
   const { job } = app;
-  if (!job) return null;
+  const jobTitle = job?.title || `Job #${app.jobId}`;
+  const jobMeta = job ? `${job.location} · ${job.pay}` : 'Đang cập nhật thông tin job';
 
   const st = STATUS_MAP[app.status];
   const currentTime = Date.now();
@@ -119,34 +138,46 @@ function ApplicationCard({ app, onWithdraw, onRate, onSubmitTask, expanding, onT
   return (
     <div className={`apps-card${expanding ? ' apps-card-expanded' : ''}`}>
       <div className="apps-card-top">
-        <Link to={`/jobs/${job.id}`} className="apps-card-job">
-          <div
-            className="jc-logo"
-            style={{ background: job.logoGradient, width: 44, height: 44, fontSize: 15, flexShrink: 0 }}
-          >
-            {job.logoText}
-          </div>
-          <div>
-            <div className="apps-card-title">{job.title}</div>
-            <div className="apps-card-company">
-              {job.company}
-              {job.verified && <span className="apps-verified" title="Đã xác thực">✓</span>}
-              {' · '}{job.location} · {job.pay}
+        {job ? (
+          <Link to={`/jobs/${job.id}`} className="apps-card-job">
+            <div
+              className="jc-logo"
+              style={{ background: job.logoGradient, width: 44, height: 44, fontSize: 15, flexShrink: 0 }}
+            >
+              {job.logoText}
+            </div>
+            <div>
+              <div className="apps-card-title">{jobTitle}</div>
+              <div className="apps-card-company">
+                {job.company}
+                {job.verified && <span className="apps-verified" title="Đã xác thực">✓</span>}
+                {' · '}{jobMeta}
+              </div>
+            </div>
+          </Link>
+        ) : (
+          <div className="apps-card-job">
+            <div className="jc-logo" style={{ background: 'linear-gradient(135deg,#8B90A5,#A4A9BE)', width: 44, height: 44, fontSize: 15, flexShrink: 0 }}>
+              ?
+            </div>
+            <div>
+              <div className="apps-card-title">{jobTitle}</div>
+              <div className="apps-card-company">{jobMeta}</div>
             </div>
           </div>
-        </Link>
+        )}
         <span className={`dash-status ${st.cls}`}>{st.label}</span>
       </div>
 
       <div className="apps-card-meta">
         <span>📅 Ứng tuyển: {app.appliedAt}</span>
-        <span>⏰ {job.deadline}</span>
+        <span>⏰ {job?.deadline || 'Không rõ hạn'}</span>
         <span>🕐 {daysSinceApplied} ngày trước</span>
-        <span>📂 {job.category}</span>
+        <span>📂 {job?.category || 'Khác'}</span>
       </div>
 
       {/* Skills tags */}
-      {job.skills.length > 0 && (
+      {job?.skills && job.skills.length > 0 && (
         <div className="apps-card-skills">
           {job.skills.map((s) => (
             <span key={s} className="apps-skill-tag">{s}</span>
@@ -212,15 +243,22 @@ function ApplicationCard({ app, onWithdraw, onRate, onSubmitTask, expanding, onT
 
       {/* Actions */}
       <div className="apps-card-actions">
-        <Link to={`/jobs/${job.id}`} className="btn btn-ghost btn-sm">Xem chi tiết →</Link>
+        {job ? (
+          <Link to={`/jobs/${job.id}`} className="btn btn-ghost btn-sm">Xem chi tiết →</Link>
+        ) : (
+          <span className="apps-card-hint">Thông tin job đang được đồng bộ</span>
+        )}
 
         {app.status === 'pending' && (
-          <button
-            className="btn btn-danger-ghost btn-sm"
-            onClick={() => onWithdraw(app.id, job.title)}
-          >
-            ✕ Rút đơn
-          </button>
+          <>
+            <button
+              className="btn btn-danger-ghost btn-sm"
+              onClick={() => onWithdraw(app.id, jobTitle)}
+            >
+              ✕ Rút đơn
+            </button>
+            <span className="apps-card-hint">Nút nộp nhiệm vụ sẽ mở khi doanh nghiệp chuyển trạng thái sang Đã nhận.</span>
+          </>
         )}
 
         {app.status === 'accepted' && (
@@ -236,7 +274,7 @@ function ApplicationCard({ app, onWithdraw, onRate, onSubmitTask, expanding, onT
         {app.status === 'completed' && (
           <button
             className="btn btn-accent btn-sm"
-            onClick={() => onRate(app.id, job.title)}
+            onClick={() => onRate(app.id, jobTitle)}
           >
             ⭐ Đánh giá
           </button>
