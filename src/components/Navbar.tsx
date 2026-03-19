@@ -72,6 +72,9 @@ export default function Navbar() {
                 <Link to="/manage-jobs" onClick={closeMobile}>📂 Quản lý job</Link>
               </>
             )}
+            {user.role === 'admin' && (
+              <Link to="/admin-finance" onClick={closeMobile}>📈 Admin Finance</Link>
+            )}
             <button
               style={{ marginTop: 16, textAlign: 'left', background: 'none', border: 'none', color: 'inherit', font: 'inherit', cursor: 'pointer', padding: '12px 0' }}
               onClick={() => { logout(); closeMobile(); }}
@@ -121,6 +124,11 @@ export default function Navbar() {
                 Đăng việc
               </Link>
             )}
+            {user?.role === 'admin' && (
+              <Link to="/admin-finance" className={location.pathname === '/admin-finance' ? 'active' : ''}>
+                Admin Finance
+              </Link>
+            )}
           </nav>
           <div className="nav-actions">
             {user ? (
@@ -140,7 +148,7 @@ export default function Navbar() {
                   <div className="nav-dropdown">
                     <div className="nav-dd-header">
                       <strong>{user.name}</strong>
-                      <span>{user.role === 'student' ? '👨‍🎓 Sinh viên' : '🏢 Doanh nghiệp'}</span>
+                      <span>{user.role === 'student' ? '👨‍🎓 Sinh viên' : user.role === 'business' ? '🏢 Doanh nghiệp' : '🛡️ Admin'}</span>
                     </div>
                     <Link to="/dashboard" className="nav-dd-item">📊 Dashboard</Link>
                     <Link to="/profile" className="nav-dd-item">👤 Hồ sơ</Link>
@@ -153,6 +161,9 @@ export default function Navbar() {
                         <Link to="/post-job" className="nav-dd-item">📝 Đăng việc</Link>
                         <Link to="/manage-jobs" className="nav-dd-item">📂 Quản lý job</Link>
                       </>
+                    )}
+                    {user.role === 'admin' && (
+                      <Link to="/admin-finance" className="nav-dd-item">📈 Admin Finance</Link>
                     )}
                     <button className="nav-dd-item nav-dd-logout" onClick={logout}>
                       🚪 Đăng xuất

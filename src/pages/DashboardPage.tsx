@@ -111,6 +111,7 @@ export default function DashboardPage() {
   // Redirect
   useEffect(() => {
     if (!user) navigate('/login');
+    else if (user.role === 'admin') navigate('/admin-finance');
   }, [user, navigate]);
 
   const apps = user ? getApplications(user.id) : [];

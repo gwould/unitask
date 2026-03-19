@@ -31,8 +31,11 @@ export default function LoginPage() {
     if (role === 'student') {
       setEmail('student@demo.com');
       setPassword('demo123');
-    } else {
+    } else if (role === 'business') {
       setEmail('business@demo.com');
+      setPassword('demo123');
+    } else {
+      setEmail('admin@demo.com');
       setPassword('demo123');
     }
     setError('');
@@ -55,6 +58,9 @@ export default function LoginPage() {
             </button>
             <button type="button" className="demo-btn" onClick={() => fillDemo('business')}>
               🏢 Doanh nghiệp
+            </button>
+            <button type="button" className="demo-btn" onClick={() => fillDemo('admin')}>
+              🛡️ Admin
             </button>
           </div>
 

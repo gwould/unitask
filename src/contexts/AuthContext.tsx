@@ -51,6 +51,19 @@ const DEMO_ACCOUNTS: (User & { password: string })[] = [
     rating: 4.8,
     balance: 12_500_000,
   },
+  {
+    id: 'admin-1',
+    email: 'admin@demo.com',
+    password: 'demo123',
+    name: 'Admin UniTask',
+    role: 'admin',
+    avatar: 'A',
+    bio: 'Quản trị hệ thống UniTask',
+    phone: '0900000000',
+    completedJobs: 0,
+    rating: 5,
+    balance: 0,
+  },
 ];
 
 function getStoredAccounts(): (User & { password: string })[] {

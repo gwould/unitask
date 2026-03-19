@@ -11,6 +11,7 @@ import ProfilePage from './pages/ProfilePage';
 import WalletPage from './pages/WalletPage';
 import MyApplicationsPage from './pages/MyApplicationsPage';
 import ManageJobsPage from './pages/ManageJobsPage';
+import AdminFinancePage from './pages/AdminFinancePage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/wallet" element={<WalletPage />} />
         <Route path="/my-applications" element={<MyApplicationsPage />} />
         <Route path="/manage-jobs" element={<ManageJobsPage />} />
+        <Route path="/admin-finance" element={<AdminFinancePage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="*" element={<NotFound />} />

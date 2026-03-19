@@ -520,6 +520,59 @@ a.nav-logo{text-decoration:none;color:inherit}
 .pj-success h2{font-family:var(--font-display);font-size:28px;margin-bottom:10px;color:var(--text)}
 .pj-success p{color:var(--text-2);font-size:15px;line-height:1.6;margin-bottom:32px}
 
+/* ─── ADMIN FINANCE PAGE ─────────────────────────── */
+.page-admin-finance{padding:100px 0 60px}
+.admin-finance-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.admin-finance-head h1{font-family:var(--font-display);font-size:34px;margin-bottom:6px;color:var(--text)}
+.admin-finance-head p{color:var(--text-2);font-size:14.5px}
+.admin-finance-actions{display:flex;gap:10px;flex-wrap:wrap}
+
+.admin-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:22px}
+.admin-kpi-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r14);padding:18px 18px 16px;box-shadow:0 8px 24px rgba(91,79,255,.08)}
+.admin-kpi-label{font-size:12.5px;color:var(--text-2);text-transform:uppercase;letter-spacing:.4px;font-weight:700;margin-bottom:8px}
+.admin-kpi-value{font-family:var(--font-display);font-size:28px;color:var(--text);line-height:1.15}
+.admin-kpi-sub{margin-top:8px;color:var(--text-2);font-size:12.5px}
+
+.admin-finance-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+.admin-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r14);padding:22px}
+.admin-panel h2{font-size:19px;font-family:var(--font-display);margin-bottom:14px}
+.admin-chart-panel{grid-column:1/-1}
+
+.admin-bar-chart{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:12px;align-items:end;height:220px;margin-bottom:16px;padding:14px;border:1px solid var(--border);border-radius:var(--r10);background:linear-gradient(180deg,rgba(91,79,255,.06),rgba(0,0,0,.05))}
+.admin-bar-item{display:flex;flex-direction:column;align-items:center;gap:8px;height:100%}
+.admin-bar-wrap{position:relative;flex:1;width:100%;max-width:48px;border-radius:var(--r8);border:1px solid rgba(91,79,255,.22);background:rgba(91,79,255,.08);display:flex;align-items:flex-end;overflow:hidden}
+.admin-bar-fill{width:100%;background:linear-gradient(180deg,var(--teal),var(--p));min-height:4px;transition:height .35s ease}
+.admin-bar-date{font-size:11px;color:var(--text-2);font-weight:700}
+
+.admin-line-chart{height:130px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r10);background:rgba(91,79,255,.04)}
+.admin-line-chart svg{width:100%;height:100%}
+.admin-line-chart polyline{fill:none;stroke:var(--teal);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 8px rgba(0,212,170,.35))}
+
+.admin-revenue-list{display:flex;flex-direction:column;gap:12px}
+.admin-revenue-row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:14px 12px;border:1px solid var(--border);border-radius:var(--r10);background:linear-gradient(135deg,rgba(91,79,255,.05),rgba(0,212,170,.025))}
+.admin-revenue-name{font-size:14.5px;font-weight:700;color:var(--text)}
+.admin-revenue-note{font-size:12.5px;color:var(--text-2);margin-top:4px}
+.admin-revenue-right{text-align:right}
+.admin-revenue-value{font-size:16px;font-weight:800;color:var(--t)}
+.admin-revenue-share{font-size:12px;color:var(--text-2);margin-top:2px}
+
+.admin-metrics-list{display:flex;flex-direction:column;gap:10px;color:var(--text-2);margin-bottom:18px}
+.admin-metrics-list li{padding:10px 12px;border-radius:var(--r8);background:rgba(91,79,255,.06);border:1px solid rgba(91,79,255,.16)}
+.admin-metrics-list strong{color:var(--text)}
+.admin-note{font-size:12.5px;color:var(--text-2)}
+
+@media (max-width:1100px){
+  .admin-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .admin-finance-grid{grid-template-columns:1fr}
+  .admin-bar-chart{grid-template-columns:repeat(7,minmax(0,1fr))}
+}
+
+@media (max-width:640px){
+  .admin-kpis{grid-template-columns:1fr}
+  .admin-kpi-value{font-size:24px}
+  .admin-finance-head h1{font-size:28px}
+}
+
 /* ─── PROFILE PAGE ────────────────────────────────── */
 .page-profile{padding:100px 0 60px}
 .prof-layout{max-width:720px;margin:0 auto}
