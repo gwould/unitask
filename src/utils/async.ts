@@ -1,0 +1,4 @@
+/** Simulate network delay for mock API calls */
+export function simulateDelay(ms = 600): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
