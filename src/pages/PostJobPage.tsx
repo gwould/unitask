@@ -91,7 +91,7 @@ export default function PostJobPage() {
     return (
       <section className="page-postjob">
         <div className="container">
-          <div className="pj-success fade-up">
+          <div className="pj-success fade-up visible">
             <div className="pj-success-icon">🎉</div>
             <h2>Đăng việc thành công!</h2>
             <p>Job của bạn đã được gửi lên hệ thống và sẽ hiển thị cho sinh viên ngay.</p>
