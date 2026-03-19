@@ -47,16 +47,46 @@ function getDefaultBankMethods(): BankMethod[] {
   ];
 }
 
-function loadTransactions(role: string): Transaction[] {
+function loadTransactions(role: string, userId: string): Transaction[] {
+  try {
+    const byUser: Record<string, Transaction[]> = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_TRANSACTIONS) || '{}');
+    if (byUser[userId]?.length) return byUser[userId];
+  } catch {
+    // fallback to legacy key
+  }
   try {
     const stored: Transaction[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.TRANSACTIONS) || '[]');
-    if (stored.length > 0) return stored;
-  } catch { /* use seed */ }
+    if (stored.length > 0) {
+      return stored.filter((tx) => !tx.userId || tx.userId === userId);
+    }
+  } catch {
+    // use seed
+  }
   return getSeedTransactions(role);
 }
 
-function saveTransactions(txs: Transaction[]) {
-  localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(txs));
+function saveTransactions(userId: string, txs: Transaction[]) {
+  const byUser = (() => {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_TRANSACTIONS) || '{}') as Record<string, Transaction[]>;
+    } catch {
+      return {} as Record<string, Transaction[]>;
+    }
+  })();
+  byUser[userId] = txs;
+  localStorage.setItem(STORAGE_KEYS.USER_TRANSACTIONS, JSON.stringify(byUser));
+
+  // Keep global ledger for admin analytics pages.
+  const global = (() => {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEYS.TRANSACTIONS) || '[]') as Transaction[];
+    } catch {
+      return [] as Transaction[];
+    }
+  })();
+  const withoutCurrentUser = global.filter((tx) => tx.userId && tx.userId !== userId);
+  const normalized = txs.map((tx) => ({ ...tx, userId }));
+  localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify([...normalized, ...withoutCurrentUser]));
 }
 
 function loadBankMethods(): BankMethod[] {
@@ -139,7 +169,7 @@ export default function WalletPage() {
     let cancelled = false;
     simulateDelay(700).then(() => {
       if (cancelled) return;
-      const txs = loadTransactions(user.role);
+      const txs = loadTransactions(user.role, user.id);
       const methods = loadBankMethods();
       setTransactions(txs);
       setBankMethods(methods);
@@ -221,7 +251,7 @@ export default function WalletPage() {
 
     setTransactions((prev) => {
       const updated = [newTx, ...prev];
-      saveTransactions(updated);
+      saveTransactions(user.id, updated);
       return updated;
     });
 

@@ -37,8 +37,11 @@ export default function JobDetailPage() {
 
     // Save to localStorage mock "database"
     const apps = JSON.parse(localStorage.getItem(STORAGE_KEYS.APPLICATIONS) || '[]');
+    const applicants = JSON.parse(localStorage.getItem(STORAGE_KEYS.MANAGE_APPLICANTS) || '[]');
     const timestamp = Date.now();
     const appliedDate = new Date().toISOString().slice(0, 10);
+    const appId = `app-${timestamp}`;
+
     apps.push({
       id: `app-${timestamp}`,
       jobId: job.id,
@@ -47,7 +50,23 @@ export default function JobDetailPage() {
       status: 'pending',
       appliedAt: appliedDate,
     });
+
+    applicants.push({
+      id: `ap-${timestamp}`,
+      appId,
+      jobId: job.id,
+      userId: user.id,
+      coverLetter,
+      status: 'pending',
+      appliedAt: appliedDate,
+      name: user.name,
+      university: user.university,
+      skills: user.skills || [],
+      rating: user.rating,
+    });
+
     localStorage.setItem(STORAGE_KEYS.APPLICATIONS, JSON.stringify(apps));
+    localStorage.setItem(STORAGE_KEYS.MANAGE_APPLICANTS, JSON.stringify(applicants));
     setApplied(true);
     setShowApply(false);
   };

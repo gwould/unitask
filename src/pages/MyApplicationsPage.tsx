@@ -38,6 +38,7 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
 ];
 
 const STORAGE_KEY = STORAGE_KEYS.APPLICATIONS;
+const APPLICANTS_KEY = STORAGE_KEYS.MANAGE_APPLICANTS;
 
 /* ─── DATA HELPERS ────────────────────────────────── */
 
@@ -56,6 +57,18 @@ function loadApplications(userId: string): Application[] {
 
 function saveApplications(apps: Application[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(apps));
+}
+
+function loadApplicants() {
+  try {
+    return JSON.parse(localStorage.getItem(APPLICANTS_KEY) || '[]') as Array<Record<string, unknown>>;
+  } catch {
+    return [];
+  }
+}
+
+function saveApplicants(apps: Array<Record<string, unknown>>) {
+  localStorage.setItem(APPLICANTS_KEY, JSON.stringify(apps));
 }
 
 function enrichApp(app: Application): EnrichedApplication {
@@ -86,10 +99,11 @@ function ApplicationSkeleton() {
   );
 }
 
-function ApplicationCard({ app, onWithdraw, onRate, expanding, onToggleExpand }: {
+function ApplicationCard({ app, onWithdraw, onRate, onSubmitTask, expanding, onToggleExpand }: {
   app: EnrichedApplication;
   onWithdraw: (appId: string, jobTitle: string) => void;
   onRate: (appId: string, jobTitle: string) => void;
+  onSubmitTask: (app: EnrichedApplication) => void;
   expanding: boolean;
   onToggleExpand: () => void;
 }) {
@@ -163,9 +177,35 @@ function ApplicationCard({ app, onWithdraw, onRate, expanding, onToggleExpand }:
             <div className="apps-progress-line done" />
             <div className="apps-progress-step done">✓ Được nhận</div>
             <div className="apps-progress-line" />
-            <div className="apps-progress-step">Đang làm</div>
+            <div className="apps-progress-step">
+              {app.submission?.reviewStatus === 'submitted' ? 'Đang chờ duyệt' : 'Đang làm'}
+            </div>
             <div className="apps-progress-line" />
             <div className="apps-progress-step">Hoàn thành</div>
+          </div>
+        </div>
+      )}
+
+      {app.status === 'accepted' && app.submission && (
+        <div className="apps-card-letter" style={{ marginTop: 10 }}>
+          <div className="apps-letter-header">
+            <strong>📦 Bài nộp mới nhất</strong>
+          </div>
+          <div className="apps-letter-body" style={{ whiteSpace: 'pre-wrap' }}>
+            {app.submission.summary}
+            {app.submission.deliverableUrl && (
+              <div style={{ marginTop: 8 }}>
+                🔗 <a href={app.submission.deliverableUrl} target="_blank" rel="noreferrer">{app.submission.deliverableUrl}</a>
+              </div>
+            )}
+            {app.submission.reviewStatus === 'submitted' && (
+              <div style={{ marginTop: 8, color: 'var(--pl)' }}>⏳ Doanh nghiệp đang kiểm tra bài nộp.</div>
+            )}
+            {app.submission.reviewStatus === 'revision_requested' && (
+              <div style={{ marginTop: 8, color: 'var(--a)' }}>
+                🔁 Cần chỉnh sửa: {app.submission.reviewNote || 'Vui lòng cập nhật lại bài nộp.'}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -184,9 +224,13 @@ function ApplicationCard({ app, onWithdraw, onRate, expanding, onToggleExpand }:
         )}
 
         {app.status === 'accepted' && (
-          <span className="apps-card-hint">
-            💬 Hãy liên hệ doanh nghiệp để bắt đầu!
-          </span>
+          app.submission?.reviewStatus === 'submitted' ? (
+            <span className="apps-card-hint">⏳ Đã nộp bài, đang chờ duyệt</span>
+          ) : (
+            <button className="btn btn-primary btn-sm" onClick={() => onSubmitTask(app)}>
+              📤 {app.submission?.reviewStatus === 'revision_requested' ? 'Nộp lại nhiệm vụ' : 'Nộp nhiệm vụ'}
+            </button>
+          )
         )}
 
         {app.status === 'completed' && (
@@ -237,6 +281,10 @@ export default function MyApplicationsPage() {
   // Modals
   const [withdrawConfirm, setWithdrawConfirm] = useState<WithdrawConfirm | null>(null);
   const [ratingTarget, setRatingTarget] = useState<{ appId: string; jobTitle: string } | null>(null);
+  const [submitTarget, setSubmitTarget] = useState<EnrichedApplication | null>(null);
+  const [submitSummary, setSubmitSummary] = useState('');
+  const [submitUrl, setSubmitUrl] = useState('');
+  const [submitNote, setSubmitNote] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   // Redirect unauthenticated
@@ -344,6 +392,55 @@ export default function MyApplicationsPage() {
     setActionLoading(null);
     showToast(`Đã rút đơn ứng tuyển "${withdrawConfirm.jobTitle}"`);
   }, [withdrawConfirm, user, showToast]);
+
+  const handleSubmitTask = useCallback(async () => {
+    if (!submitTarget || !user) return;
+    if (!submitSummary.trim()) {
+      showToast('Vui lòng nhập mô tả kết quả đã làm.', 'error');
+      return;
+    }
+    if (!submitUrl.trim()) {
+      showToast('Vui lòng nhập link sản phẩm để doanh nghiệp kiểm tra.', 'error');
+      return;
+    }
+
+    setActionLoading(submitTarget.id);
+    await simulateDelay(500);
+
+    const submission = {
+      summary: submitSummary.trim(),
+      deliverableUrl: submitUrl.trim(),
+      note: submitNote.trim(),
+      submittedAt: new Date().toISOString().slice(0, 10),
+      reviewStatus: 'submitted' as const,
+      reviewNote: '',
+      reviewedAt: undefined,
+    };
+
+    setApplications((prev) => {
+      const updated = prev.map((a) => a.id === submitTarget.id ? { ...a, submission } : a);
+      saveApplications(updated);
+      return updated;
+    });
+
+    const applicants = loadApplicants();
+    const updatedApplicants = applicants.map((ap) => {
+      const sameApp = ap.appId === submitTarget.id;
+      const sameJobUser = ap.jobId === submitTarget.jobId && ap.userId === submitTarget.userId;
+      if (sameApp || sameJobUser) {
+        return { ...ap, appId: submitTarget.id, submission };
+      }
+      return ap;
+    });
+    saveApplicants(updatedApplicants);
+
+    setActionLoading(null);
+    setSubmitTarget(null);
+    setSubmitSummary('');
+    setSubmitUrl('');
+    setSubmitNote('');
+    showToast('Đã nộp nhiệm vụ thành công. Doanh nghiệp sẽ kiểm tra sớm.');
+  }, [showToast, submitNote, submitSummary, submitTarget, submitUrl, user]);
 
   const handleRate = useCallback(async (rating: number, review: string) => {
     if (!ratingTarget) return;
@@ -537,6 +634,12 @@ export default function MyApplicationsPage() {
                       app={app}
                       onWithdraw={(id, title) => setWithdrawConfirm({ appId: id, jobTitle: title })}
                       onRate={(id, title) => setRatingTarget({ appId: id, jobTitle: title })}
+                      onSubmitTask={(target) => {
+                        setSubmitTarget(target);
+                        setSubmitSummary(target.submission?.summary || '');
+                        setSubmitUrl(target.submission?.deliverableUrl || '');
+                        setSubmitNote(target.submission?.note || '');
+                      }}
                       expanding={expandedIds.has(app.id)}
                       onToggleExpand={() => toggleExpand(app.id)}
                     />
@@ -583,6 +686,54 @@ export default function MyApplicationsPage() {
           onSubmit={handleRate}
           onCancel={() => setRatingTarget(null)}
         />
+      )}
+
+      {submitTarget && (
+        <div className="modal-overlay" onClick={() => setSubmitTarget(null)}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+            <h3>📤 Nộp nhiệm vụ</h3>
+            <p style={{ marginBottom: 12 }}>
+              Job: <strong>{submitTarget.job?.title || `#${submitTarget.jobId}`}</strong>
+            </p>
+            <div className="pj-field" style={{ marginBottom: 10 }}>
+              <label>Mô tả kết quả *</label>
+              <textarea
+                rows={4}
+                value={submitSummary}
+                onChange={(e) => setSubmitSummary(e.target.value)}
+                placeholder="VD: Em đã hoàn thành 10 bài viết theo outline, tối ưu SEO onpage và meta đầy đủ."
+              />
+            </div>
+            <div className="pj-field" style={{ marginBottom: 10 }}>
+              <label>Link sản phẩm *</label>
+              <input
+                type="url"
+                value={submitUrl}
+                onChange={(e) => setSubmitUrl(e.target.value)}
+                placeholder="https://drive.google.com/..."
+              />
+            </div>
+            <div className="pj-field">
+              <label>Ghi chú thêm</label>
+              <textarea
+                rows={2}
+                value={submitNote}
+                onChange={(e) => setSubmitNote(e.target.value)}
+                placeholder="Có thể để trống"
+              />
+            </div>
+            <div className="modal-actions">
+              <button className="btn btn-ghost btn-sm" onClick={() => setSubmitTarget(null)}>Hủy</button>
+              <button
+                className="btn btn-primary btn-sm"
+                onClick={handleSubmitTask}
+                disabled={actionLoading === submitTarget.id}
+              >
+                {actionLoading === submitTarget.id ? 'Đang gửi...' : '📤 Gửi bài nộp'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Toast notification */}

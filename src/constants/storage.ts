@@ -5,6 +5,7 @@ export const STORAGE_KEYS = {
   APPLICATIONS: 'unitask_applications',
   CUSTOM_JOBS: 'unitask_custom_jobs',
   TRANSACTIONS: 'unitask_transactions',
+  USER_TRANSACTIONS: 'unitask_user_transactions',
   BANK_METHODS: 'unitask_bank_methods',
   MANAGE_APPLICANTS: 'unitask_manage_applicants',
 } as const;

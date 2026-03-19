@@ -10,6 +10,8 @@ export interface Transaction {
   date: string;
   status: TxStatus;
   jobTitle?: string;
+  userId?: string;
+  counterpartyId?: string;
 }
 
 export interface BankMethod {

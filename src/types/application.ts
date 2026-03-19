@@ -2,6 +2,18 @@ import type { Job } from './job';
 
 export type AppStatus = 'pending' | 'accepted' | 'rejected' | 'completed';
 
+export type SubmissionReviewStatus = 'submitted' | 'revision_requested' | 'approved';
+
+export interface TaskSubmission {
+  summary: string;
+  deliverableUrl: string;
+  note?: string;
+  submittedAt: string;
+  reviewStatus: SubmissionReviewStatus;
+  reviewNote?: string;
+  reviewedAt?: string;
+}
+
 export interface Application {
   id: string;
   jobId: number;
@@ -9,6 +21,7 @@ export interface Application {
   coverLetter: string;
   status: AppStatus;
   appliedAt: string;
+  submission?: TaskSubmission;
 }
 
 export interface EnrichedApplication extends Application {
@@ -17,6 +30,7 @@ export interface EnrichedApplication extends Application {
 
 export interface Applicant {
   id: string;
+  appId?: string;
   jobId: number;
   userId: string;
   coverLetter: string;
@@ -26,4 +40,5 @@ export interface Applicant {
   university?: string;
   skills?: string[];
   rating?: number;
+  submission?: TaskSubmission;
 }
