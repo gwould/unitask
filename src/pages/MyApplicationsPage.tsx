@@ -130,7 +130,7 @@ function ApplicationCard({ app, onWithdraw, onRate, onSubmitTask, expanding, onT
   const jobMeta = job ? `${job.location} · ${job.pay}` : 'Đang cập nhật thông tin job';
 
   const st = STATUS_MAP[app.status];
-  const currentTime = Date.now();
+  const [currentTime] = useState(() => Date.now());
   const daysSinceApplied = Math.max(0, Math.floor(
     (currentTime - new Date(app.appliedAt).getTime()) / 86_400_000
   ));
@@ -170,6 +170,7 @@ function ApplicationCard({ app, onWithdraw, onRate, onSubmitTask, expanding, onT
       </div>
 
       <div className="apps-card-meta">
+        <span>🧾 Mã đơn: {app.id}</span>
         <span>📅 Ứng tuyển: {app.appliedAt}</span>
         <span>⏰ {job?.deadline || 'Không rõ hạn'}</span>
         <span>🕐 {daysSinceApplied} ngày trước</span>
@@ -592,7 +593,19 @@ export default function MyApplicationsPage() {
           ))}
         </div>
 
-        {/* Error state */}
+        <div className="apps-results-info fade-up" style={{ marginTop: -18 }}>
+          📌 Nộp nhiệm vụ chỉ xuất hiện ở tab <strong>Đã nhận</strong> (sau khi doanh nghiệp chấp nhận đơn).
+          {filter !== 'accepted' && (
+            <button
+              className="btn btn-ghost btn-sm"
+              style={{ marginLeft: 10 }}
+              onClick={() => setFilter('accepted')}
+              type="button"
+            >
+              Chuyển sang Đã nhận
+            </button>
+          )}
+        </div>
         {error && (
           <div className="apps-error fade-up">
             <div className="apps-error-icon">⚠️</div>
