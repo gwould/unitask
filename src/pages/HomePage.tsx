@@ -7,6 +7,7 @@ import SearchSection from '../components/SearchSection';
 import JobsSection from '../components/JobsSection';
 import HowItWorks from '../components/HowItWorks';
 import Features from '../components/Features';
+import PricingSection from '../components/PricingSection';
 import Testimonials from '../components/Testimonials';
 import CTABanner from '../components/CTABanner';
 
@@ -39,6 +40,7 @@ export default function HomePage() {
       <JobsSection />
       <HowItWorks />
       <Features />
+      <PricingSection />
       <Testimonials />
       <CTABanner />
     </>

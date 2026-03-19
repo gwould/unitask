@@ -24,6 +24,56 @@ const VALUES = [
   { icon: '🚀', title: 'Nhanh chóng & Hiệu quả', desc: 'Smart Matching AI kết nối bạn với job/ứng viên phù hợp trong vài phút.' },
 ];
 
+const SUBSCRIPTION_PLANS = [
+  {
+    key: 'starter',
+    name: 'Starter',
+    price: 'Miễn phí',
+    period: 'Không giới hạn thời gian',
+    badge: 'Mới bắt đầu',
+    features: [
+      'Đăng tối đa 3 job/tháng',
+      'Hiển thị cơ bản trong kết quả tìm kiếm',
+      'Quản lý ứng viên và duyệt thủ công',
+      'Hỗ trợ email trong giờ hành chính',
+    ],
+    cta: 'Dùng miễn phí',
+    highlight: false,
+  },
+  {
+    key: 'growth',
+    name: 'Growth',
+    price: '499.000 đ',
+    period: '/ tháng',
+    badge: 'Phổ biến',
+    features: [
+      'Đăng job không giới hạn',
+      'Ưu tiên hiển thị trước gói Starter',
+      'Gợi ý ứng viên phù hợp bằng AI matching',
+      'Báo cáo hiệu suất tuyển dụng theo tuần',
+      'Hỗ trợ nhanh trong 24h',
+    ],
+    cta: 'Nâng cấp Growth',
+    highlight: true,
+  },
+  {
+    key: 'pro',
+    name: 'Pro',
+    price: '999.000 đ',
+    period: '/ tháng',
+    badge: 'Doanh nghiệp tăng tốc',
+    features: [
+      'Tất cả quyền lợi của Growth',
+      'Ưu tiên top đầu danh sách job',
+      'Branding công ty trên thẻ tuyển dụng',
+      'Tự động nhắc deadline và workflow duyệt bài',
+      'CSKH ưu tiên 1-1',
+    ],
+    cta: 'Nâng cấp Pro',
+    highlight: false,
+  },
+] as const;
+
 /* ─── ANIMATED COUNTER HOOK ───────────────────────── */
 
 function useCountUp(target: number, duration = 1800) {
@@ -151,6 +201,32 @@ function ValueCard({ value, index }: { value: typeof VALUES[0]; index: number })
   );
 }
 
+function PlanCard({ plan }: { plan: (typeof SUBSCRIPTION_PLANS)[number] }) {
+  return (
+    <div className={`about-plan-card${plan.highlight ? ' featured' : ''}`}>
+      <div className="about-plan-top">
+        <div>
+          <div className="about-plan-name">{plan.name}</div>
+          <div className="about-plan-badge">{plan.badge}</div>
+        </div>
+        {plan.highlight && <span className="about-plan-hot">Recommended</span>}
+      </div>
+      <div className="about-plan-price">
+        <strong>{plan.price}</strong>
+        <span>{plan.period}</span>
+      </div>
+      <ul className="about-plan-features">
+        {plan.features.map((feature) => (
+          <li key={feature}>{feature}</li>
+        ))}
+      </ul>
+      <Link to="/register" className={`btn ${plan.highlight ? 'btn-primary' : 'btn-ghost'}`} style={{ width: '100%', justifyContent: 'center' }}>
+        {plan.cta}
+      </Link>
+    </div>
+  );
+}
+
 /* ─── MAIN ────────────────────────────────────────── */
 
 export default function AboutPage() {
@@ -203,6 +279,18 @@ export default function AboutPage() {
           <div className="about-values-grid">
             {VALUES.map((v, i) => (
               <ValueCard key={i} value={v} index={i} />
+            ))}
+          </div>
+        </div>
+
+        <div id="pricing" className="about-section fade-up">
+          <h2>💼 Gói đăng ký doanh nghiệp</h2>
+          <p className="about-plan-sub">
+            Chọn gói phù hợp với giai đoạn tăng trưởng của doanh nghiệp. Có thể nâng cấp hoặc hạ cấp linh hoạt mỗi tháng.
+          </p>
+          <div className="about-plan-grid">
+            {SUBSCRIPTION_PLANS.map((plan) => (
+              <PlanCard key={plan.key} plan={plan} />
             ))}
           </div>
         </div>

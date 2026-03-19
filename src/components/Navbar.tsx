@@ -52,9 +52,11 @@ export default function Navbar() {
       <nav className={`mobile-nav${mobileOpen ? ' open' : ''}`}>
         <button className="mobile-close" onClick={closeMobile}>✕</button>
         <Link to="/jobs" onClick={closeMobile}>🔍 Tìm việc</Link>
+        <Link to="/about#pricing" onClick={closeMobile}>💼 Bảng giá</Link>
         {isHome && (
           <>
             <a href="#how" onClick={closeMobile}>💡 Cách hoạt động</a>
+            <a href="#pricing" onClick={closeMobile}>💼 Bảng giá</a>
             <a href="#features" onClick={closeMobile}>⭐ Tính năng</a>
           </>
         )}
@@ -113,9 +115,13 @@ export default function Navbar() {
             <Link to="/jobs" className={location.pathname.startsWith('/jobs') ? 'active' : ''}>
               Tìm việc
             </Link>
+            <Link to="/about#pricing" className={location.pathname === '/about' ? 'active' : ''}>
+              Bảng giá
+            </Link>
             {isHome && (
               <>
                 <a href="#how">Cách hoạt động</a>
+                <a href="#pricing">Bảng giá</a>
                 <a href="#features">Tính năng</a>
               </>
             )}
