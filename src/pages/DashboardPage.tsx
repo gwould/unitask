@@ -5,6 +5,7 @@ import { jobsData, applicationsData } from '../data/mockData';
 import { APP_STATUS_MAP, STORAGE_KEYS } from '../constants';
 import { formatMoney } from '../utils/format';
 import { simulateDelay } from '../utils/async';
+import type { Job } from '../types';
 
 /* ─── TYPES ───────────────────────────────────────── */
 
@@ -41,6 +42,24 @@ function getApplications(userId: string): AppRecord[] {
   }
 }
 
+function getPostedJobs(companyId: string): Job[] {
+  try {
+    const custom: Job[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_JOBS) || '[]');
+    return [...jobsData, ...custom].filter((j) => j.companyId === companyId);
+  } catch {
+    return jobsData.filter((j) => j.companyId === companyId);
+  }
+}
+
+function getAllApplications(): AppRecord[] {
+  try {
+    const stored: AppRecord[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.APPLICATIONS) || '[]');
+    return [...applicationsData, ...stored];
+  } catch {
+    return applicationsData;
+  }
+}
+
 function getGreeting(): string {
   const h = new Date().getHours();
   if (h < 12) return 'Chào buổi sáng';
@@ -50,6 +69,11 @@ function getGreeting(): string {
 
 function daysAgo(dateStr: string): number {
   return Math.floor((Date.now() - new Date(dateStr).getTime()) / 86_400_000);
+}
+
+function isExpired(deadline: string): boolean {
+  if (!deadline) return false;
+  return new Date(deadline).getTime() < new Date().setHours(0, 0, 0, 0);
 }
 
 function DashSkeleton() {
@@ -90,6 +114,8 @@ export default function DashboardPage() {
   }, [user, navigate]);
 
   const apps = user ? getApplications(user.id) : [];
+  const postedJobs = user ? getPostedJobs(user.id) : [];
+  const allApplications = getAllApplications();
 
   // Toast auto-dismiss
   useEffect(() => {
@@ -98,17 +124,31 @@ export default function DashboardPage() {
     return () => clearTimeout(t);
   }, [toast]);
 
-  // Filtered apps by period
+  // Filtered by period
   const filteredApps = period === 'all'
     ? apps
     : apps.filter((a) => daysAgo(a.appliedAt) <= (period === '7d' ? 7 : 30));
 
-  const stats = {
-    total: filteredApps.length,
-    accepted: filteredApps.filter((a) => a.status === 'accepted').length,
-    completed: filteredApps.filter((a) => a.status === 'completed').length,
-    pending: filteredApps.filter((a) => a.status === 'pending').length,
-  };
+  const filteredPostedJobs = period === 'all'
+    ? postedJobs
+    : postedJobs.filter((j) => daysAgo(j.postedAt) <= (period === '7d' ? 7 : 30));
+
+  const postedJobIds = new Set(postedJobs.map((j) => j.id));
+  const applicationsOnMyJobs = allApplications.filter((a) => postedJobIds.has(a.jobId));
+
+  const stats = user?.role === 'business'
+    ? {
+        total: filteredPostedJobs.length,
+        accepted: applicationsOnMyJobs.filter((a) => a.status === 'accepted').length,
+        completed: filteredPostedJobs.filter((j) => isExpired(j.deadline)).length,
+        pending: applicationsOnMyJobs.filter((a) => a.status === 'pending').length,
+      }
+    : {
+        total: filteredApps.length,
+        accepted: filteredApps.filter((a) => a.status === 'accepted').length,
+        completed: filteredApps.filter((a) => a.status === 'completed').length,
+        pending: filteredApps.filter((a) => a.status === 'pending').length,
+      };
 
   const handleRefresh = useCallback(() => {
     setIsRefreshing(true);
@@ -212,12 +252,12 @@ export default function DashboardPage() {
                 <div className="dash-stat-card">
                   <div className="ds-icon" style={{ background: 'rgba(91,79,255,.15)' }}>📋</div>
                   <div className="ds-num">{stats.total}</div>
-                  <div className="ds-label">Đã ứng tuyển</div>
+                  <div className="ds-label">{user.role === 'business' ? 'Job đã đăng' : 'Đã ứng tuyển'}</div>
                 </div>
                 <div className="dash-stat-card">
                   <div className="ds-icon" style={{ background: 'rgba(0,212,170,.1)' }}>✅</div>
                   <div className="ds-num">{stats.accepted}</div>
-                  <div className="ds-label">Đã được nhận</div>
+                  <div className="ds-label">{user.role === 'business' ? 'Đã được nhận' : 'Đã được nhận'}</div>
                 </div>
                 <div className="dash-stat-card">
                   <div className="ds-icon" style={{ background: 'rgba(255,179,64,.1)' }}>⏳</div>
@@ -227,7 +267,7 @@ export default function DashboardPage() {
                 <div className="dash-stat-card">
                   <div className="ds-icon" style={{ background: 'rgba(255,107,53,.1)' }}>🏆</div>
                   <div className="ds-num">{stats.completed}</div>
-                  <div className="ds-label">Hoàn thành</div>
+                  <div className="ds-label">{user.role === 'business' ? 'Đã hết hạn' : 'Hoàn thành'}</div>
                 </div>
               </div>
 
@@ -238,38 +278,60 @@ export default function DashboardPage() {
                   <Link to={user.role === 'student' ? '/my-applications' : '/manage-jobs'} className="btn btn-ghost btn-sm">Xem tất cả →</Link>
                 </div>
 
-                {filteredApps.length === 0 ? (
+                {(user.role === 'business' ? filteredPostedJobs.length === 0 : filteredApps.length === 0) ? (
                   <div className="dash-empty">
-                    <p>{period !== 'all' ? 'Không có hoạt động nào trong khoảng thời gian này.' : 'Bạn chưa ứng tuyển job nào.'}</p>
+                    <p>
+                      {period !== 'all'
+                        ? 'Không có hoạt động nào trong khoảng thời gian này.'
+                        : user.role === 'business'
+                          ? 'Bạn chưa đăng job nào.'
+                          : 'Bạn chưa ứng tuyển job nào.'}
+                    </p>
                     {period !== 'all' ? (
                       <button className="btn btn-ghost btn-sm" style={{ marginTop: 12 }} onClick={() => setPeriod('all')}>
                         Xem tất cả
                       </button>
                     ) : (
-                      <Link to="/jobs" className="btn btn-primary" style={{ marginTop: 12 }}>
-                        🔍 Tìm việc ngay
+                      <Link to={user.role === 'business' ? '/post-job' : '/jobs'} className="btn btn-primary" style={{ marginTop: 12 }}>
+                        {user.role === 'business' ? '📝 Đăng việc ngay' : '🔍 Tìm việc ngay'}
                       </Link>
                     )}
                   </div>
                 ) : (
                   <div className="dash-apps-list">
-                    {filteredApps.map((app) => {
-                      const job = jobsData.find((j) => j.id === app.jobId);
-                      if (!job) return null;
-                      const st = STATUS_MAP[app.status] || STATUS_MAP.pending;
-                      return (
-                        <Link to={`/jobs/${job.id}`} key={app.id} className="dash-app-row">
-                          <div className="jc-logo" style={{ background: job.logoGradient, width: 40, height: 40, fontSize: 14, flexShrink: 0 }}>
-                            {job.logoText}
-                          </div>
-                          <div className="dash-app-info">
-                            <div className="dash-app-title">{job.title}</div>
-                            <div className="dash-app-company">{job.company} · {app.appliedAt}</div>
-                          </div>
-                          <span className={`dash-status ${st.cls}`}>{st.label}</span>
-                        </Link>
-                      );
-                    })}
+                    {user.role === 'business'
+                      ? filteredPostedJobs.map((job) => {
+                          const appCount = applicationsOnMyJobs.filter((a) => a.jobId === job.id).length;
+                          return (
+                            <Link to="/manage-jobs" key={job.id} className="dash-app-row">
+                              <div className="jc-logo" style={{ background: job.logoGradient, width: 40, height: 40, fontSize: 14, flexShrink: 0 }}>
+                                {job.logoText}
+                              </div>
+                              <div className="dash-app-info">
+                                <div className="dash-app-title">{job.title}</div>
+                                <div className="dash-app-company">{job.location} · Đăng: {job.postedAt}</div>
+                              </div>
+                              <span className="dash-status st-pending">{appCount} ứng viên</span>
+                            </Link>
+                          );
+                        })
+                      : filteredApps.map((app) => {
+                          const job = jobsData.find((j) => j.id === app.jobId);
+                          if (!job) return null;
+                          const st = STATUS_MAP[app.status] || STATUS_MAP.pending;
+                          return (
+                            <Link to={`/jobs/${job.id}`} key={app.id} className="dash-app-row">
+                              <div className="jc-logo" style={{ background: job.logoGradient, width: 40, height: 40, fontSize: 14, flexShrink: 0 }}>
+                                {job.logoText}
+                              </div>
+                              <div className="dash-app-info">
+                                <div className="dash-app-title">{job.title}</div>
+                                <div className="dash-app-company">{job.company} · {app.appliedAt}</div>
+                              </div>
+                              <span className={`dash-status ${st.cls}`}>{st.label}</span>
+                            </Link>
+                          );
+                        })}
                   </div>
                 )}
               </div>
