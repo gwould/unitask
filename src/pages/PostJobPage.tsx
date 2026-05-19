@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { JOB_CATEGORIES, LOCATIONS, STORAGE_KEYS } from '../constants';
+import { createNotification } from '../services/automationEngine';
 
 const CATEGORIES = JOB_CATEGORIES;
 
@@ -24,11 +25,18 @@ export default function PostJobPage() {
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
 
   // Redirect if not business user
   useEffect(() => {
     if (!user || user.role !== 'business') navigate('/dashboard');
   }, [user, navigate]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 3500);
+    return () => clearTimeout(t);
+  }, [toast]);
 
   if (!user || user.role !== 'business') return null;
 
@@ -84,6 +92,18 @@ export default function PostJobPage() {
       // Ignore localStorage errors
     }
 
+    createNotification({
+      recipientId: user.id,
+      recipientType: 'business',
+      title: '📝 Đăng job thành công',
+      message: `Job "${newJob.title}" đã được đăng. Mức lương: ${newJob.pay} · Hạn: ${newJob.deadline}.`,
+      type: 'system',
+      relatedJobId: newJob.id,
+      actionUrl: '/manage-jobs',
+    });
+
+    setToast('Đã đăng job thành công. Thông báo đã được gửi.');
+
     setSuccess(true);
   };
 
@@ -105,6 +125,13 @@ export default function PostJobPage() {
             </div>
           </div>
         </div>
+        {toast && (
+          <div className="apps-toast apps-toast-success">
+            <span>✅</span>
+            {toast}
+            <button className="apps-toast-close" onClick={() => setToast(null)}>✕</button>
+          </div>
+        )}
       </section>
     );
   }
@@ -192,6 +219,13 @@ export default function PostJobPage() {
           </div>
         </form>
       </div>
+      {toast && (
+        <div className="apps-toast apps-toast-success">
+          <span>✅</span>
+          {toast}
+          <button className="apps-toast-close" onClick={() => setToast(null)}>✕</button>
+        </div>
+      )}
     </section>
   );
 }

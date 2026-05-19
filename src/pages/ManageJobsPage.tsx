@@ -374,6 +374,31 @@ export default function ManageJobsPage() {
     return list;
   }, [applicants, selectedJobId, statusFilter, searchQuery]);
 
+  const buildAcceptMessage = useCallback((job: Job | StoredJob | null) => {
+    if (!job) {
+      return 'Chúc mừng! Bạn đã được chấp nhận. Vui lòng theo dõi hướng dẫn tiếp theo trong hệ thống.';
+    }
+    const pay = 'pay' in job && typeof job.pay === 'string'
+      ? job.pay
+      : formatMoney((job as StoredJob).payMin);
+    const deadline = job.deadline || 'Đang cập nhật';
+    const duration = job.duration || 'Linh hoạt';
+    return `Chúc mừng! Bạn được nhận job "${job.title}". Lương: ${pay} · Hạn: ${deadline} · Thời lượng: ${duration}. Vui lòng vào hệ thống để nộp bài đúng hạn.`;
+  }, []);
+
+  const buildRejectMessage = useCallback((job: Job | StoredJob | null) => {
+    if (!job) {
+      return 'Cảm ơn bạn đã ứng tuyển. Hồ sơ chưa phù hợp ở thời điểm này. Chúc bạn may mắn với cơ hội khác.';
+    }
+    return `Cảm ơn bạn đã ứng tuyển job "${job.title}". Hồ sơ chưa phù hợp ở thời điểm này. Chúc bạn may mắn với cơ hội khác.`;
+  }, []);
+
+  const buildJobActionUrl = useCallback((job: Job | StoredJob | null) => {
+    if (!job) return '/my-applications';
+    const isSeededJob = jobsData.some((j) => j.id === job.id);
+    return isSeededJob ? `/jobs/${job.id}` : '/my-applications';
+  }, []);
+
   // Handlers
   const showToast = useCallback((message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type });
@@ -396,6 +421,7 @@ export default function ManageJobsPage() {
     try {
       await simulateDelay(600);
       const targetApplicants = applicants.filter(a => ids.includes(a.id));
+      const jobForNotify = selectedJob || null;
       
       if (action === 'accept' || action === 'reject') {
         const newStatus = action === 'accept' ? 'accepted' : 'rejected';
@@ -422,10 +448,12 @@ export default function ManageJobsPage() {
             recipientType: 'student',
             title: action === 'accept' ? '✅ Bạn đã được chấp nhận' : '❌ Hồ sơ không được chấp nhận',
             message: action === 'accept'
-              ? 'Chúc mừng! Bạn được chấp nhận. Vui lòng nộp bài tập.'
-              : 'Cảm ơn bạn đã ứng tuyển. Chúc bạn may mắn với các cơ hội khác.',
+              ? buildAcceptMessage(jobForNotify)
+              : buildRejectMessage(jobForNotify),
             type: 'application_status',
-            actionUrl: '/my-applications',
+            relatedJobId: jobForNotify ? jobForNotify.id : undefined,
+            relatedApplicationId: ap.appId,
+            actionUrl: buildJobActionUrl(jobForNotify),
           });
         }
 
@@ -450,7 +478,7 @@ export default function ManageJobsPage() {
     } finally {
       setIsBulkLoading(false);
     }
-  }, [applicants, showToast]);
+  }, [applicants, buildAcceptMessage, buildJobActionUrl, buildRejectMessage, selectedJob, showToast]);
 
   const handleStatusChange = useCallback(async (id: string, newStatus: ApplicantStatus) => {
     setConfirmAction(null);
@@ -482,6 +510,21 @@ export default function ManageJobsPage() {
     });
     saveApplicationsStore(updatedApps);
 
+    const targetJob = selectedJob || myJobs.find((j) => j.id === targetApplicant.jobId) || null;
+
+    createNotification({
+      recipientId: targetApplicant.userId,
+      recipientType: 'student',
+      title: newStatus === 'accepted' ? '✅ Bạn đã được chấp nhận' : '❌ Hồ sơ không được chấp nhận',
+      message: newStatus === 'accepted'
+        ? buildAcceptMessage(targetJob)
+        : buildRejectMessage(targetJob),
+      type: 'application_status',
+      relatedJobId: targetJob ? targetJob.id : undefined,
+      relatedApplicationId: targetApplicant.appId,
+      actionUrl: buildJobActionUrl(targetJob),
+    });
+
     setActioningId(null);
 
     if (newStatus === 'accepted') {
@@ -489,7 +532,7 @@ export default function ManageJobsPage() {
     } else {
       showToast(`Đã từ chối ${targetApplicant.name || 'ứng viên'}`);
     }
-  }, [applicants, showToast]);
+  }, [applicants, buildAcceptMessage, buildJobActionUrl, buildRejectMessage, myJobs, selectedJob, showToast]);
 
   const handleRequestRevision = useCallback(async (id: string) => {
     const note = window.prompt('Nhập góp ý để sinh viên sửa bài:', 'Vui lòng chỉnh lại format và bổ sung hạng mục còn thiếu.');
@@ -636,6 +679,17 @@ export default function ManageJobsPage() {
     updateAccountBalance(user.id, -payout);
     updateAccountBalance(targetApplicant.userId, payout);
     updateProfile({ balance: (user.balance || 0) - payout });
+
+    createNotification({
+      recipientId: targetApplicant.userId,
+      recipientType: 'student',
+      title: '💰 Đã duyệt & thanh toán',
+      message: `Job "${selectedJob.title}" đã được duyệt. Bạn nhận ${formatMoney(payout)} vào ví.`,
+      type: 'payment',
+      relatedJobId: selectedJob.id,
+      relatedApplicationId: targetApplicant.appId,
+      actionUrl: '/wallet',
+    });
 
     setActioningId(null);
     showToast(`Đã duyệt bài và thanh toán ${formatMoney(payout)} cho ${targetApplicant.name} ✅`);

@@ -6,6 +6,7 @@ import type { Application, EnrichedApplication } from '../types';
 import { APP_STATUS_MAP } from '../constants';
 import { simulateDelay } from '../utils/async';
 import { STORAGE_KEYS } from '../constants';
+import type { Notification } from '../types/automation';
 import { ConfirmModal, RatingModal } from '../components/ui';
 import { SEEDED_APPLICATIONS } from '../services/applicationService';
 
@@ -354,6 +355,7 @@ export default function MyApplicationsPage() {
     return () => { cancelled = true; };
   }, [user]);
 
+
   // Sync filter to URL
   useEffect(() => {
     const params = new URLSearchParams();
@@ -415,6 +417,19 @@ export default function MyApplicationsPage() {
   const showToast = useCallback((message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type });
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    try {
+      const all: Notification[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS) || '[]');
+      const unread = all.filter((n) => n.recipientId === user.id && !n.isRead);
+      if (unread.length > 0) {
+        showToast(`Bạn có ${unread.length} thông báo mới. Xem trong Trung tâm thông báo.`);
+      }
+    } catch {
+      // ignore errors
+    }
+  }, [user, showToast]);
 
   const handleWithdraw = useCallback(async () => {
     if (!withdrawConfirm || !user) return;

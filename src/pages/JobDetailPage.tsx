@@ -1,8 +1,9 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { jobsData } from '../data/mockData';
 import { useAuth } from '../contexts/AuthContext';
 import { STORAGE_KEYS } from '../constants';
+import { createNotification } from '../services/automationEngine';
 
 export default function JobDetailPage() {
   const { id } = useParams();
@@ -13,6 +14,13 @@ export default function JobDetailPage() {
   const [showApply, setShowApply] = useState(false);
   const [coverLetter, setCoverLetter] = useState('');
   const [applied, setApplied] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 3500);
+    return () => clearTimeout(t);
+  }, [toast]);
 
   if (!job) {
     return (
@@ -67,6 +75,32 @@ export default function JobDetailPage() {
 
     localStorage.setItem(STORAGE_KEYS.APPLICATIONS, JSON.stringify(apps));
     localStorage.setItem(STORAGE_KEYS.MANAGE_APPLICANTS, JSON.stringify(applicants));
+
+    if (job.companyId) {
+      createNotification({
+        recipientId: job.companyId,
+        recipientType: 'business',
+        title: '📥 Có ứng viên mới',
+        message: `${user.name} vừa ứng tuyển vào job "${job.title}".`,
+        type: 'system',
+        relatedJobId: job.id,
+        relatedApplicationId: appId,
+        actionUrl: '/manage-jobs',
+      });
+    }
+
+    createNotification({
+      recipientId: user.id,
+      recipientType: 'student',
+      title: '📨 Ứng tuyển thành công',
+      message: `Bạn đã ứng tuyển job "${job.title}" · Lương: ${job.pay} · Hạn: ${job.deadline}.`,
+      type: 'application_status',
+      relatedJobId: job.id,
+      relatedApplicationId: appId,
+      actionUrl: `/jobs/${job.id}`,
+    });
+
+    setToast('Đã gửi ứng tuyển. Thông báo đã được cập nhật.');
     setApplied(true);
     setShowApply(false);
   };
@@ -222,6 +256,13 @@ export default function JobDetailPage() {
           </div>
         </div>
       </div>
+      {toast && (
+        <div className="apps-toast apps-toast-success">
+          <span>✅</span>
+          {toast}
+          <button className="apps-toast-close" onClick={() => setToast(null)}>✕</button>
+        </div>
+      )}
     </section>
   );
 }
