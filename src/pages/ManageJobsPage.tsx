@@ -7,6 +7,9 @@ import type { AppStatus, Applicant } from '../types/application';
 import { APPLICANT_STATUS_MAP, STORAGE_KEYS } from '../constants';
 import { formatMoney } from '../utils/format';
 import { simulateDelay } from '../utils/async';
+import { BulkActions } from '../components/BulkActions';
+import { AutomationSuggestions } from '../components/AutomationSuggestions';
+import { createNotification } from '../services/automationEngine';
 
 /* ─── TYPES ───────────────────────────────────────── */
 
@@ -110,20 +113,32 @@ function updateAccountBalance(userId: string, delta: number) {
 
 /* ─── SUB COMPONENTS ──────────────────────────────── */
 
-function ApplicantCard({ ap, onAccept, onReject, onApprove, onRequestRevision, isActioning }: {
+function ApplicantCard({ ap, onAccept, onReject, onApprove, onRequestRevision, isActioning, isSelected, onSelectChange }: {
   ap: Applicant;
   onAccept: (id: string) => void;
   onReject: (id: string) => void;
   onApprove: (id: string) => void;
   onRequestRevision: (id: string) => void;
   isActioning: boolean;
+  isSelected?: boolean;
+  onSelectChange?: (id: string, selected: boolean) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const st = STATUS_MAP[ap.status];
 
   return (
-    <div className={`manage-applicant-card${isActioning ? ' manage-ap-loading' : ''}`}>
+    <div className={`manage-applicant-card${isActioning ? ' manage-ap-loading' : ''}${isSelected ? ' selected' : ''}`}>
       <div className="manage-ap-top">
+        {onSelectChange && (
+          <div style={{ marginRight: 12 }}>
+            <input
+              type="checkbox"
+              checked={isSelected || false}
+              onChange={(e) => onSelectChange(ap.id, e.target.checked)}
+              style={{ cursor: 'pointer' }}
+            />
+          </div>
+        )}
         <div className="manage-ap-avatar">
           {ap.name.charAt(0)}
         </div>
@@ -271,6 +286,8 @@ export default function ManageJobsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<ApplicantStatus | 'all'>('all');
   const [confirmAction, setConfirmAction] = useState<{ id: string; name: string; action: 'accept' | 'reject' | 'approve' | 'revision' } | null>(null);
+  const [selectedApplicantIds, setSelectedApplicantIds] = useState<Set<string>>(new Set());
+  const [isBulkLoading, setIsBulkLoading] = useState(false);
 
   // Redirect
   useEffect(() => {
@@ -361,6 +378,79 @@ export default function ManageJobsPage() {
   const showToast = useCallback((message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type });
   }, []);
+
+  const handleSelectApplicant = useCallback((id: string, selected: boolean) => {
+    setSelectedApplicantIds(prev => {
+      const updated = new Set(prev);
+      if (selected) {
+        updated.add(id);
+      } else {
+        updated.delete(id);
+      }
+      return updated;
+    });
+  }, []);
+
+  const handleBulkAction = useCallback(async (action: 'accept' | 'reject' | 'notify', ids: string[], message?: string) => {
+    setIsBulkLoading(true);
+    try {
+      await simulateDelay(600);
+      const targetApplicants = applicants.filter(a => ids.includes(a.id));
+      
+      if (action === 'accept' || action === 'reject') {
+        const newStatus = action === 'accept' ? 'accepted' : 'rejected';
+        setApplicants(prev => {
+          const updated = prev.map(a => ids.includes(a.id) ? { ...a, status: newStatus as AppStatus } : a);
+          saveApplicants(updated);
+          return updated;
+        });
+
+        // Update applications store too
+        const apps = loadApplicationsStore();
+        const updatedApps = apps.map(a => {
+          if (applicants.find(ap => ids.includes(ap.id) && ap.jobId === a.jobId && ap.userId === a.userId)) {
+            return { ...a, status: newStatus as AppStatus };
+          }
+          return a;
+        });
+        saveApplicationsStore(updatedApps);
+
+        // Create notifications
+        for (const ap of targetApplicants) {
+          createNotification({
+            recipientId: ap.userId,
+            recipientType: 'student',
+            title: action === 'accept' ? '✅ Bạn đã được chấp nhận' : '❌ Hồ sơ không được chấp nhận',
+            message: action === 'accept'
+              ? 'Chúc mừng! Bạn được chấp nhận. Vui lòng nộp bài tập.'
+              : 'Cảm ơn bạn đã ứng tuyển. Chúc bạn may mắn với các cơ hội khác.',
+            type: 'application_status',
+            actionUrl: '/my-applications',
+          });
+        }
+
+        showToast(`${action === 'accept' ? 'Chấp nhận' : 'Từ chối'} ${ids.length} ứng viên ✅`);
+      } else if (action === 'notify' && message) {
+        for (const ap of targetApplicants) {
+          createNotification({
+            recipientId: ap.userId,
+            recipientType: 'student',
+            title: '🔔 Thông báo từ công ty',
+            message,
+            type: 'system',
+            actionUrl: '/my-applications',
+          });
+        }
+        showToast(`Gửi thông báo đến ${ids.length} ứng viên ✅`);
+      }
+
+      setSelectedApplicantIds(new Set());
+    } catch (err) {
+      showToast('Lỗi khi xử lý hàng loạt', 'error');
+    } finally {
+      setIsBulkLoading(false);
+    }
+  }, [applicants, showToast]);
 
   const handleStatusChange = useCallback(async (id: string, newStatus: ApplicantStatus) => {
     setConfirmAction(null);
@@ -633,6 +723,17 @@ export default function ManageJobsPage() {
                   </span>
                 </div>
 
+                {/* Automation Suggestions */}
+                <AutomationSuggestions applicants={jobApplicants} />
+
+                {/* Bulk Actions */}
+                <BulkActions
+                  selectedIds={selectedApplicantIds}
+                  applicants={jobApplicants}
+                  onApplyAction={handleBulkAction}
+                  isLoading={isBulkLoading}
+                />
+
                 {/* Panel toolbar */}
                 <div className="manage-panel-toolbar">
                   <div className="apps-search" style={{ flex: 1 }}>
@@ -707,6 +808,8 @@ export default function ManageJobsPage() {
                         onApprove={handleApprove}
                         onRequestRevision={handleRevision}
                         isActioning={actioningId === ap.id}
+                        isSelected={selectedApplicantIds.has(ap.id)}
+                        onSelectChange={handleSelectApplicant}
                       />
                     ))}
                   </div>

@@ -26,50 +26,50 @@ const VALUES = [
 
 const SUBSCRIPTION_PLANS = [
   {
-    key: 'starter',
-    name: 'Starter',
-    price: 'Miễn phí',
-    period: 'Không giới hạn thời gian',
-    badge: 'Mới bắt đầu',
+    key: 'free-starter',
+    name: 'Free Starter',
+    price: '0 đ',
+    period: '/ tháng',
+    badge: 'Khởi động',
     features: [
-      'Đăng tối đa 3 job/tháng',
+      '5 job/tháng',
       'Hiển thị cơ bản trong kết quả tìm kiếm',
-      'Quản lý ứng viên và duyệt thủ công',
+      'AI matching cơ bản',
       'Hỗ trợ email trong giờ hành chính',
     ],
     cta: 'Dùng miễn phí',
     highlight: false,
   },
   {
-    key: 'growth',
-    name: 'Growth',
-    price: '499.000 đ',
+    key: 'starter',
+    name: 'Starter Package',
+    price: '299.000 đ',
     period: '/ tháng',
-    badge: 'Phổ biến',
+    badge: 'Linh hoạt',
     features: [
-      'Đăng job không giới hạn',
-      'Ưu tiên hiển thị trước gói Starter',
-      'Gợi ý ứng viên phù hợp bằng AI matching',
-      'Báo cáo hiệu suất tuyển dụng theo tuần',
-      'Hỗ trợ nhanh trong 24h',
+      '30 job/tháng',
+      'Ưu tiên hiển thị bài đăng',
+      'AI matching ứng viên phù hợp',
+      'Giảm phí giao dịch',
+      'Thống kê hiệu quả tuyển dụng',
     ],
-    cta: 'Nâng cấp Growth',
+    cta: 'Nâng cấp Starter',
     highlight: true,
   },
   {
-    key: 'pro',
-    name: 'Pro',
-    price: '999.000 đ',
+    key: 'growth',
+    name: 'Growth Package',
+    price: '799.000 đ',
     period: '/ tháng',
-    badge: 'Doanh nghiệp tăng tốc',
+    badge: 'Không giới hạn',
     features: [
-      'Tất cả quyền lợi của Growth',
-      'Ưu tiên top đầu danh sách job',
-      'Branding công ty trên thẻ tuyển dụng',
-      'Tự động nhắc deadline và workflow duyệt bài',
-      'CSKH ưu tiên 1-1',
+      'Job không giới hạn',
+      'Ưu tiên hiển thị bài đăng',
+      'AI matching ứng viên phù hợp',
+      'Giảm phí giao dịch',
+      'Thống kê hiệu quả tuyển dụng',
     ],
-    cta: 'Nâng cấp Pro',
+    cta: 'Nâng cấp Growth',
     highlight: false,
   },
 ] as const;
@@ -273,6 +273,23 @@ export default function AboutPage() {
           </div>
         </div>
 
+        <div className="about-section fade-up">
+          <h2>💼 Mô hình kinh doanh</h2>
+          <div className="about-mission">
+            <p>
+              UniTask hoạt động theo mô hình trung gian, kết nối doanh nghiệp và sinh viên thông qua hệ thống Escrow.
+            </p>
+            <p>
+              <strong>Phí giao dịch (Commission Fee):</strong> Sinh viên được miễn phí 5 giao dịch đầu tiên.
+              Job dưới 2.000.000 VNĐ thu 10%, job từ 2.000.000 VNĐ trở lên thu 8%.
+            </p>
+            <p>
+              <strong>Ví dụ:</strong> Doanh nghiệp đăng job 1.000.000 VNĐ → sinh viên nhận 900.000 VNĐ,
+              UniTask thu 100.000 VNĐ.
+            </p>
+          </div>
+        </div>
+
         {/* values with staggered animation */}
         <div className="about-section">
           <h2 className="fade-up">💡 Giá trị cốt lõi</h2>
@@ -286,7 +303,7 @@ export default function AboutPage() {
         <div id="pricing" className="about-section fade-up">
           <h2>💼 Gói đăng ký doanh nghiệp</h2>
           <p className="about-plan-sub">
-            Chọn gói phù hợp với giai đoạn tăng trưởng của doanh nghiệp. Có thể nâng cấp hoặc hạ cấp linh hoạt mỗi tháng.
+            Chọn gói phù hợp với nhu cầu tuyển dụng. Có thể nâng cấp hoặc hạ cấp linh hoạt mỗi tháng.
           </p>
           <div className="about-plan-grid">
             {SUBSCRIPTION_PLANS.map((plan) => (
@@ -334,7 +351,7 @@ export default function AboutPage() {
               onMouseLeave={() => setCtaHover(null)}
             >
               🏢 Đăng ký Doanh nghiệp
-              {ctaHover === 'business' && <span className="cta-hint">3 job miễn phí</span>}
+              {ctaHover === 'business' && <span className="cta-hint">5 job miễn phí</span>}
             </Link>
           </div>
         </div>

@@ -8,4 +8,8 @@ export const STORAGE_KEYS = {
   USER_TRANSACTIONS: 'unitask_user_transactions',
   BANK_METHODS: 'unitask_bank_methods',
   MANAGE_APPLICANTS: 'unitask_manage_applicants',
+  AUTOMATION_RULES: 'unitask_automation_rules',
+  NOTIFICATIONS: 'unitask_notifications',
+  AUTOMATION_LOGS: 'unitask_automation_logs',
+  BULK_ACTIONS: 'unitask_bulk_actions',
 } as const;

@@ -288,7 +288,7 @@ export const jobsData: Job[] = [
     deadline: 'Còn 7 ngày',
     category: 'business',
     description:
-      'AlphaFinance cần nhập liệu từ scan PDF sang Excel (500 dòng), sau đó tạo các bảng pivot, chart cơ bản để phục vụ báo cáo nội bộ. Task đơn giản, phù hợp sinh viên mới bắt đầu.',
+      'AlphaFinance cần nhập liệu từ scan PDF sang Excel (500 dòng), sau đó tạo các bảng pivot, chart cơ bản để phục vụ báo cáo nội bộ. Job đơn giản, phù hợp sinh viên mới bắt đầu.',
     requirements: [
       'Thành thạo Microsoft Excel (pivot table, VLOOKUP, chart)',
       'Cẩn thận, chính xác trong nhập liệu',
@@ -496,14 +496,14 @@ export const categoriesData: Category[] = [
 export const studentSteps: HowStep[] = [
   { num: '01', icon: '🎓', title: 'Đăng ký & Xác thực', desc: 'Tạo tài khoản với email .edu hoặc thẻ sinh viên. Hệ thống xác minh trong 24h.' },
   { num: '02', icon: '🤖', title: 'Smart Matching', desc: 'Hệ thống gợi ý job phù hợp với ngành học và kỹ năng bạn đã có sẵn.' },
-  { num: '03', icon: '⚡', title: 'Làm việc & Nộp bài', desc: 'Nhận task, thực hiện, nộp sản phẩm qua hệ thống. Doanh nghiệp review trực tuyến.' },
+  { num: '03', icon: '⚡', title: 'Làm việc & Nộp bài', desc: 'Nhận job, thực hiện, nộp sản phẩm qua hệ thống. Doanh nghiệp review trực tuyến.' },
   { num: '04', icon: '🏆', title: 'Nhận tiền + Hồ sơ số', desc: 'Tiền Escrow tự động chuyển ví. Project tự động cập nhật vào CV điện tử của bạn.' },
 ];
 
 export const businessSteps: HowStep[] = [
   { num: '01', icon: '🏢', title: 'Đăng ký Doanh nghiệp', desc: 'Tạo tài khoản, xác thực thông tin DN. Quá trình nhanh chóng, hoàn thành trong ngày.' },
   { num: '02', icon: '💰', title: 'Nạp tiền Escrow', desc: 'Nạp ngân sách vào hệ thống. Tiền chỉ trả khi bạn duyệt sản phẩm hoàn chỉnh.' },
-  { num: '03', icon: '📋', title: 'Đăng Job & Chọn ứng viên', desc: 'Mô tả task ngắn gọn. Hệ thống tự gợi ý sinh viên phù hợp, bạn chọn và phê duyệt.' },
+  { num: '03', icon: '📋', title: 'Đăng Job & Chọn ứng viên', desc: 'Mô tả job ngắn gọn. Hệ thống tự gợi ý sinh viên phù hợp, bạn chọn và phê duyệt.' },
   { num: '04', icon: '✅', title: 'Duyệt & Thanh toán', desc: 'Review sản phẩm, đánh giá kỹ năng sinh viên. Giải phóng tiền khi hài lòng.' },
 ];
 

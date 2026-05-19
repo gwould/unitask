@@ -14,6 +14,11 @@ import ManageJobsPage from './pages/ManageJobsPage';
 import AdminFinancePage from './pages/AdminFinancePage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
+import BusinessAutomationPage from './pages/BusinessAutomationPage';
+import AutomationRulesPage from './pages/AutomationRulesPage';
+import NotificationHubPage from './pages/NotificationHubPage.tsx';
+import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
 
 export default function App() {
   return (
@@ -30,9 +35,14 @@ export default function App() {
         <Route path="/wallet" element={<WalletPage />} />
         <Route path="/my-applications" element={<MyApplicationsPage />} />
         <Route path="/manage-jobs" element={<ManageJobsPage />} />
+        <Route path="/business-automation" element={<BusinessAutomationPage />} />
+        <Route path="/automation-rules" element={<AutomationRulesPage />} />
+        <Route path="/notifications" element={<NotificationHubPage />} />
         <Route path="/admin-finance" element={<AdminFinancePage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

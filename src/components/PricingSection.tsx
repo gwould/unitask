@@ -2,51 +2,51 @@ import { Link } from 'react-router-dom';
 
 const HOME_PLANS = [
   {
-    key: 'starter',
-    name: 'Starter',
-    price: 'Miễn phí',
-    period: 'Không giới hạn',
-    badge: 'Mới bắt đầu',
+    key: 'free-starter',
+    name: 'Free Starter',
+    price: '0 đ',
+    period: '/ tháng',
+    badge: 'Khởi động',
     highlight: false,
     features: [
-      'Đăng tối đa 3 job/tháng',
+      '5 job/tháng',
       'Hiển thị cơ bản',
-      'Quản lý ứng viên thủ công',
+      'AI matching cơ bản',
       'Hỗ trợ email',
     ],
     cta: 'Bắt đầu miễn phí',
   },
   {
-    key: 'growth',
-    name: 'Growth',
-    price: '499.000 đ',
+    key: 'starter',
+    name: 'Starter Package',
+    price: '299.000 đ',
     period: '/ tháng',
-    badge: 'Phổ biến nhất',
+    badge: 'Linh hoạt',
     highlight: true,
     features: [
-      'Đăng job không giới hạn',
-      'Ưu tiên hiển thị trước Starter',
-      'AI matching ứng viên',
-      'Báo cáo tuyển dụng theo tuần',
-      'Hỗ trợ phản hồi trong 24h',
+      '30 job/tháng',
+      'Ưu tiên hiển thị bài đăng',
+      'AI matching ứng viên phù hợp',
+      'Giảm phí giao dịch',
+      'Thống kê hiệu quả tuyển dụng',
     ],
-    cta: 'Nâng cấp Growth',
+    cta: 'Nâng cấp Starter',
   },
   {
-    key: 'pro',
-    name: 'Pro',
-    price: '999.000 đ',
+    key: 'growth',
+    name: 'Growth Package',
+    price: '799.000 đ',
     period: '/ tháng',
-    badge: 'Tăng tốc tuyển dụng',
+    badge: 'Không giới hạn',
     highlight: false,
     features: [
-      'Tất cả quyền lợi Growth',
-      'Ưu tiên top đầu danh sách',
-      'Branding doanh nghiệp nổi bật',
-      'Workflow duyệt bài tự động',
-      'CSKH ưu tiên 1-1',
+      'Job không giới hạn',
+      'Ưu tiên hiển thị bài đăng',
+      'AI matching ứng viên phù hợp',
+      'Giảm phí giao dịch',
+      'Thống kê hiệu quả tuyển dụng',
     ],
-    cta: 'Nâng cấp Pro',
+    cta: 'Nâng cấp Growth',
   },
 ] as const;
 
@@ -58,8 +58,24 @@ export default function PricingSection() {
           <div className="section-eyebrow">Bảng giá</div>
           <h2 className="section-title">Gói đăng ký cho Doanh nghiệp</h2>
           <p className="section-sub">
-            Xem nhanh các gói trước khi đăng ký. Bạn có thể bắt đầu miễn phí và nâng cấp bất cứ lúc nào.
+            Bắt đầu miễn phí, sau đó chọn gói phù hợp. Có thể nâng cấp hoặc hạ cấp linh hoạt theo tháng.
           </p>
+        </div>
+
+        <div className="pricing-note fade-up">
+          <div className="pricing-note-card">
+            <div className="pricing-note-title">Phí giao dịch (Commission Fee)</div>
+            <p>
+              UniTask thu phí hoa hồng khi giao dịch hoàn tất qua Escrow. Sinh viên được miễn phí 5 giao dịch đầu tiên.
+            </p>
+            <ul>
+              <li>Job dưới 2.000.000 VNĐ: phí 10%</li>
+              <li>Job từ 2.000.000 VNĐ trở lên: phí 8%</li>
+            </ul>
+            <div className="pricing-note-example">
+              Ví dụ: Job 1.000.000 VNĐ → Sinh viên nhận 900.000 VNĐ, UniTask thu 100.000 VNĐ.
+            </div>
+          </div>
         </div>
 
         <div className="pricing-grid">

@@ -34,12 +34,6 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // close dropdown on route change
-  useEffect(() => {
-    setDropdownOpen(false);
-    closeMobile();
-  }, [location.pathname]);
-
   return (
     <>
       {/* Overlay */}
@@ -65,6 +59,7 @@ export default function Navbar() {
             <Link to="/dashboard" onClick={closeMobile}>📊 Dashboard</Link>
             <Link to="/profile" onClick={closeMobile}>👤 Hồ sơ</Link>
             <Link to="/wallet" onClick={closeMobile}>💰 Ví</Link>
+            <Link to="/notifications" onClick={closeMobile}>🔔 Thông báo</Link>
             {user.role === 'student' && (
               <Link to="/my-applications" onClick={closeMobile}>📋 Đơn ứng tuyển</Link>
             )}
@@ -72,6 +67,8 @@ export default function Navbar() {
               <>
                 <Link to="/post-job" onClick={closeMobile}>📝 Đăng việc</Link>
                 <Link to="/manage-jobs" onClick={closeMobile}>📂 Quản lý job</Link>
+                <Link to="/business-automation" onClick={closeMobile}>🎯 Trung tâm tăng trưởng</Link>
+                <Link to="/automation-rules" onClick={closeMobile}>🤖 Tự động hóa</Link>
               </>
             )}
             {user.role === 'admin' && (
@@ -151,7 +148,7 @@ export default function Navbar() {
                   {user.avatar}
                 </button>
                 {dropdownOpen && (
-                  <div className="nav-dropdown">
+                  <div className="nav-dropdown" onClick={() => setDropdownOpen(false)}>
                     <div className="nav-dd-header">
                       <strong>{user.name}</strong>
                       <span>{user.role === 'student' ? '👨‍🎓 Sinh viên' : user.role === 'business' ? '🏢 Doanh nghiệp' : '🛡️ Admin'}</span>
@@ -159,6 +156,7 @@ export default function Navbar() {
                     <Link to="/dashboard" className="nav-dd-item">📊 Dashboard</Link>
                     <Link to="/profile" className="nav-dd-item">👤 Hồ sơ</Link>
                     <Link to="/wallet" className="nav-dd-item">💰 Ví</Link>
+                    <Link to="/notifications" className="nav-dd-item">🔔 Thông báo</Link>
                     {user.role === 'student' && (
                       <Link to="/my-applications" className="nav-dd-item">📋 Đơn ứng tuyển</Link>
                     )}
@@ -166,6 +164,8 @@ export default function Navbar() {
                       <>
                         <Link to="/post-job" className="nav-dd-item">📝 Đăng việc</Link>
                         <Link to="/manage-jobs" className="nav-dd-item">📂 Quản lý job</Link>
+                        <Link to="/business-automation" className="nav-dd-item">🎯 Trung tâm tăng trưởng</Link>
+                        <Link to="/automation-rules" className="nav-dd-item">🤖 Tự động hóa</Link>
                       </>
                     )}
                     {user.role === 'admin' && (

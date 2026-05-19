@@ -38,8 +38,8 @@ export default function Footer() {
             <h4>UniTask</h4>
             <Link to="/about">Về chúng tôi</Link>
             <Link to="/contact">Liên hệ</Link>
-            <a href="#">Điều khoản</a>
-            <a href="#">Bảo mật</a>
+            <Link to="/terms">Điều khoản</Link>
+            <Link to="/privacy">Bảo mật</Link>
           </div>
         </div>
         <div className="footer-bottom">

@@ -211,6 +211,7 @@ export default function DashboardPage() {
                 <>
                   <Link to="/post-job" className="dash-nav-item">📝 Đăng việc mới</Link>
                   <Link to="/manage-jobs" className="dash-nav-item">📂 Quản lý job</Link>
+                  <Link to="/business-automation" className="dash-nav-item">🎯 Trung tâm tăng trưởng</Link>
                   <Link to="/wallet" className="dash-nav-item">💰 Escrow & Thanh toán</Link>
                 </>
               )}

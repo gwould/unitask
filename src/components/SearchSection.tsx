@@ -62,7 +62,7 @@ export default function SearchSection({
           <div className="search-divider" />
           <select value={workType} onChange={(e) => setWorkType(e.target.value)}>
             <option>Tất cả hình thức</option>
-            <option>Micro-task</option>
+            <option>Micro-job</option>
             <option>Freelance</option>
             <option>Micro-Internship</option>
           </select>
