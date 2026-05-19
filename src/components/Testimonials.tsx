@@ -1,6 +1,26 @@
-import { testimonialsData } from '../data/mockData';
+import { useEffect, useState } from 'react';
+import { siteService } from '../services/siteService';
+import type { Testimonial } from '../types';
 
 export default function Testimonials() {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    siteService.getTestimonials()
+      .then((data) => {
+        if (!cancelled) setTestimonials(data);
+      })
+      .catch(() => {
+        if (!cancelled) setTestimonials([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
   return (
     <section id="testimonials" className="testimonials-bg">
       <div className="container">
@@ -11,23 +31,27 @@ export default function Testimonials() {
             Những trải nghiệm thực tế từ cộng đồng UniTask
           </p>
         </div>
-        <div className="testi-grid">
-          {testimonialsData.map((t, i) => (
-            <div key={i} className="testi-card fade-up">
-              <div className="testi-stars">
-                {'★'.repeat(t.stars)}
-              </div>
-              <p className="testi-text">{t.text}</p>
-              <div className="testi-author">
-                <div className="testi-avatar" style={{ background: t.avatarGradient }}>{t.avatarLetter}</div>
-                <div>
-                  <div className="testi-name">{t.name}</div>
-                  <div className="testi-role">{t.role}</div>
+        {loading ? (
+          <div style={{ textAlign: 'center', color: 'var(--text-2)' }}>Đang tải đánh giá...</div>
+        ) : (
+          <div className="testi-grid">
+            {testimonials.map((t, i) => (
+              <div key={i} className="testi-card fade-up">
+                <div className="testi-stars">
+                  {'★'.repeat(t.stars)}
+                </div>
+                <p className="testi-text">{t.text}</p>
+                <div className="testi-author">
+                  <div className="testi-avatar" style={{ background: t.avatarGradient }}>{t.avatarLetter}</div>
+                  <div>
+                    <div className="testi-name">{t.name}</div>
+                    <div className="testi-role">{t.role}</div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { studentSteps, businessSteps } from '../data/mockData';
+import { useEffect, useState } from 'react';
 import type { HowStep } from '../types';
+import { siteService } from '../services/siteService';
 
 function StepCard({ step }: { step: HowStep }) {
   return (
@@ -15,6 +15,34 @@ function StepCard({ step }: { step: HowStep }) {
 
 export default function HowItWorks() {
   const [mode, setMode] = useState<'student' | 'business'>('student');
+  const [studentSteps, setStudentSteps] = useState<HowStep[]>([]);
+  const [businessSteps, setBusinessSteps] = useState<HowStep[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([
+      siteService.getHowSteps('student'),
+      siteService.getHowSteps('business'),
+    ])
+      .then(([student, business]) => {
+        if (!cancelled) {
+          setStudentSteps(student);
+          setBusinessSteps(business);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setStudentSteps([]);
+          setBusinessSteps([]);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
   const steps = mode === 'student' ? studentSteps : businessSteps;
 
   return (
@@ -39,11 +67,15 @@ export default function HowItWorks() {
             🏢 Dành cho Doanh nghiệp
           </button>
         </div>
-        <div className="how-steps">
-          {steps.map((step) => (
-            <StepCard key={step.num + mode} step={step} />
-          ))}
-        </div>
+        {loading ? (
+          <div style={{ textAlign: 'center', color: 'var(--text-2)' }}>Đang tải quy trình...</div>
+        ) : (
+          <div className="how-steps">
+            {steps.map((step) => (
+              <StepCard key={step.num + mode} step={step} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

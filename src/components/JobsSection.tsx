@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { jobsData } from '../data/mockData';
 import type { Job } from '../types';
+import { jobService } from '../services/jobService';
 
 const TABS = [
   { label: 'Tất cả', cat: 'all' },
@@ -45,10 +45,27 @@ function JobCard({ job }: { job: Job }) {
 
 export default function JobsSection() {
   const [activeTab, setActiveTab] = useState('all');
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    jobService.getAll()
+      .then((data) => {
+        if (!cancelled) setJobs(data);
+      })
+      .catch(() => {
+        if (!cancelled) setJobs([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, []);
 
   const filtered = activeTab === 'all'
-    ? jobsData
-    : jobsData.filter((j) => j.category === activeTab);
+    ? jobs
+    : jobs.filter((j) => j.category === activeTab);
 
   return (
     <section className="jobs-section" id="jobs">
@@ -79,11 +96,15 @@ export default function JobsSection() {
             ))}
           </div>
         </div>
-        <div className="jobs-grid">
-          {filtered.map((job) => (
-            <JobCard key={job.id} job={job} />
-          ))}
-        </div>
+        {loading ? (
+          <div style={{ textAlign: 'center', color: 'var(--text-2)' }}>Đang tải job...</div>
+        ) : (
+          <div className="jobs-grid">
+            {filtered.map((job) => (
+              <JobCard key={job.id} job={job} />
+            ))}
+          </div>
+        )}
         <div style={{ textAlign: 'center', marginTop: 44 }} className="fade-up">
           <Link to="/jobs" className="btn btn-ghost">Xem tất cả 1.100+ job →</Link>
         </div>

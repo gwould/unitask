@@ -1,14 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { jobsData } from '../data/mockData';
-import type { Application, EnrichedApplication } from '../types';
-import { APP_STATUS_MAP } from '../constants';
-import { simulateDelay } from '../utils/async';
-import { STORAGE_KEYS } from '../constants';
+import type { Application, EnrichedApplication, Job, TaskSubmission } from '../types';
+import { APP_STATUS_MAP, STORAGE_KEYS } from '../constants';
 import type { Notification } from '../types/automation';
 import { ConfirmModal, RatingModal } from '../components/ui';
-import { SEEDED_APPLICATIONS } from '../services/applicationService';
+import { applicationService } from '../services/applicationService';
+import { jobService } from '../services/jobService';
 
 /* ─── LOCAL TYPES ─────────────────────────────────── */
 
@@ -16,7 +14,7 @@ type FilterKey = Application['status'] | 'all';
 type SortKey = 'newest' | 'oldest' | 'status';
 
 interface WithdrawConfirm {
-  appId: string;
+  appId: number | string;
   jobTitle: string;
 }
 
@@ -38,60 +36,20 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: 'status', label: 'Trạng thái' },
 ];
 
-const STORAGE_KEY = STORAGE_KEYS.APPLICATIONS;
-const APPLICANTS_KEY = STORAGE_KEYS.MANAGE_APPLICANTS;
+const SUBMISSIONS_KEY = STORAGE_KEYS.APPLICATION_SUBMISSIONS;
 
 /* ─── DATA HELPERS ────────────────────────────────── */
 
-function loadApplications(userId: string): Application[] {
-  const stored: Application[] = (() => {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
-    catch { return []; }
-  })();
-  const seededIds = new Set(stored.map((a) => a.id));
-  const merged = [
-    ...SEEDED_APPLICATIONS.filter((s) => !seededIds.has(s.id)),
-    ...stored,
-  ];
-  return merged.filter((a) => a.userId === userId);
-}
-
-function saveApplications(apps: Application[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(apps));
-}
-
-function loadApplicants() {
+function loadSubmissionMap(): Record<string, TaskSubmission> {
   try {
-    return JSON.parse(localStorage.getItem(APPLICANTS_KEY) || '[]') as Array<Record<string, unknown>>;
+    return JSON.parse(localStorage.getItem(SUBMISSIONS_KEY) || '{}') as Record<string, TaskSubmission>;
   } catch {
-    return [];
+    return {};
   }
 }
 
-function saveApplicants(apps: Array<Record<string, unknown>>) {
-  localStorage.setItem(APPLICANTS_KEY, JSON.stringify(apps));
-}
-
-function enrichApp(app: Application): EnrichedApplication {
-  const customJobs = (() => {
-    try {
-      const stored = JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_JOBS) || '[]') as Array<{ id: number } & Record<string, unknown>>;
-      return stored.map((j) => ({
-        ...j,
-        verified: false,
-        tags: [],
-        spotsLeft: 1,
-        spotsTotal: 1,
-        featured: false,
-      }));
-    } catch {
-      return [] as Array<{ id: number } & Record<string, unknown>>;
-    }
-  })();
-
-  const allJobs = [...jobsData, ...customJobs] as Array<{ id: number } & Record<string, unknown>>;
-  const job = allJobs.find((j) => Number(j.id) === app.jobId);
-  return { ...app, job: job as EnrichedApplication['job'] };
+function saveSubmissionMap(map: Record<string, TaskSubmission>) {
+  localStorage.setItem(SUBMISSIONS_KEY, JSON.stringify(map));
 }
 
 /* ─── SUB-COMPONENTS ──────────────────────────────── */
@@ -120,8 +78,8 @@ function ApplicationSkeleton() {
 
 function ApplicationCard({ app, onWithdraw, onRate, onSubmitTask, expanding, onToggleExpand }: {
   app: EnrichedApplication;
-  onWithdraw: (appId: string, jobTitle: string) => void;
-  onRate: (appId: string, jobTitle: string) => void;
+  onWithdraw: (appId: number | string, jobTitle: string) => void;
+  onRate: (appId: number | string, jobTitle: string) => void;
   onSubmitTask: (app: EnrichedApplication) => void;
   expanding: boolean;
   onToggleExpand: () => void;
@@ -306,6 +264,7 @@ export default function MyApplicationsPage() {
 
   // Data
   const [applications, setApplications] = useState<Application[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
 
   // Filters & sort
   const filterParam = (searchParams.get('status') as FilterKey) || 'all';
@@ -320,19 +279,19 @@ export default function MyApplicationsPage() {
 
   // Modals
   const [withdrawConfirm, setWithdrawConfirm] = useState<WithdrawConfirm | null>(null);
-  const [ratingTarget, setRatingTarget] = useState<{ appId: string; jobTitle: string } | null>(null);
+  const [ratingTarget, setRatingTarget] = useState<{ appId: number | string; jobTitle: string } | null>(null);
   const [submitTarget, setSubmitTarget] = useState<EnrichedApplication | null>(null);
   const [submitSummary, setSubmitSummary] = useState('');
   const [submitUrl, setSubmitUrl] = useState('');
   const [submitNote, setSubmitNote] = useState('');
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState<number | string | null>(null);
 
   // Redirect unauthenticated
   useEffect(() => {
     if (!user) navigate('/login');
   }, [user, navigate]);
 
-  // Load data with simulated delay
+  // Load data from API
   useEffect(() => {
     if (!user) return;
 
@@ -340,17 +299,26 @@ export default function MyApplicationsPage() {
     setIsLoading(true);
     setError(null);
 
-    simulateDelay(800).then(() => {
-      if (cancelled) return;
-      try {
-        const data = loadApplications(user.id);
-        setApplications(data);
-      } catch {
-        setError('Không thể tải dữ liệu. Vui lòng thử lại.');
-      } finally {
-        setIsLoading(false);
-      }
-    });
+    Promise.all([
+      applicationService.getByUser(user.id),
+      jobService.getAll(),
+    ])
+      .then(([apps, allJobs]) => {
+        if (cancelled) return;
+        const submissions = loadSubmissionMap();
+        const merged = apps.map((app) => {
+          const submission = submissions[String(app.id)];
+          return submission ? { ...app, submission } : app;
+        });
+        setApplications(merged);
+        setJobs(allJobs);
+      })
+      .catch(() => {
+        if (!cancelled) setError('Không thể tải dữ liệu. Vui lòng thử lại.');
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
 
     return () => { cancelled = true; };
   }, [user]);
@@ -370,10 +338,14 @@ export default function MyApplicationsPage() {
     return () => clearTimeout(t);
   }, [toast]);
 
+  const jobsById = useMemo(() => {
+    return new Map(jobs.map((job) => [job.id, job]));
+  }, [jobs]);
+
   // Enrich apps with job data
   const enrichedApps = useMemo(
-    () => applications.map(enrichApp),
-    [applications]
+    () => applications.map((app) => ({ ...app, job: jobsById.get(app.jobId) })),
+    [applications, jobsById]
   );
 
   // Counts per status
@@ -422,7 +394,7 @@ export default function MyApplicationsPage() {
     if (!user) return;
     try {
       const all: Notification[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS) || '[]');
-      const unread = all.filter((n) => n.recipientId === user.id && !n.isRead);
+      const unread = all.filter((n) => n.recipientId === String(user.id) && !n.isRead);
       if (unread.length > 0) {
         showToast(`Bạn có ${unread.length} thông báo mới. Xem trong Trung tâm thông báo.`);
       }
@@ -436,13 +408,14 @@ export default function MyApplicationsPage() {
     setActionLoading(withdrawConfirm.appId);
     setWithdrawConfirm(null);
 
-    await simulateDelay(700);
-
-    setApplications((prev) => {
-      const updated = prev.filter((a) => a.id !== withdrawConfirm.appId);
-      saveApplications(updated);
-      return updated;
-    });
+    try {
+      await applicationService.withdraw(withdrawConfirm.appId);
+      setApplications((prev) => prev.filter((a) => a.id !== withdrawConfirm.appId));
+    } catch {
+      showToast('Không thể rút đơn ngay lúc này. Vui lòng thử lại.', 'error');
+      setActionLoading(null);
+      return;
+    }
     setActionLoading(null);
     showToast(`Đã rút đơn ứng tuyển "${withdrawConfirm.jobTitle}"`);
   }, [withdrawConfirm, user, showToast]);
@@ -459,7 +432,6 @@ export default function MyApplicationsPage() {
     }
 
     setActionLoading(submitTarget.id);
-    await simulateDelay(500);
 
     const submission = {
       summary: submitSummary.trim(),
@@ -471,22 +443,10 @@ export default function MyApplicationsPage() {
       reviewedAt: undefined,
     };
 
-    setApplications((prev) => {
-      const updated = prev.map((a) => a.id === submitTarget.id ? { ...a, submission } : a);
-      saveApplications(updated);
-      return updated;
-    });
-
-    const applicants = loadApplicants();
-    const updatedApplicants = applicants.map((ap) => {
-      const sameApp = ap.appId === submitTarget.id;
-      const sameJobUser = ap.jobId === submitTarget.jobId && ap.userId === submitTarget.userId;
-      if (sameApp || sameJobUser) {
-        return { ...ap, appId: submitTarget.id, submission };
-      }
-      return ap;
-    });
-    saveApplicants(updatedApplicants);
+    setApplications((prev) => prev.map((a) => a.id === submitTarget.id ? { ...a, submission } : a));
+    const submissions = loadSubmissionMap();
+    submissions[String(submitTarget.id)] = submission;
+    saveSubmissionMap(submissions);
 
     setActionLoading(null);
     setSubmitTarget(null);
@@ -509,11 +469,12 @@ export default function MyApplicationsPage() {
     showToast(`Đã gửi đánh giá ${rating}/5 sao cho "${ratingTarget.jobTitle}" 🎉`);
   }, [ratingTarget, showToast]);
 
-  const toggleExpand = useCallback((id: string) => {
+  const toggleExpand = useCallback((id: number | string) => {
     setExpandedIds((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      const key = String(id);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
       return next;
     });
   }, []);
@@ -522,15 +483,25 @@ export default function MyApplicationsPage() {
     if (!user) return;
     setIsLoading(true);
     setError(null);
-    simulateDelay(800).then(() => {
-      try {
-        setApplications(loadApplications(user.id));
-      } catch {
+    Promise.all([
+      applicationService.getByUser(user.id),
+      jobService.getAll(),
+    ])
+      .then(([apps, allJobs]) => {
+        const submissions = loadSubmissionMap();
+        const merged = apps.map((app) => {
+          const submission = submissions[String(app.id)];
+          return submission ? { ...app, submission } : app;
+        });
+        setApplications(merged);
+        setJobs(allJobs);
+      })
+      .catch(() => {
         setError('Không thể tải dữ liệu. Vui lòng thử lại.');
-      } finally {
+      })
+      .finally(() => {
         setIsLoading(false);
-      }
-    });
+      });
   }, [user]);
 
   if (!user) return null;
@@ -706,7 +677,7 @@ export default function MyApplicationsPage() {
                         setSubmitUrl(target.submission?.deliverableUrl || '');
                         setSubmitNote(target.submission?.note || '');
                       }}
-                      expanding={expandedIds.has(app.id)}
+                      expanding={expandedIds.has(String(app.id))}
                       onToggleExpand={() => toggleExpand(app.id)}
                     />
                   </div>

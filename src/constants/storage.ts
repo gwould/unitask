@@ -3,6 +3,7 @@ export const STORAGE_KEYS = {
   USER: 'unitask_user',
   ACCOUNTS: 'unitask_accounts',
   APPLICATIONS: 'unitask_applications',
+  APPLICATION_SUBMISSIONS: 'unitask_application_submissions',
   CUSTOM_JOBS: 'unitask_custom_jobs',
   TRANSACTIONS: 'unitask_transactions',
   USER_TRANSACTIONS: 'unitask_user_transactions',

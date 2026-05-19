@@ -1,15 +1,17 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { jobsData } from '../data/mockData';
 import { useAuth } from '../contexts/AuthContext';
-import { STORAGE_KEYS } from '../constants';
 import { createNotification } from '../services/automationEngine';
+import { applicationService } from '../services/applicationService';
+import { jobService } from '../services/jobService';
+import type { Job } from '../types';
 
 export default function JobDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const job = jobsData.find((j) => j.id === Number(id));
+  const [job, setJob] = useState<Job | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [showApply, setShowApply] = useState(false);
   const [coverLetter, setCoverLetter] = useState('');
@@ -21,6 +23,36 @@ export default function JobDetailPage() {
     const t = setTimeout(() => setToast(null), 3500);
     return () => clearTimeout(t);
   }, [toast]);
+
+  useEffect(() => {
+    if (!id) return;
+    let cancelled = false;
+    setIsLoading(true);
+    jobService.getById(Number(id))
+      .then((data) => {
+        if (!cancelled) setJob(data ?? null);
+      })
+      .catch(() => {
+        if (!cancelled) setJob(null);
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [id]);
+
+  if (isLoading) {
+    return (
+      <section className="page-detail">
+        <div className="container" style={{ textAlign: 'center', paddingTop: 160 }}>
+          <h2 className="section-title">Đang tải job...</h2>
+          <p className="section-sub" style={{ margin: '0 auto 24px' }}>
+            Vui lòng đợi trong giây lát.
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   if (!job) {
     return (
@@ -36,45 +68,25 @@ export default function JobDetailPage() {
     );
   }
 
-  const handleApply = () => {
+  const handleApply = async () => {
     if (!user) {
       navigate('/login');
       return;
     }
     if (!coverLetter.trim()) return;
 
-    // Save to localStorage mock "database"
-    const apps = JSON.parse(localStorage.getItem(STORAGE_KEYS.APPLICATIONS) || '[]');
-    const applicants = JSON.parse(localStorage.getItem(STORAGE_KEYS.MANAGE_APPLICANTS) || '[]');
-    const timestamp = Date.now();
-    const appliedDate = new Date().toISOString().slice(0, 10);
-    const appId = `app-${timestamp}`;
-
-    apps.push({
-      id: `app-${timestamp}`,
-      jobId: job.id,
-      userId: user.id,
-      coverLetter,
-      status: 'pending',
-      appliedAt: appliedDate,
-    });
-
-    applicants.push({
-      id: `ap-${timestamp}`,
-      appId,
-      jobId: job.id,
-      userId: user.id,
-      coverLetter,
-      status: 'pending',
-      appliedAt: appliedDate,
-      name: user.name,
-      university: user.university,
-      skills: user.skills || [],
-      rating: user.rating,
-    });
-
-    localStorage.setItem(STORAGE_KEYS.APPLICATIONS, JSON.stringify(apps));
-    localStorage.setItem(STORAGE_KEYS.MANAGE_APPLICANTS, JSON.stringify(applicants));
+    let appId: number | string | null = null;
+    try {
+      const created = await applicationService.apply({
+        jobId: job.id,
+        userId: user.id,
+        coverLetter: coverLetter.trim(),
+      });
+      appId = created.id;
+    } catch {
+      setToast('Không thể gửi ứng tuyển ngay lúc này. Vui lòng thử lại.');
+      return;
+    }
 
     if (job.companyId) {
       createNotification({
@@ -84,7 +96,7 @@ export default function JobDetailPage() {
         message: `${user.name} vừa ứng tuyển vào job "${job.title}".`,
         type: 'system',
         relatedJobId: job.id,
-        relatedApplicationId: appId,
+        relatedApplicationId: appId ? String(appId) : undefined,
         actionUrl: '/manage-jobs',
       });
     }
@@ -96,7 +108,7 @@ export default function JobDetailPage() {
       message: `Bạn đã ứng tuyển job "${job.title}" · Lương: ${job.pay} · Hạn: ${job.deadline}.`,
       type: 'application_status',
       relatedJobId: job.id,
-      relatedApplicationId: appId,
+      relatedApplicationId: appId ? String(appId) : undefined,
       actionUrl: `/jobs/${job.id}`,
     });
 

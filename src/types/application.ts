@@ -15,9 +15,9 @@ export interface TaskSubmission {
 }
 
 export interface Application {
-  id: string;
+  id: number | string;
   jobId: number;
-  userId: string;
+  userId: number | string;
   coverLetter: string;
   status: AppStatus;
   appliedAt: string;
@@ -29,10 +29,10 @@ export interface EnrichedApplication extends Application {
 }
 
 export interface Applicant {
-  id: string;
-  appId?: string;
+  id: number | string;
+  appId?: number | string;
   jobId: number;
-  userId: string;
+  userId: number | string;
   coverLetter: string;
   status: AppStatus;
   appliedAt: string;

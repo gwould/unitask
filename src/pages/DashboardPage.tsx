@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { jobsData, applicationsData } from '../data/mockData';
-import { APP_STATUS_MAP, STORAGE_KEYS } from '../constants';
+import { APP_STATUS_MAP } from '../constants';
 import { formatMoney } from '../utils/format';
-import { simulateDelay } from '../utils/async';
 import type { Job } from '../types';
+import { applicationService } from '../services/applicationService';
+import { jobService } from '../services/jobService';
 
 /* ─── TYPES ───────────────────────────────────────── */
 
 interface AppRecord {
-  id: string;
+  id: number | string;
   jobId: number;
-  userId: string;
+  userId: number | string;
   coverLetter: string;
   status: string;
   appliedAt: string;
@@ -31,34 +31,6 @@ const PERIOD_OPTIONS: { key: Period; label: string }[] = [
 ];
 
 /* ─── HELPERS ─────────────────────────────────────── */
-
-function getApplications(userId: string): AppRecord[] {
-  try {
-    const seeded: AppRecord[] = applicationsData;
-    const stored: AppRecord[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.APPLICATIONS) || '[]');
-    return [...seeded, ...stored].filter((a) => a.userId === userId);
-  } catch {
-    return [];
-  }
-}
-
-function getPostedJobs(companyId: string): Job[] {
-  try {
-    const custom: Job[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_JOBS) || '[]');
-    return [...jobsData, ...custom].filter((j) => j.companyId === companyId);
-  } catch {
-    return jobsData.filter((j) => j.companyId === companyId);
-  }
-}
-
-function getAllApplications(): AppRecord[] {
-  try {
-    const stored: AppRecord[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.APPLICATIONS) || '[]');
-    return [...applicationsData, ...stored];
-  } catch {
-    return applicationsData;
-  }
-}
 
 function getGreeting(): string {
   const h = new Date().getHours();

@@ -1,6 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { jobsData, categoriesData } from '../data/mockData';
+import { jobService } from '../services/jobService';
+import type { Job } from '../types';
+import { siteService } from '../services/siteService';
+import type { Category } from '../types';
 
 export default function JobsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -11,9 +14,39 @@ export default function JobsPage() {
   const [category, setCategory] = useState(initialCat);
   const [location, setLocation] = useState('');
   const [sort, setSort] = useState<'newest' | 'pay-high' | 'pay-low' | 'deadline'>('newest');
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    jobService.getAll()
+      .then((data) => {
+        if (!cancelled) setJobs(data);
+      })
+      .catch(() => {
+        if (!cancelled) setJobs([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    siteService.getCategories()
+      .then((data) => {
+        if (!cancelled) setCategories(data);
+      })
+      .catch(() => {
+        if (!cancelled) setCategories([]);
+      });
+    return () => { cancelled = true; };
+  }, []);
 
   const filtered = useMemo(() => {
-    let list = [...jobsData];
+    let list = [...jobs];
 
     if (query.trim()) {
       const q = query.toLowerCase();
@@ -49,7 +82,7 @@ export default function JobsPage() {
     }
 
     return list;
-  }, [query, category, location, sort]);
+  }, [jobs, query, category, location, sort]);
 
   const handleSearch = () => {
     const params = new URLSearchParams();
@@ -85,7 +118,7 @@ export default function JobsPage() {
             </div>
             <select value={category} onChange={(e) => setCategory(e.target.value)}>
               <option value="">Tất cả ngành</option>
-              {categoriesData.map((c) => (
+              {categories.map((c) => (
                 <option key={c.slug} value={c.slug}>
                   {c.icon} {c.name}
                 </option>
@@ -122,7 +155,13 @@ export default function JobsPage() {
         </div>
 
         {/* results */}
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="pj-empty fade-up">
+            <div style={{ fontSize: 48, marginBottom: 16 }}>⏳</div>
+            <h3>Đang tải dữ liệu job</h3>
+            <p>Vui lòng chờ trong giây lát.</p>
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="pj-empty fade-up">
             <div style={{ fontSize: 48, marginBottom: 16 }}>🔍</div>
             <h3>Không tìm thấy job phù hợp</h3>

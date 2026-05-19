@@ -9,7 +9,7 @@ export interface Job {
   logoGradient: string;
   title: string;
   company: string;
-  companyId: string;
+  companyId: number | string;
   verified: boolean;
   location: string;
   tags: JobTag[];

@@ -1,72 +1,38 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { jobsData } from '../data/mockData';
-import type { Job, Application, Transaction, User } from '../types';
-import type { AppStatus, Applicant } from '../types/application';
+import type { Job, Transaction, User } from '../types';
+import type { AppStatus, Applicant, TaskSubmission } from '../types/application';
 import { APPLICANT_STATUS_MAP, STORAGE_KEYS } from '../constants';
 import { formatMoney } from '../utils/format';
-import { simulateDelay } from '../utils/async';
 import { BulkActions } from '../components/BulkActions';
 import { AutomationSuggestions } from '../components/AutomationSuggestions';
 import { createNotification } from '../services/automationEngine';
+import { applicationService } from '../services/applicationService';
+import { jobService } from '../services/jobService';
+import { userApiService } from '../services/userApiService';
 
 /* ─── TYPES ───────────────────────────────────────── */
 
 type ApplicantStatus = AppStatus;
 
-interface StoredJob {
-  id: number;
-  title: string;
-  category: string;
-  payMin: number;
-  payMax: number;
-  deadline: string;
-  company: string;
-  location: string;
-  postedAt: string;
-}
 
 /* ─── CONSTANTS ───────────────────────────────────── */
 
 const STATUS_MAP = APPLICANT_STATUS_MAP;
 
-/* ─── SEED DATA ───────────────────────────────────── */
-
-function getDefaultApplicants(): Applicant[] {
-  return [
-    { id: 'ap-1', jobId: 1, userId: 'stu-1', coverLetter: 'Em rất hứng thú với vị trí Frontend Developer. Em đã có 1 năm kinh nghiệm React + TypeScript qua các dự án cá nhân. Em tin rằng mình có thể đóng góp hiệu quả.', status: 'accepted', appliedAt: '2026-03-01', name: 'Nguyễn Minh Anh', university: 'ĐH Bách Khoa HCM', skills: ['React', 'TypeScript', 'Tailwind'], rating: 4.9 },
-    { id: 'ap-2', jobId: 1, userId: 'stu-2', coverLetter: 'Em có 1 năm kinh nghiệm React và đang muốn tham gia dự án thực tế. Em thành thạo HTML/CSS/JS và đã làm 3 project cá nhân.', status: 'pending', appliedAt: '2026-03-02', name: 'Trần Văn Bình', university: 'ĐH KHTN HCM', skills: ['React', 'JavaScript', 'CSS'], rating: 4.5 },
-    { id: 'ap-3', jobId: 1, userId: 'stu-3', coverLetter: 'Em muốn học hỏi thêm về React và sản phẩm thực tế. Em đang học năm 3 CNTT, có nền tảng tốt về lập trình và đam mê frontend.', status: 'rejected', appliedAt: '2026-03-03', name: 'Lê Thị Cẩm', university: 'ĐH Công Nghệ HCM', skills: ['HTML', 'CSS', 'JavaScript'], rating: 4.2 },
-    { id: 'ap-4', jobId: 4, userId: 'stu-4', coverLetter: 'Em chuyên về video editing, thành thạo Premiere Pro và CapCut. Em có kênh TikTok cá nhân 15K followers. Em rất muốn thử sức với dự án này.', status: 'pending', appliedAt: '2026-03-04', name: 'Phạm Đức Dũng', university: 'ĐH Hoa Sen', skills: ['Premiere Pro', 'CapCut', 'After Effects'], rating: 4.7 },
-    { id: 'ap-5', jobId: 1, userId: 'stu-5', coverLetter: 'Em có kinh nghiệm 6 tháng làm intern frontend tại một startup. Em thành thạo React, Redux và có hiểu biết về UI/UX.', status: 'pending', appliedAt: '2026-03-04', name: 'Hoàng Thị Dung', university: 'ĐH FPT HCM', skills: ['React', 'Redux', 'Figma'], rating: 4.6 },
-  ];
-}
-
 /* ─── HELPERS ─────────────────────────────────────── */
 
-function loadApplicants(): Applicant[] {
+function loadSubmissionMap(): Record<string, TaskSubmission> {
   try {
-    const stored: Applicant[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.MANAGE_APPLICANTS) || '[]');
-    if (stored.length > 0) return stored;
-  } catch { /* use seed */ }
-  return getDefaultApplicants();
-}
-
-function saveApplicants(apps: Applicant[]) {
-  localStorage.setItem(STORAGE_KEYS.MANAGE_APPLICANTS, JSON.stringify(apps));
-}
-
-function loadApplicationsStore(): Application[] {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEYS.APPLICATIONS) || '[]');
+    return JSON.parse(localStorage.getItem(STORAGE_KEYS.APPLICATION_SUBMISSIONS) || '{}') as Record<string, TaskSubmission>;
   } catch {
-    return [];
+    return {};
   }
 }
 
-function saveApplicationsStore(apps: Application[]) {
-  localStorage.setItem(STORAGE_KEYS.APPLICATIONS, JSON.stringify(apps));
+function saveSubmissionMap(map: Record<string, TaskSubmission>) {
+  localStorage.setItem(STORAGE_KEYS.APPLICATION_SUBMISSIONS, JSON.stringify(map));
 }
 
 function loadUserTransactionsMap(): Record<string, Transaction[]> {
@@ -115,10 +81,10 @@ function updateAccountBalance(userId: string, delta: number) {
 
 function ApplicantCard({ ap, onAccept, onReject, onApprove, onRequestRevision, isActioning, isSelected, onSelectChange }: {
   ap: Applicant;
-  onAccept: (id: string) => void;
-  onReject: (id: string) => void;
-  onApprove: (id: string) => void;
-  onRequestRevision: (id: string) => void;
+  onAccept: (id: number | string) => void;
+  onReject: (id: number | string) => void;
+  onApprove: (id: number | string) => void;
+  onRequestRevision: (id: number | string) => void;
   isActioning: boolean;
   isSelected?: boolean;
   onSelectChange?: (id: string, selected: boolean) => void;
@@ -134,7 +100,7 @@ function ApplicantCard({ ap, onAccept, onReject, onApprove, onRequestRevision, i
             <input
               type="checkbox"
               checked={isSelected || false}
-              onChange={(e) => onSelectChange(ap.id, e.target.checked)}
+              onChange={(e) => onSelectChange(String(ap.id), e.target.checked)}
               style={{ cursor: 'pointer' }}
             />
           </div>
@@ -241,7 +207,7 @@ function ApplicantCard({ ap, onAccept, onReject, onApprove, onRequestRevision, i
 }
 
 function JobCard({ job, isSelected, applicantCount, pendingCount, onClick }: {
-  job: Job | (StoredJob & Record<string, unknown>);
+  job: Job;
   isSelected: boolean;
   applicantCount: number;
   pendingCount: number;
@@ -260,7 +226,7 @@ function JobCard({ job, isSelected, applicantCount, pendingCount, onClick }: {
       </div>
       <div className="manage-job-meta">
         <span>📍 {job.location}</span>
-        <span>💰 {'pay' in job && typeof (job as Job).pay === 'string' ? (job as Job).pay : formatMoney((job as StoredJob).payMin)}</span>
+        <span>💰 {job.pay}</span>
         <span>👥 {applicantCount} ứng viên</span>
       </div>
       <div className="manage-job-meta">
@@ -280,12 +246,13 @@ export default function ManageJobsPage() {
   // States
   const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
   const [applicants, setApplicants] = useState<Applicant[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [actioningId, setActioningId] = useState<string | null>(null);
+  const [actioningId, setActioningId] = useState<number | string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<ApplicantStatus | 'all'>('all');
-  const [confirmAction, setConfirmAction] = useState<{ id: string; name: string; action: 'accept' | 'reject' | 'approve' | 'revision' } | null>(null);
+  const [confirmAction, setConfirmAction] = useState<{ id: number | string; name: string; action: 'accept' | 'reject' | 'approve' | 'revision' } | null>(null);
   const [selectedApplicantIds, setSelectedApplicantIds] = useState<Set<string>>(new Set());
   const [isBulkLoading, setIsBulkLoading] = useState(false);
 
@@ -300,11 +267,39 @@ export default function ManageJobsPage() {
     if (!user) return;
     let cancelled = false;
     setIsLoading(true);
-    simulateDelay(600).then(() => {
-      if (cancelled) return;
-      setApplicants(loadApplicants());
-      setIsLoading(false);
-    });
+    Promise.all([
+      jobService.getAll(),
+      applicationService.getAll(),
+      userApiService.getAll(),
+    ])
+      .then(([allJobs, allApps, allUsers]) => {
+        if (cancelled) return;
+        setJobs(allJobs);
+        const submissionMap = loadSubmissionMap();
+        const usersById = new Map(allUsers.map((u) => [String(u.id), u]));
+        const mappedApplicants: Applicant[] = allApps.map((app) => {
+          const apUser = usersById.get(String(app.userId));
+          return {
+            id: app.id,
+            appId: app.id,
+            jobId: app.jobId,
+            userId: app.userId,
+            coverLetter: app.coverLetter,
+            status: app.status,
+            appliedAt: app.appliedAt,
+            name: apUser?.name || 'Ứng viên',
+            university: apUser?.university,
+            skills: apUser?.skills,
+            rating: apUser?.rating,
+            submission: submissionMap[String(app.id)],
+          };
+        });
+        setApplicants(mappedApplicants);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        if (!cancelled) setIsLoading(false);
+      });
     return () => { cancelled = true; };
   }, [user]);
 
@@ -318,30 +313,8 @@ export default function ManageJobsPage() {
   // Computed
   const myJobs = useMemo(() => {
     if (!user) return [];
-    const fromData = jobsData.filter((j) => j.companyId === user.id);
-    const custom: StoredJob[] = (() => {
-      try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_JOBS) || '[]');
-      } catch { return []; }
-    })();
-    return [...fromData, ...custom.map((c) => ({
-      ...c,
-      logoText: c.company.slice(0, 2).toUpperCase(),
-      logoGradient: 'linear-gradient(135deg,#5B4FFF,#7C72FF)',
-      verified: false,
-      tags: [] as Job['tags'],
-      spotsLeft: 3,
-      spotsTotal: 5,
-      pay: `${formatMoney(c.payMin)} – ${formatMoney(c.payMax)}`,
-      featured: false,
-      description: '',
-      requirements: [] as string[],
-      deliverables: [] as string[],
-      duration: '',
-      skills: [] as string[],
-      companyId: user.id,
-    }))];
-  }, [user]);
+    return jobs.filter((j) => String(j.companyId) === String(user.id));
+  }, [jobs, user]);
 
   const selectedJob = selectedJobId !== null
     ? myJobs.find((j) => j.id === selectedJobId) || null
@@ -374,29 +347,25 @@ export default function ManageJobsPage() {
     return list;
   }, [applicants, selectedJobId, statusFilter, searchQuery]);
 
-  const buildAcceptMessage = useCallback((job: Job | StoredJob | null) => {
+  const buildAcceptMessage = useCallback((job: Job | null) => {
     if (!job) {
       return 'Chúc mừng! Bạn đã được chấp nhận. Vui lòng theo dõi hướng dẫn tiếp theo trong hệ thống.';
     }
-    const pay = 'pay' in job && typeof job.pay === 'string'
-      ? job.pay
-      : formatMoney((job as StoredJob).payMin);
     const deadline = job.deadline || 'Đang cập nhật';
     const duration = job.duration || 'Linh hoạt';
-    return `Chúc mừng! Bạn được nhận job "${job.title}". Lương: ${pay} · Hạn: ${deadline} · Thời lượng: ${duration}. Vui lòng vào hệ thống để nộp bài đúng hạn.`;
+    return `Chúc mừng! Bạn được nhận job "${job.title}". Lương: ${job.pay} · Hạn: ${deadline} · Thời lượng: ${duration}. Vui lòng vào hệ thống để nộp bài đúng hạn.`;
   }, []);
 
-  const buildRejectMessage = useCallback((job: Job | StoredJob | null) => {
+  const buildRejectMessage = useCallback((job: Job | null) => {
     if (!job) {
       return 'Cảm ơn bạn đã ứng tuyển. Hồ sơ chưa phù hợp ở thời điểm này. Chúc bạn may mắn với cơ hội khác.';
     }
     return `Cảm ơn bạn đã ứng tuyển job "${job.title}". Hồ sơ chưa phù hợp ở thời điểm này. Chúc bạn may mắn với cơ hội khác.`;
   }, []);
 
-  const buildJobActionUrl = useCallback((job: Job | StoredJob | null) => {
+  const buildJobActionUrl = useCallback((job: Job | null) => {
     if (!job) return '/my-applications';
-    const isSeededJob = jobsData.some((j) => j.id === job.id);
-    return isSeededJob ? `/jobs/${job.id}` : '/my-applications';
+    return `/jobs/${job.id}`;
   }, []);
 
   // Handlers
@@ -419,32 +388,18 @@ export default function ManageJobsPage() {
   const handleBulkAction = useCallback(async (action: 'accept' | 'reject' | 'notify', ids: string[], message?: string) => {
     setIsBulkLoading(true);
     try {
-      await simulateDelay(600);
-      const targetApplicants = applicants.filter(a => ids.includes(a.id));
+      const targetApplicants = applicants.filter(a => ids.includes(String(a.id)));
       const jobForNotify = selectedJob || null;
       
       if (action === 'accept' || action === 'reject') {
         const newStatus = action === 'accept' ? 'accepted' : 'rejected';
-        setApplicants(prev => {
-          const updated = prev.map(a => ids.includes(a.id) ? { ...a, status: newStatus as AppStatus } : a);
-          saveApplicants(updated);
-          return updated;
-        });
-
-        // Update applications store too
-        const apps = loadApplicationsStore();
-        const updatedApps = apps.map(a => {
-          if (applicants.find(ap => ids.includes(ap.id) && ap.jobId === a.jobId && ap.userId === a.userId)) {
-            return { ...a, status: newStatus as AppStatus };
-          }
-          return a;
-        });
-        saveApplicationsStore(updatedApps);
+        await Promise.all(ids.map((id) => applicationService.updateStatus(id, newStatus as AppStatus)));
+        setApplicants(prev => prev.map(a => ids.includes(String(a.id)) ? { ...a, status: newStatus as AppStatus } : a));
 
         // Create notifications
         for (const ap of targetApplicants) {
           createNotification({
-            recipientId: ap.userId,
+            recipientId: String(ap.userId),
             recipientType: 'student',
             title: action === 'accept' ? '✅ Bạn đã được chấp nhận' : '❌ Hồ sơ không được chấp nhận',
             message: action === 'accept'
@@ -452,7 +407,7 @@ export default function ManageJobsPage() {
               : buildRejectMessage(jobForNotify),
             type: 'application_status',
             relatedJobId: jobForNotify ? jobForNotify.id : undefined,
-            relatedApplicationId: ap.appId,
+            relatedApplicationId: ap.appId ? String(ap.appId) : undefined,
             actionUrl: buildJobActionUrl(jobForNotify),
           });
         }
@@ -461,7 +416,7 @@ export default function ManageJobsPage() {
       } else if (action === 'notify' && message) {
         for (const ap of targetApplicants) {
           createNotification({
-            recipientId: ap.userId,
+            recipientId: String(ap.userId),
             recipientType: 'student',
             title: '🔔 Thông báo từ công ty',
             message,
@@ -480,40 +435,30 @@ export default function ManageJobsPage() {
     }
   }, [applicants, buildAcceptMessage, buildJobActionUrl, buildRejectMessage, selectedJob, showToast]);
 
-  const handleStatusChange = useCallback(async (id: string, newStatus: ApplicantStatus) => {
+  const handleStatusChange = useCallback(async (id: number | string, newStatus: ApplicantStatus) => {
     setConfirmAction(null);
     setActioningId(id);
-    await simulateDelay(800);
 
-    const targetApplicant = applicants.find((a) => a.id === id);
+    const targetApplicant = applicants.find((a) => String(a.id) === String(id));
     if (!targetApplicant) {
       setActioningId(null);
       showToast('Không tìm thấy ứng viên để cập nhật.', 'error');
       return;
     }
+    try {
+      await applicationService.updateStatus(id, newStatus);
+    } catch {
+      setActioningId(null);
+      showToast('Không thể cập nhật trạng thái. Vui lòng thử lại.', 'error');
+      return;
+    }
 
-    setApplicants((prev) => {
-      const updated = prev.map((a) => a.id === id ? { ...a, status: newStatus } : a);
-      saveApplicants(updated);
-      return updated;
-    });
-
-    const apps = loadApplicationsStore();
-    const hasLinkedApp = apps.some((a) => a.id === targetApplicant.appId);
-    const updatedApps = apps.map((a) => {
-      const sameApp = targetApplicant.appId ? a.id === targetApplicant.appId : false;
-      const sameJobUser = a.jobId === targetApplicant.jobId && a.userId === targetApplicant.userId;
-      if ((sameApp || (!hasLinkedApp && sameJobUser)) && a.status !== 'completed') {
-        return { ...a, status: newStatus };
-      }
-      return a;
-    });
-    saveApplicationsStore(updatedApps);
+    setApplicants((prev) => prev.map((a) => String(a.id) === String(id) ? { ...a, status: newStatus } : a));
 
     const targetJob = selectedJob || myJobs.find((j) => j.id === targetApplicant.jobId) || null;
 
     createNotification({
-      recipientId: targetApplicant.userId,
+      recipientId: String(targetApplicant.userId),
       recipientType: 'student',
       title: newStatus === 'accepted' ? '✅ Bạn đã được chấp nhận' : '❌ Hồ sơ không được chấp nhận',
       message: newStatus === 'accepted'
@@ -521,7 +466,7 @@ export default function ManageJobsPage() {
         : buildRejectMessage(targetJob),
       type: 'application_status',
       relatedJobId: targetJob ? targetJob.id : undefined,
-      relatedApplicationId: targetApplicant.appId,
+      relatedApplicationId: targetApplicant.appId ? String(targetApplicant.appId) : undefined,
       actionUrl: buildJobActionUrl(targetJob),
     });
 
@@ -534,118 +479,88 @@ export default function ManageJobsPage() {
     }
   }, [applicants, buildAcceptMessage, buildJobActionUrl, buildRejectMessage, myJobs, selectedJob, showToast]);
 
-  const handleRequestRevision = useCallback(async (id: string) => {
+  const handleRequestRevision = useCallback(async (id: number | string) => {
     const note = window.prompt('Nhập góp ý để sinh viên sửa bài:', 'Vui lòng chỉnh lại format và bổ sung hạng mục còn thiếu.');
     if (note === null) return;
 
     setConfirmAction(null);
     setActioningId(id);
-    await simulateDelay(500);
 
-    const targetApplicant = applicants.find((a) => a.id === id);
+    const targetApplicant = applicants.find((a) => String(a.id) === String(id));
     if (!targetApplicant) {
       setActioningId(null);
       showToast('Không tìm thấy ứng viên.', 'error');
       return;
     }
+    if (!targetApplicant.submission) {
+      setActioningId(null);
+      showToast('Ứng viên chưa nộp bài để yêu cầu chỉnh sửa.', 'error');
+      return;
+    }
 
-    setApplicants((prev) => {
-      const updated = prev.map((a) => {
-        if (a.id !== id || !a.submission) return a;
-        return {
-          ...a,
-          submission: {
-            ...a.submission,
-            reviewStatus: 'revision_requested' as const,
-            reviewNote: note.trim(),
-            reviewedAt: new Date().toISOString().slice(0, 10),
-          },
-        };
-      });
-      saveApplicants(updated);
-      return updated;
-    });
+    const nextSubmission: TaskSubmission = {
+      ...targetApplicant.submission,
+      reviewStatus: 'revision_requested',
+      reviewNote: note.trim(),
+      reviewedAt: new Date().toISOString().slice(0, 10),
+    };
 
-    const apps = loadApplicationsStore();
-    const hasLinkedApp = apps.some((a) => a.id === targetApplicant.appId);
-    const updatedApps = apps.map((a) => {
-      const sameApp = targetApplicant.appId ? a.id === targetApplicant.appId : false;
-      const sameJobUser = a.jobId === targetApplicant.jobId && a.userId === targetApplicant.userId;
-      if ((sameApp || (!hasLinkedApp && sameJobUser)) && a.submission) {
-        return {
-          ...a,
-          submission: {
-            ...a.submission,
-            reviewStatus: 'revision_requested' as const,
-            reviewNote: note.trim(),
-            reviewedAt: new Date().toISOString().slice(0, 10),
-          },
-        };
-      }
-      return a;
-    });
-    saveApplicationsStore(updatedApps);
+    setApplicants((prev) => prev.map((a) =>
+      String(a.id) === String(id) ? { ...a, submission: nextSubmission } : a
+    ));
+
+    const submissions = loadSubmissionMap();
+    submissions[String(targetApplicant.id)] = nextSubmission;
+    saveSubmissionMap(submissions);
 
     setActioningId(null);
     showToast(`Đã gửi yêu cầu chỉnh sửa cho ${targetApplicant.name}.`);
   }, [applicants, showToast]);
 
-  const handleApproveAndPay = useCallback(async (id: string) => {
+  const handleApproveAndPay = useCallback(async (id: number | string) => {
     if (!selectedJob || !user) return;
 
     setConfirmAction(null);
     setActioningId(id);
-    await simulateDelay(700);
 
-    const targetApplicant = applicants.find((a) => a.id === id);
+    const targetApplicant = applicants.find((a) => String(a.id) === String(id));
     if (!targetApplicant) {
       setActioningId(null);
       showToast('Không tìm thấy ứng viên.', 'error');
       return;
     }
 
-    setApplicants((prev) => {
-      const updated = prev.map((a) => {
-        if (a.id !== id) return a;
-        return {
-          ...a,
-          status: 'completed' as const,
-          submission: a.submission
-            ? {
-              ...a.submission,
-              reviewStatus: 'approved' as const,
-              reviewNote: 'Đã duyệt hoàn tất.',
-              reviewedAt: new Date().toISOString().slice(0, 10),
-            }
-            : a.submission,
-        };
-      });
-      saveApplicants(updated);
-      return updated;
-    });
+    try {
+      await applicationService.updateStatus(id, 'completed');
+    } catch {
+      setActioningId(null);
+      showToast('Không thể cập nhật trạng thái. Vui lòng thử lại.', 'error');
+      return;
+    }
 
-    const apps = loadApplicationsStore();
-    const hasLinkedApp = apps.some((a) => a.id === targetApplicant.appId);
-    const updatedApps = apps.map((a) => {
-      const sameApp = targetApplicant.appId ? a.id === targetApplicant.appId : false;
-      const sameJobUser = a.jobId === targetApplicant.jobId && a.userId === targetApplicant.userId;
-      if ((sameApp || (!hasLinkedApp && sameJobUser)) && a.status !== 'completed') {
-        return {
-          ...a,
-          status: 'completed' as const,
-          submission: a.submission
-            ? {
-              ...a.submission,
-              reviewStatus: 'approved' as const,
-              reviewNote: 'Đã duyệt hoàn tất.',
-              reviewedAt: new Date().toISOString().slice(0, 10),
-            }
-            : a.submission,
-        };
+    const updatedSubmission = targetApplicant.submission
+      ? {
+        ...targetApplicant.submission,
+        reviewStatus: 'approved' as const,
+        reviewNote: 'Đã duyệt hoàn tất.',
+        reviewedAt: new Date().toISOString().slice(0, 10),
       }
-      return a;
-    });
-    saveApplicationsStore(updatedApps);
+      : undefined;
+
+    setApplicants((prev) => prev.map((a) => {
+      if (String(a.id) !== String(id)) return a;
+      return {
+        ...a,
+        status: 'completed' as const,
+        submission: updatedSubmission ?? a.submission,
+      };
+    }));
+
+    if (updatedSubmission) {
+      const submissions = loadSubmissionMap();
+      submissions[String(targetApplicant.id)] = updatedSubmission;
+      saveSubmissionMap(submissions);
+    }
 
     const payout = selectedJob.payMax || selectedJob.payMin || 0;
     const date = new Date().toISOString().slice(0, 10);
@@ -672,22 +587,22 @@ export default function ManageJobsPage() {
       jobTitle: selectedJob.title,
     };
 
-    appendUserTransaction(user.id, businessTx);
-    appendUserTransaction(targetApplicant.userId, studentTx);
+    appendUserTransaction(String(user.id), businessTx);
+    appendUserTransaction(String(targetApplicant.userId), studentTx);
     appendGlobalTransaction(businessTx);
     appendGlobalTransaction(studentTx);
-    updateAccountBalance(user.id, -payout);
-    updateAccountBalance(targetApplicant.userId, payout);
+    updateAccountBalance(String(user.id), -payout);
+    updateAccountBalance(String(targetApplicant.userId), payout);
     updateProfile({ balance: (user.balance || 0) - payout });
 
     createNotification({
-      recipientId: targetApplicant.userId,
+      recipientId: String(targetApplicant.userId),
       recipientType: 'student',
       title: '💰 Đã duyệt & thanh toán',
       message: `Job "${selectedJob.title}" đã được duyệt. Bạn nhận ${formatMoney(payout)} vào ví.`,
       type: 'payment',
       relatedJobId: selectedJob.id,
-      relatedApplicationId: targetApplicant.appId,
+      relatedApplicationId: targetApplicant.appId ? String(targetApplicant.appId) : undefined,
       actionUrl: '/wallet',
     });
 
@@ -695,22 +610,22 @@ export default function ManageJobsPage() {
     showToast(`Đã duyệt bài và thanh toán ${formatMoney(payout)} cho ${targetApplicant.name} ✅`);
   }, [applicants, selectedJob, showToast, updateProfile, user]);
 
-  const handleAccept = useCallback((id: string) => {
+  const handleAccept = useCallback((id: number | string) => {
     const ap = applicants.find((a) => a.id === id);
     setConfirmAction({ id, name: ap?.name || 'ứng viên', action: 'accept' });
   }, [applicants]);
 
-  const handleReject = useCallback((id: string) => {
+  const handleReject = useCallback((id: number | string) => {
     const ap = applicants.find((a) => a.id === id);
     setConfirmAction({ id, name: ap?.name || 'ứng viên', action: 'reject' });
   }, [applicants]);
 
-  const handleApprove = useCallback((id: string) => {
+  const handleApprove = useCallback((id: number | string) => {
     const ap = applicants.find((a) => a.id === id);
     setConfirmAction({ id, name: ap?.name || 'ứng viên', action: 'approve' });
   }, [applicants]);
 
-  const handleRevision = useCallback((id: string) => {
+  const handleRevision = useCallback((id: number | string) => {
     const ap = applicants.find((a) => a.id === id);
     setConfirmAction({ id, name: ap?.name || 'ứng viên', action: 'revision' });
   }, [applicants]);
@@ -861,8 +776,8 @@ export default function ManageJobsPage() {
                         onReject={handleReject}
                         onApprove={handleApprove}
                         onRequestRevision={handleRevision}
-                        isActioning={actioningId === ap.id}
-                        isSelected={selectedApplicantIds.has(ap.id)}
+                        isActioning={actioningId !== null && String(actioningId) === String(ap.id)}
+                        isSelected={selectedApplicantIds.has(String(ap.id))}
                         onSelectChange={handleSelectApplicant}
                       />
                     ))}
