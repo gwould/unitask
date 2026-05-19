@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { observeFadeUpElements } from '../hooks/useScroll';
 import { siteService } from '../services/siteService';
 import type { Category } from '../types';
 
@@ -17,7 +18,10 @@ export default function Categories() {
         if (!cancelled) setCategories([]);
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+          requestAnimationFrame(() => observeFadeUpElements());
+        }
       });
     return () => { cancelled = true; };
   }, []);

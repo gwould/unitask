@@ -1,19 +1,21 @@
 import type { User } from '../types';
 import { apiGet } from './apiClient';
 
-type ApiUser = {
+export type ApiUser = {
   id: number;
+  externalCode?: string | null;
   fullName: string;
   email: string;
   role: string;
   companyName?: string | null;
   university?: string | null;
   phone?: string | null;
+  major?: string | null;
 };
 
-function normalizeUser(user: ApiUser): User {
+export function normalizeUser(user: ApiUser): User {
   return {
-    id: user.id,
+    id: user.externalCode ?? String(user.id),
     email: user.email,
     name: user.fullName,
     role: user.role === 'business' ? 'business' : user.role === 'admin' ? 'admin' : 'student',
@@ -29,9 +31,18 @@ function normalizeUser(user: ApiUser): User {
   };
 }
 
+/** Map database user id → profile (for application joins). */
+export function buildUsersByDbId(users: ApiUser[]): Map<number, User> {
+  return new Map(users.map((u) => [u.id, normalizeUser(u)]));
+}
+
 export const userApiService = {
   async getAll(): Promise<User[]> {
     const users = await apiGet<ApiUser[]>('/api/users');
     return users.map(normalizeUser);
+  },
+
+  async getAllRaw(): Promise<ApiUser[]> {
+    return apiGet<ApiUser[]>('/api/users');
   },
 };

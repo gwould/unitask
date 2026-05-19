@@ -3,20 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { APP_STATUS_MAP } from '../constants';
 import { formatMoney } from '../utils/format';
-import type { Job } from '../types';
+import { simulateDelay, toIdString } from '../utils';
+import type { Application, Job } from '../types';
 import { applicationService } from '../services/applicationService';
 import { jobService } from '../services/jobService';
-
-/* ─── TYPES ───────────────────────────────────────── */
-
-interface AppRecord {
-  id: number | string;
-  jobId: number;
-  userId: number | string;
-  coverLetter: string;
-  status: string;
-  appliedAt: string;
-}
 
 type Period = '7d' | '30d' | 'all';
 
@@ -77,8 +67,28 @@ export default function DashboardPage() {
   const navigate = useNavigate();
 
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [period, setPeriod] = useState<Period>('all');
   const [toast, setToast] = useState<string | null>(null);
+  const [apps, setApps] = useState<Application[]>([]);
+  const [postedJobs, setPostedJobs] = useState<Job[]>([]);
+  const [allApplications, setAllApplications] = useState<Application[]>([]);
+  const [jobsData, setJobsData] = useState<Job[]>([]);
+
+  const loadData = useCallback(async () => {
+    if (!user) return;
+    const uid = toIdString(user.id);
+    const [userApps, companyJobs, allApps, jobs] = await Promise.all([
+      user.role === 'student' ? applicationService.getByUser(uid) : Promise.resolve([] as Application[]),
+      user.role === 'business' ? jobService.getByCompany(uid) : Promise.resolve([] as Job[]),
+      applicationService.getAll(),
+      jobService.getAll(),
+    ]);
+    setApps(userApps);
+    setPostedJobs(companyJobs);
+    setAllApplications(allApps);
+    setJobsData(jobs);
+  }, [user]);
 
   // Redirect
   useEffect(() => {
@@ -86,9 +96,13 @@ export default function DashboardPage() {
     else if (user.role === 'admin') navigate('/admin-finance');
   }, [user, navigate]);
 
-  const apps = user ? getApplications(user.id) : [];
-  const postedJobs = user ? getPostedJobs(user.id) : [];
-  const allApplications = getAllApplications();
+  useEffect(() => {
+    if (!user) return;
+    setIsLoading(true);
+    loadData()
+      .catch(() => {})
+      .finally(() => setIsLoading(false));
+  }, [user, loadData]);
 
   // Toast auto-dismiss
   useEffect(() => {
@@ -124,12 +138,14 @@ export default function DashboardPage() {
       };
 
   const handleRefresh = useCallback(() => {
+    if (!user) return;
     setIsRefreshing(true);
-    simulateDelay(450).then(() => {
-      setIsRefreshing(false);
-      setToast('Đã cập nhật dữ liệu ✓');
-    });
-  }, []);
+    simulateDelay(450)
+      .then(() => loadData())
+      .then(() => setToast('Đã cập nhật dữ liệu ✓'))
+      .catch(() => setToast('Không thể cập nhật dữ liệu'))
+      .finally(() => setIsRefreshing(false));
+  }, [user, loadData]);
 
   if (!user) return null;
 
@@ -194,7 +210,7 @@ export default function DashboardPage() {
           </aside>
 
           {/* main content */}
-          {isRefreshing ? (
+          {(isLoading || isRefreshing) ? (
             <DashSkeleton />
           ) : (
             <div className="dash-main">

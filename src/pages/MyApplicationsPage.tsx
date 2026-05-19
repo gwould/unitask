@@ -7,6 +7,7 @@ import type { Notification } from '../types/automation';
 import { ConfirmModal, RatingModal } from '../components/ui';
 import { applicationService } from '../services/applicationService';
 import { jobService } from '../services/jobService';
+import { simulateDelay } from '../utils/async';
 
 /* ─── LOCAL TYPES ─────────────────────────────────── */
 

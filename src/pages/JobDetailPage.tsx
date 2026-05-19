@@ -90,7 +90,7 @@ export default function JobDetailPage() {
 
     if (job.companyId) {
       createNotification({
-        recipientId: job.companyId,
+        recipientId: String(job.companyId),
         recipientType: 'business',
         title: '📥 Có ứng viên mới',
         message: `${user.name} vừa ứng tuyển vào job "${job.title}".`,
@@ -102,7 +102,7 @@ export default function JobDetailPage() {
     }
 
     createNotification({
-      recipientId: user.id,
+      recipientId: String(user.id),
       recipientType: 'student',
       title: '📨 Ứng tuyển thành công',
       message: `Bạn đã ứng tuyển job "${job.title}" · Lương: ${job.pay} · Hạn: ${job.deadline}.`,

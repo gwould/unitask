@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Job } from '../types';
+import { observeFadeUpElements } from '../hooks/useScroll';
 import { jobService } from '../services/jobService';
 
 const TABS = [
@@ -58,7 +59,10 @@ export default function JobsSection() {
         if (!cancelled) setJobs([]);
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+          requestAnimationFrame(() => observeFadeUpElements());
+        }
       });
     return () => { cancelled = true; };
   }, []);

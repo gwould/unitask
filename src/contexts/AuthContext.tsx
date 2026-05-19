@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { User, UserRole, RegisterData } from '../types';
 import { STORAGE_KEYS } from '../constants';
+import { apiPost } from '../services/apiClient';
+import { normalizeUser, type ApiUser } from '../services/userApiService';
 
 // Re-export types for consumers that import from AuthContext
 export type { User, UserRole };
@@ -100,11 +102,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     const accounts = getStoredAccounts();
-    const match = accounts.find(
+    const localMatch = accounts.find(
       (a) => a.email.toLowerCase() === email.toLowerCase() && a.password === password,
     );
-    if (!match) return false;
-    const { password: _, ...userData } = match;
+
+    try {
+      const apiUser = await apiPost<ApiUser>('/api/auth/login', { email, password });
+      const fromApi = normalizeUser(apiUser);
+      const merged: User = {
+        ...fromApi,
+        balance: localMatch?.balance ?? 0,
+        skills: localMatch?.skills ?? [],
+        bio: localMatch?.bio ?? '',
+        major: localMatch?.major,
+        year: localMatch?.year,
+        completedJobs: localMatch?.completedJobs ?? 0,
+        rating: localMatch?.rating ?? 0,
+        phone: fromApi.phone ?? localMatch?.phone,
+      };
+      persist(merged);
+      return true;
+    } catch {
+      // API unavailable or invalid credentials — fall back to local demo accounts
+    }
+
+    if (!localMatch) return false;
+    const { password: _, ...userData } = localMatch;
     persist(userData);
     return true;
   };

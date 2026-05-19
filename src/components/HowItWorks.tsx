@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { HowStep } from '../types';
+import { observeFadeUpElements } from '../hooks/useScroll';
 import { siteService } from '../services/siteService';
 
 function StepCard({ step }: { step: HowStep }) {
@@ -38,7 +39,10 @@ export default function HowItWorks() {
         }
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+          requestAnimationFrame(() => observeFadeUpElements());
+        }
       });
     return () => { cancelled = true; };
   }, []);

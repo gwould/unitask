@@ -10,7 +10,7 @@ import { AutomationSuggestions } from '../components/AutomationSuggestions';
 import { createNotification } from '../services/automationEngine';
 import { applicationService } from '../services/applicationService';
 import { jobService } from '../services/jobService';
-import { userApiService } from '../services/userApiService';
+import { buildUsersByDbId, userApiService } from '../services/userApiService';
 
 /* ─── TYPES ───────────────────────────────────────── */
 
@@ -270,15 +270,16 @@ export default function ManageJobsPage() {
     Promise.all([
       jobService.getAll(),
       applicationService.getAll(),
-      userApiService.getAll(),
+      userApiService.getAllRaw(),
     ])
-      .then(([allJobs, allApps, allUsers]) => {
+      .then(([allJobs, allApps, rawUsers]) => {
         if (cancelled) return;
         setJobs(allJobs);
         const submissionMap = loadSubmissionMap();
-        const usersById = new Map(allUsers.map((u) => [String(u.id), u]));
+        const usersByDbId = buildUsersByDbId(rawUsers);
         const mappedApplicants: Applicant[] = allApps.map((app) => {
-          const apUser = usersById.get(String(app.userId));
+          const dbId = typeof app.userId === 'number' ? app.userId : Number(app.userId);
+          const apUser = Number.isFinite(dbId) ? usersByDbId.get(dbId) : undefined;
           return {
             id: app.id,
             appId: app.id,
@@ -566,8 +567,8 @@ export default function ManageJobsPage() {
     const date = new Date().toISOString().slice(0, 10);
     const businessTx: Transaction = {
       id: `tx-release-${Date.now()}`,
-      userId: user.id,
-      counterpartyId: targetApplicant.userId,
+      userId: String(user.id),
+      counterpartyId: String(targetApplicant.userId),
       type: 'escrow_release',
       label: `Giải phóng Escrow: ${selectedJob.title}`,
       amount: -payout,
@@ -577,8 +578,8 @@ export default function ManageJobsPage() {
     };
     const studentTx: Transaction = {
       id: `tx-income-${Date.now()}`,
-      userId: targetApplicant.userId,
-      counterpartyId: user.id,
+      userId: String(targetApplicant.userId),
+      counterpartyId: String(user.id),
       type: 'income',
       label: `Thanh toán job: ${selectedJob.title}`,
       amount: payout,

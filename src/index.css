@@ -47,8 +47,21 @@ body::before{
 .tag-t{background:rgba(0,212,170,.12);color:#4FFFDF;border:1px solid rgba(0,212,170,.25)}
 .tag-a{background:rgba(255,107,53,.12);color:#FF9B72;border:1px solid rgba(255,107,53,.25)}
 .tag-g{background:rgba(255,179,64,.12);color:#FFD080;border:1px solid rgba(255,179,64,.25)}
-.fade-up{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
-.fade-up.visible{opacity:1;transform:translateY(0)}
+.fade-up{
+  opacity:0;
+  transform:translateY(24px);
+  animation:fade-up-enter .65s ease forwards;
+}
+.fade-up.visible{
+  opacity:1;
+  transform:translateY(0);
+}
+@keyframes fade-up-enter{
+  to{opacity:1;transform:translateY(0)}
+}
+@media (prefers-reduced-motion:reduce){
+  .fade-up{opacity:1;transform:none;animation:none}
+}
 
 /* ─── BUTTONS ─────────────────────────────────────── */
 .btn{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:var(--r10);font-size:14px;font-weight:700;transition:all .25s ease;letter-spacing:.3px}

@@ -76,7 +76,7 @@ export default function BusinessAutomationPage() {
     const submitted = apps.filter((a) => a.submission && (a.submission.reviewStatus === 'submitted' || a.submission.reviewStatus === 'revision_requested' || a.submission.reviewStatus === 'approved')).length;
     const completed = apps.filter((a) => a.status === 'completed').length;
 
-    const txs = loadUserTransactions(user.id);
+    const txs = loadUserTransactions(String(user.id));
     const release = Math.abs(
       txs
         .filter((tx) => tx.type === 'escrow_release' && tx.status === 'completed')

@@ -93,7 +93,7 @@ export default function PostJobPage() {
     }
 
     createNotification({
-      recipientId: user.id,
+      recipientId: String(user.id),
       recipientType: 'business',
       title: '📝 Đăng job thành công',
       message: `Job "${newJob.title}" đã được đăng. Mức lương: ${newJob.pay} · Hạn: ${newJob.deadline}.`,

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Unitask.Api.Data;
+using Unitask.Api.Helpers;
 using Unitask.Api.Models;
 
 namespace Unitask.Api.Controllers;
@@ -17,12 +18,17 @@ public class JobsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Job>>> GetAll([FromQuery] int? companyId)
+    public async Task<ActionResult<IEnumerable<Job>>> GetAll([FromQuery] string? companyId)
     {
         IQueryable<Job> query = _db.Jobs.AsNoTracking();
-        if (companyId.HasValue)
+        if (!string.IsNullOrWhiteSpace(companyId))
         {
-            query = query.Where(j => j.CompanyUserId == companyId.Value);
+            var resolvedId = await UserIdResolver.ResolveUserIdAsync(_db, companyId);
+            if (!resolvedId.HasValue)
+            {
+                return BadRequest($"Invalid company id: {companyId}");
+            }
+            query = query.Where(j => j.CompanyUserId == resolvedId.Value);
         }
         return Ok(await query.OrderByDescending(j => j.PostedAt).ToListAsync());
     }
@@ -38,13 +44,19 @@ public class JobsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Job>> Create(CreateJobRequest request)
     {
+        var companyUserId = await UserIdResolver.ResolveUserIdAsync(_db, request.CompanyUserId);
+        if (!companyUserId.HasValue)
+        {
+            return BadRequest($"Invalid company user id: {request.CompanyUserId}");
+        }
+
         var job = new Job
         {
             Title = request.Title.Trim(),
             Description = request.Description.Trim(),
             CompanyName = request.CompanyName.Trim(),
             CompanyCode = request.CompanyCode?.Trim() ?? string.Empty,
-            CompanyUserId = request.CompanyUserId,
+            CompanyUserId = companyUserId.Value,
             PayMin = request.PayMin,
             PayMax = request.PayMax,
             Pay = request.Pay?.Trim() ?? string.Empty,
@@ -76,7 +88,7 @@ public class JobsController : ControllerBase
         string Title,
         string Description,
         string CompanyName,
-        int CompanyUserId,
+        string CompanyUserId,
         decimal PayMin,
         decimal PayMax,
         string? Pay,

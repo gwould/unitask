@@ -9,6 +9,9 @@ public static class DatabaseSeeder
     public static async Task SeedAsync(AppDbContext db, IWebHostEnvironment env)
     {
         if (!env.IsDevelopment()) return;
+
+        await SyncDemoAccountsAsync(db);
+
         if (await db.Jobs.AnyAsync()) return;
 
         var seedPath = Path.Combine(AppContext.BaseDirectory, "Data", "Seed", "seed.json");
@@ -181,6 +184,27 @@ public static class DatabaseSeeder
         await InsertWithIdentityAsync(db, transactions);
     }
 
+    private static async Task SyncDemoAccountsAsync(AppDbContext db)
+    {
+        var biz = await db.Users.FirstOrDefaultAsync(u => u.ExternalCode == "biz-1");
+        if (biz != null)
+        {
+            biz.Email = "business@demo.com";
+            biz.FullName = "Huỳnh Thanh Tùng";
+            biz.CompanyName = "BrandSpace Startup";
+            biz.Password = "demo123";
+        }
+
+        var student = await db.Users.FirstOrDefaultAsync(u => u.ExternalCode == "stu-1");
+        if (student != null)
+        {
+            student.Email = "student@demo.com";
+            student.Password = "demo123";
+        }
+
+        await db.SaveChangesAsync();
+    }
+
     private static async Task InsertWithIdentityAsync<T>(AppDbContext db, List<T> entities) where T : class
     {
         if (entities.Count == 0) return;
@@ -190,11 +214,13 @@ public static class DatabaseSeeder
         var schema = entityType?.GetSchema();
         if (table == null) return;
 
-        var fullName = schema == null ? table : $"{schema}.{table}";
+        var fullName = schema == null ? $"[{table}]" : $"[{schema}].[{table}]";
 
+        await using var transaction = await db.Database.BeginTransactionAsync();
         await db.Database.ExecuteSqlRawAsync($"SET IDENTITY_INSERT {fullName} ON");
         db.Set<T>().AddRange(entities);
         await db.SaveChangesAsync();
         await db.Database.ExecuteSqlRawAsync($"SET IDENTITY_INSERT {fullName} OFF");
+        await transaction.CommitAsync();
     }
 }

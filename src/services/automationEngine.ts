@@ -110,7 +110,7 @@ export function executeRule(
 
         // Create notification
         createNotification({
-          recipientId: applicant.userId,
+          recipientId: String(applicant.userId),
           recipientType: 'student',
           title: '✅ Bạn đã được chấp nhận',
           message: `Bạn được chấp nhận cho vị trí ${applicant.name}. Vui lòng nộp bài.`,
@@ -122,7 +122,7 @@ export function executeRule(
           id: `log-${Date.now()}`,
           ruleId: rule.id,
           companyId,
-          applicantId: applicant.id,
+          applicantId: String(applicant.id),
           action: 'auto_accept',
           result: 'success',
           executedAt: new Date().toISOString(),
@@ -146,7 +146,7 @@ export function executeRule(
         localStorage.setItem(STORAGE_KEYS.MANAGE_APPLICANTS, JSON.stringify(updated));
 
         createNotification({
-          recipientId: applicant.userId,
+          recipientId: String(applicant.userId),
           recipientType: 'student',
           title: '❌ Không được chấp nhận',
           message: `Xin lỗi, bạn không được chấp nhận cho vị trí này. Chúc bạn thành công với các cơ hội khác!`,
@@ -158,7 +158,7 @@ export function executeRule(
           id: `log-${Date.now()}`,
           ruleId: rule.id,
           companyId,
-          applicantId: applicant.id,
+          applicantId: String(applicant.id),
           action: 'auto_reject',
           result: 'success',
           executedAt: new Date().toISOString(),
@@ -174,7 +174,7 @@ export function executeRule(
         }
 
         createNotification({
-          recipientId: applicant.userId,
+          recipientId: String(applicant.userId),
           recipientType: 'student',
           title: '🔔 Thông báo từ công ty',
           message: rule.action.message,
@@ -186,7 +186,7 @@ export function executeRule(
           id: `log-${Date.now()}`,
           ruleId: rule.id,
           companyId,
-          applicantId: applicant.id,
+          applicantId: String(applicant.id),
           action: 'auto_notify',
           result: 'success',
           executedAt: new Date().toISOString(),
@@ -204,7 +204,7 @@ export function executeRule(
       id: `log-${Date.now()}`,
       ruleId: rule.id,
       companyId,
-      applicantId: applicant.id,
+      applicantId: String(applicant.id),
       action: rule.ruleType,
       result: 'failed',
       reason: error instanceof Error ? error.message : String(error),

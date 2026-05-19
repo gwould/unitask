@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Unitask.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6778c0fac6fc792b2f5d7bd4afe23e9cf73a970d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0874c17d27779622a089a8f93213b8d15e022525")]
 [assembly: System.Reflection.AssemblyProductAttribute("Unitask.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Unitask.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

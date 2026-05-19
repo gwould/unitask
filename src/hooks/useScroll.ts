@@ -31,26 +31,42 @@ export function useActiveSection(ids: string[], offset = 120): string {
   return active;
 }
 
-/** IntersectionObserver hook – adds `visible` class to elements with `fade-up` */
+/** Scan and observe all `.fade-up` elements not yet visible. */
+export function observeFadeUpElements(): void {
+  const els = document.querySelectorAll<HTMLElement>('.fade-up:not(.visible)');
+  if (els.length === 0) return;
+
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry, i) => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target as HTMLElement;
+        setTimeout(() => el.classList.add('visible'), i * 60);
+        io.unobserve(el);
+      });
+    },
+    { threshold: 0.08, rootMargin: '40px 0px' },
+  );
+
+  els.forEach((el) => io.observe(el));
+}
+
+/** IntersectionObserver – adds `visible` to `.fade-up` (incl. async-loaded content). */
 export function useFadeUpObserver(dep?: unknown): void {
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e, i) => {
-          if (e.isIntersecting) {
-            setTimeout(() => e.target.classList.add('visible'), i * 80);
-            observer.unobserve(e.target);
-          }
-        });
-      },
-      { threshold: 0.12 }
-    );
-    const raf = requestAnimationFrame(() => {
-      document.querySelectorAll('.fade-up:not(.visible)').forEach((el) => observer.observe(el));
+    const run = () => observeFadeUpElements();
+
+    const raf = requestAnimationFrame(run);
+
+    // Re-scan when DOM gains new nodes (e.g. jobs/categories loaded from API)
+    const mutation = new MutationObserver(() => {
+      requestAnimationFrame(run);
     });
+    mutation.observe(document.body, { childList: true, subtree: true });
+
     return () => {
       cancelAnimationFrame(raf);
-      observer.disconnect();
+      mutation.disconnect();
     };
   }, [dep]);
 }
@@ -72,7 +88,7 @@ export function useCounterObserver(ref: RefObject<HTMLElement | null>): void {
           }
         });
       },
-      { threshold: 0.5 }
+      { threshold: 0.5 },
     );
     observer.observe(element);
     return () => observer.disconnect();

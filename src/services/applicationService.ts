@@ -1,5 +1,7 @@
 import type { Application } from '../types';
+import { applicationsData } from '../data/mockData';
 import { apiDelete, apiGet, apiPost, apiPut } from './apiClient';
+import { withFallback } from './withFallback';
 
 type ApiApplication = Application & { studentUserId?: number };
 
@@ -13,8 +15,13 @@ function normalizeApplication(app: ApiApplication): Application {
 export const applicationService = {
   /** Load applications for a student */
   async getByUser(userId: number | string): Promise<Application[]> {
-    const apps = await apiGet<ApiApplication[]>(`/api/applications?studentId=${userId}`);
-    return apps.map(normalizeApplication);
+    return withFallback(
+      async () => {
+        const apps = await apiGet<ApiApplication[]>(`/api/applications?studentId=${userId}`);
+        return apps.map(normalizeApplication);
+      },
+      applicationsData.filter((a) => String(a.userId) === String(userId)),
+    );
   },
 
   /** Get simple applications for dashboard (seeded + stored) */
@@ -24,8 +31,13 @@ export const applicationService = {
   },
 
   async getAll(): Promise<Application[]> {
-    const apps = await apiGet<ApiApplication[]>('/api/applications');
-    return apps.map(normalizeApplication);
+    return withFallback(
+      async () => {
+        const apps = await apiGet<ApiApplication[]>('/api/applications');
+        return apps.map(normalizeApplication);
+      },
+      applicationsData,
+    );
   },
 
   async getByJob(jobId: number): Promise<Application[]> {

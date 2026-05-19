@@ -116,7 +116,7 @@ export default function NotificationHubPage() {
     let cancelled = false;
     simulateDelay(300).then(() => {
       if (cancelled) return;
-      setNotifications(loadNotifications(user.id));
+      setNotifications(loadNotifications(String(user.id)));
       setIsLoading(false);
     });
 

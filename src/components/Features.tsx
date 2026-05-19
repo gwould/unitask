@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { observeFadeUpElements } from '../hooks/useScroll';
 import { siteService } from '../services/siteService';
 import type { Feature } from '../types';
 
@@ -16,7 +17,10 @@ export default function Features() {
         if (!cancelled) setFeatures([]);
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+          requestAnimationFrame(() => observeFadeUpElements());
+        }
       });
     return () => { cancelled = true; };
   }, []);

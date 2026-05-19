@@ -15,7 +15,7 @@ export function BulkActions({ selectedIds, applicants, onApplyAction, isLoading 
 
   const selectedCount = selectedIds.size;
   const selectedApplicants = useMemo(() => {
-    return applicants.filter(a => selectedIds.has(a.id));
+    return applicants.filter(a => selectedIds.has(String(a.id)));
   }, [applicants, selectedIds]);
 
   const selectedStats = useMemo(() => {

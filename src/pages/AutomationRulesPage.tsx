@@ -268,7 +268,7 @@ export default function AutomationRulesPage() {
   useEffect(() => {
     if (!user) return;
     simulateDelay(500).then(() => {
-      setRules(loadRules(user.id));
+      setRules(loadRules(String(user.id)));
       setIsLoading(false);
     });
   }, [user]);
@@ -297,7 +297,7 @@ export default function AutomationRulesPage() {
     if (!user) return;
     const newRule = {
       ...rule,
-      companyId: user.id,
+      companyId: String(user.id),
       updatedAt: new Date().toISOString(),
     };
 

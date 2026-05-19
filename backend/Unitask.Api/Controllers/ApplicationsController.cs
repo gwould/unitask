@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Unitask.Api.Data;
+using Unitask.Api.Helpers;
 using Unitask.Api.Models;
 
 namespace Unitask.Api.Controllers;
@@ -17,12 +18,17 @@ public class ApplicationsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Application>>> GetAll([FromQuery] int? studentId, [FromQuery] int? jobId)
+    public async Task<ActionResult<IEnumerable<Application>>> GetAll([FromQuery] string? studentId, [FromQuery] int? jobId)
     {
         IQueryable<Application> query = _db.Applications.AsNoTracking();
-        if (studentId.HasValue)
+        if (!string.IsNullOrWhiteSpace(studentId))
         {
-            query = query.Where(a => a.StudentUserId == studentId.Value);
+            var resolvedId = await UserIdResolver.ResolveUserIdAsync(_db, studentId);
+            if (!resolvedId.HasValue)
+            {
+                return BadRequest($"Invalid student id: {studentId}");
+            }
+            query = query.Where(a => a.StudentUserId == resolvedId.Value);
         }
         if (jobId.HasValue)
         {
@@ -34,10 +40,16 @@ public class ApplicationsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Application>> Create(CreateApplicationRequest request)
     {
+        var studentUserId = await UserIdResolver.ResolveUserIdAsync(_db, request.StudentUserId);
+        if (!studentUserId.HasValue)
+        {
+            return BadRequest($"Invalid student id: {request.StudentUserId}");
+        }
+
         var application = new Application
         {
             JobId = request.JobId,
-            StudentUserId = request.StudentUserId,
+            StudentUserId = studentUserId.Value,
             CoverLetter = request.CoverLetter.Trim(),
             Status = "pending",
             AppliedAt = DateTime.UtcNow.ToString("yyyy-MM-dd"),
@@ -79,7 +91,7 @@ public class ApplicationsController : ControllerBase
         return NoContent();
     }
 
-    public record CreateApplicationRequest(int JobId, int StudentUserId, string CoverLetter);
+    public record CreateApplicationRequest(int JobId, string StudentUserId, string CoverLetter);
 
     public record UpdateApplicationStatusRequest(string Status);
 }

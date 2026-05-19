@@ -1,4 +1,4 @@
-const DEFAULT_API_BASE = 'https://localhost:5001';
+const DEFAULT_API_BASE = 'http://localhost:5244';
 
 export const API_BASE = (import.meta as { env?: Record<string, string> }).env?.VITE_API_URL || DEFAULT_API_BASE;
 

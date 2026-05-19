@@ -169,7 +169,7 @@ export default function WalletPage() {
     let cancelled = false;
     simulateDelay(700).then(() => {
       if (cancelled) return;
-      const txs = loadTransactions(user.role, user.id);
+      const txs = loadTransactions(user.role, String(user.id));
       const methods = loadBankMethods();
       setTransactions(txs);
       setBankMethods(methods);
@@ -251,7 +251,7 @@ export default function WalletPage() {
 
     setTransactions((prev) => {
       const updated = [newTx, ...prev];
-      saveTransactions(user.id, updated);
+      saveTransactions(String(user.id), updated);
       return updated;
     });
 
