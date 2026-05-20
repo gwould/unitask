@@ -297,8 +297,6 @@ export default function MyApplicationsPage() {
     if (!user) return;
 
     let cancelled = false;
-    setIsLoading(true);
-    setError(null);
 
     Promise.all([
       applicationService.getByUser(user.id),
@@ -313,12 +311,14 @@ export default function MyApplicationsPage() {
         });
         setApplications(merged);
         setJobs(allJobs);
+        setError(null);
+        setIsLoading(false);
       })
       .catch(() => {
-        if (!cancelled) setError('Không thể tải dữ liệu. Vui lòng thử lại.');
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoading(false);
+        if (!cancelled) {
+          setError('Không thể tải dữ liệu. Vui lòng thử lại.');
+          setIsLoading(false);
+        }
       });
 
     return () => { cancelled = true; };
@@ -393,15 +393,19 @@ export default function MyApplicationsPage() {
 
   useEffect(() => {
     if (!user) return;
-    try {
-      const all: Notification[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS) || '[]');
-      const unread = all.filter((n) => n.recipientId === String(user.id) && !n.isRead);
-      if (unread.length > 0) {
-        showToast(`Bạn có ${unread.length} thông báo mới. Xem trong Trung tâm thông báo.`);
+    // Delay showing notification toast to avoid cascading renders
+    const timer = setTimeout(() => {
+      try {
+        const all: Notification[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS) || '[]');
+        const unread = all.filter((n) => n.recipientId === String(user.id) && !n.isRead);
+        if (unread.length > 0) {
+          showToast(`Bạn có ${unread.length} thông báo mới. Xem trong Trung tâm thông báo.`);
+        }
+      } catch {
+        // ignore errors
       }
-    } catch {
-      // ignore errors
-    }
+    }, 100);
+    return () => clearTimeout(timer);
   }, [user, showToast]);
 
   const handleWithdraw = useCallback(async () => {

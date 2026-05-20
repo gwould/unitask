@@ -27,16 +27,18 @@ export default function JobDetailPage() {
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
-    setIsLoading(true);
     jobService.getById(Number(id))
       .then((data) => {
-        if (!cancelled) setJob(data ?? null);
+        if (!cancelled) {
+          setJob(data ?? null);
+          setIsLoading(false);
+        }
       })
       .catch(() => {
-        if (!cancelled) setJob(null);
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoading(false);
+        if (!cancelled) {
+          setJob(null);
+          setIsLoading(false);
+        }
       });
     return () => { cancelled = true; };
   }, [id]);

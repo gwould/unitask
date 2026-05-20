@@ -76,7 +76,7 @@ export default function DashboardPage() {
   const [jobsData, setJobsData] = useState<Job[]>([]);
 
   const loadData = useCallback(async () => {
-    if (!user) return;
+    if (!user) return { userApps: [], companyJobs: [], allApps: [], jobs: [] };
     const uid = toIdString(user.id);
     const [userApps, companyJobs, allApps, jobs] = await Promise.all([
       user.role === 'student' ? applicationService.getByUser(uid) : Promise.resolve([] as Application[]),
@@ -84,10 +84,7 @@ export default function DashboardPage() {
       applicationService.getAll(),
       jobService.getAll(),
     ]);
-    setApps(userApps);
-    setPostedJobs(companyJobs);
-    setAllApplications(allApps);
-    setJobsData(jobs);
+    return { userApps, companyJobs, allApps, jobs };
   }, [user]);
 
   // Redirect
@@ -98,10 +95,21 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!user) return;
-    setIsLoading(true);
+    let cancelled = false;
     loadData()
+      .then((data) => {
+        if (!cancelled && data) {
+          setApps(data.userApps);
+          setPostedJobs(data.companyJobs);
+          setAllApplications(data.allApps);
+          setJobsData(data.jobs);
+        }
+      })
       .catch(() => {})
-      .finally(() => setIsLoading(false));
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+    return () => { cancelled = true; };
   }, [user, loadData]);
 
   // Toast auto-dismiss

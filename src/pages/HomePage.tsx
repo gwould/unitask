@@ -4,6 +4,7 @@ import Hero from '../components/Hero';
 import TrustStrip from '../components/TrustStrip';
 import Categories from '../components/Categories';
 import SearchSection from '../components/SearchSection';
+import AIMatchingPanel from '../components/AIMatchingPanel';
 import JobsSection from '../components/JobsSection';
 import HowItWorks from '../components/HowItWorks';
 import Features from '../components/Features';
@@ -37,6 +38,7 @@ export default function HomePage() {
         onSearch={handleSearch}
         onQuickSearch={handleQuickSearch}
       />
+      <AIMatchingPanel compact topK={4} />
       <JobsSection />
       <HowItWorks />
       <Features />

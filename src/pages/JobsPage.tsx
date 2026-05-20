@@ -4,6 +4,9 @@ import { jobService } from '../services/jobService';
 import type { Job } from '../types';
 import { siteService } from '../services/siteService';
 import type { Category } from '../types';
+import AIMatchingPanel from '../components/AIMatchingPanel';
+import { useAuth } from '../contexts/AuthContext';
+import { aiMatchingService } from '../services/aiMatchingService';
 
 export default function JobsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -17,6 +20,8 @@ export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
+  const { user } = useAuth();
+  const [matchMap, setMatchMap] = useState<Record<number, number>>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -32,6 +37,23 @@ export default function JobsPage() {
       });
     return () => { cancelled = true; };
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    setMatchMap({});
+    aiMatchingService.getRecommendations(user, query.trim() || undefined, 50)
+      .then((matches) => {
+        if (cancelled) return;
+        const map: Record<number, number> = {};
+        matches.forEach((m) => { map[m.id] = m.matchScore; });
+        setMatchMap(map);
+      })
+      .catch(() => {
+        if (!cancelled) setMatchMap({});
+      });
+
+    return () => { cancelled = true; };
+  }, [user, query]);
 
   useEffect(() => {
     let cancelled = false;
@@ -83,6 +105,16 @@ export default function JobsPage() {
 
     return list;
   }, [jobs, query, category, location, sort]);
+
+  const displayed = useMemo(() => {
+    const list = [...filtered];
+    const hasScores = Object.keys(matchMap).length > 0;
+    if (!hasScores) return list;
+
+    // Sort by match score when available, preserving other sort preferences
+    list.sort((a, b) => (matchMap[b.id] || 0) - (matchMap[a.id] || 0));
+    return list;
+  }, [filtered, matchMap]);
 
   const handleSearch = () => {
     const params = new URLSearchParams();
@@ -154,6 +186,13 @@ export default function JobsPage() {
           </div>
         </div>
 
+        <AIMatchingPanel
+          query={query.trim() || undefined}
+          topK={6}
+          title="Job phù hợp nhất với hồ sơ và truy vấn của bạn"
+          subtitle="AI tự động chấm điểm job theo hồ sơ cá nhân, kỹ năng, ngành học và từ khóa tìm kiếm hiện tại."
+        />
+
         {/* results */}
         {loading ? (
           <div className="pj-empty fade-up">
@@ -169,7 +208,7 @@ export default function JobsPage() {
           </div>
         ) : (
           <div className="pj-grid">
-            {filtered.map((job) => (
+            {displayed.map((job) => (
               <Link to={`/jobs/${job.id}`} key={job.id} className="pj-card fade-up">
                 <div className="pj-card-top">
                   <div className="jc-logo" style={{ background: job.logoGradient }}>

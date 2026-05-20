@@ -429,7 +429,7 @@ export default function ManageJobsPage() {
       }
 
       setSelectedApplicantIds(new Set());
-    } catch (err) {
+    } catch {
       showToast('Lỗi khi xử lý hàng loạt', 'error');
     } finally {
       setIsBulkLoading(false);
