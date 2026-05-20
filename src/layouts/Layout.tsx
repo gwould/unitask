@@ -4,6 +4,7 @@ import { useFadeUpObserver } from '../hooks/useScroll';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ScrollToTop from '../components/ScrollToTop';
+import CareerAssistantChat from '../components/CareerAssistantChat';
 
 export default function Layout() {
   const { pathname } = useLocation();
@@ -24,6 +25,7 @@ export default function Layout() {
       </main>
       <Footer />
       <ScrollToTop />
+      <CareerAssistantChat />
     </>
   );
 }

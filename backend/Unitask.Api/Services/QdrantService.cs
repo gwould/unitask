@@ -50,6 +50,7 @@ public class QdrantService : IQdrantService
             if (checkResponse.IsSuccessStatusCode)
             {
                 _logger.LogInformation($"Collection {_config.CollectionName} already exists");
+                await EnsurePayloadIndexesAsync();
                 return;
             }
 
@@ -76,11 +77,49 @@ public class QdrantService : IQdrantService
             }
 
             _logger.LogInformation($"Collection {_config.CollectionName} created successfully");
+            await EnsurePayloadIndexesAsync();
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error initializing Qdrant collection");
             throw;
+        }
+    }
+
+    /// <summary>
+    /// Qdrant Cloud requires keyword payload indexes before filtering on payload fields.
+    /// </summary>
+    private async Task EnsurePayloadIndexesAsync()
+    {
+        var baseUrl = GetBaseUrl();
+        foreach (var fieldName in new[] { "type", "document_id" })
+        {
+            try
+            {
+                var indexRequest = new { field_name = fieldName, field_schema = "keyword" };
+                var response = await _httpClient.PutAsJsonAsync(
+                    $"{baseUrl}/collections/{_config.CollectionName}/index",
+                    indexRequest);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    _logger.LogInformation("Qdrant payload index ready: {Field}", fieldName);
+                    continue;
+                }
+
+                var body = await response.Content.ReadAsStringAsync();
+                if (body.Contains("already exists", StringComparison.OrdinalIgnoreCase))
+                {
+                    _logger.LogDebug("Qdrant payload index already exists: {Field}", fieldName);
+                    continue;
+                }
+
+                _logger.LogWarning("Could not create Qdrant index for {Field}: {Body}", fieldName, body);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Could not create Qdrant payload index for {Field}", fieldName);
+            }
         }
     }
 
@@ -141,64 +180,30 @@ public class QdrantService : IQdrantService
         try
         {
             await InitializeCollectionAsync();
+            await EnsurePayloadIndexesAsync();
 
-            var baseUrl = GetBaseUrl();
-
-            var searchRequest = new
+            if (!string.IsNullOrWhiteSpace(documentType))
             {
-                vector = vector,
-                limit = limit,
-                with_payload = true,
-                with_vectors = false,
-                filter = documentType != null ? new
+                try
                 {
-                    must = new[]
-                    {
-                        new
-                        {
-                            key = "type",
-                            match = new { value = documentType }
-                        }
-                    }
-                } : null
-            };
-
-            var response = await _httpClient.PostAsJsonAsync(
-                $"{baseUrl}/collections/{_config.CollectionName}/points/search",
-                searchRequest
-            );
-
-            if (!response.IsSuccessStatusCode)
-            {
-                var error = await response.Content.ReadAsStringAsync();
-                _logger.LogError($"Failed to search: {error}");
-                throw new Exception($"Failed to search in Qdrant: {error}");
+                    return await ExecuteSearchAsync(vector, limit, documentType);
+                }
+                catch (Exception ex) when (IsMissingPayloadIndexError(ex))
+                {
+                    _logger.LogWarning(
+                        "Qdrant filter on 'type' unavailable; falling back to in-memory filter. Re-index may be needed.");
+                }
             }
 
-            var content = await response.Content.ReadAsStringAsync();
-            var json = JsonSerializer.Deserialize<JsonElement>(content);
-            var results = new List<RagSearchResult>();
+            var fetchLimit = string.IsNullOrWhiteSpace(documentType) ? limit : Math.Max(limit * 4, 20);
+            var results = await ExecuteSearchAsync(vector, fetchLimit, documentType: null);
 
-            foreach (var result in json.GetProperty("result").EnumerateArray())
+            if (!string.IsNullOrWhiteSpace(documentType))
             {
-                var payload = result.GetProperty("payload");
-                var metadata = payload.GetProperty("metadata");
-                var metadataDict = new Dictionary<string, string>();
-
-                foreach (var prop in metadata.EnumerateObject())
-                {
-                    metadataDict[prop.Name] = prop.Value.GetString() ?? string.Empty;
-                }
-
-                results.Add(new RagSearchResult
-                {
-                    DocumentId = payload.GetProperty("document_id").GetString() ?? string.Empty,
-                    Type = payload.GetProperty("type").GetString() ?? string.Empty,
-                    Title = payload.GetProperty("title").GetString() ?? string.Empty,
-                    Content = payload.GetProperty("content").GetString() ?? string.Empty,
-                    Score = (float)result.GetProperty("score").GetDouble(),
-                    Metadata = metadataDict
-                });
+                results = results
+                    .Where(r => r.Type.Equals(documentType, StringComparison.OrdinalIgnoreCase))
+                    .Take(limit)
+                    .ToList();
             }
 
             return results;
@@ -209,6 +214,70 @@ public class QdrantService : IQdrantService
             throw;
         }
     }
+
+    private async Task<List<RagSearchResult>> ExecuteSearchAsync(float[] vector, int limit, string? documentType)
+    {
+        var baseUrl = GetBaseUrl();
+
+        var searchRequest = new
+        {
+            vector,
+            limit,
+            with_payload = true,
+            with_vectors = false,
+            filter = documentType != null
+                ? new
+                {
+                    must = new[]
+                    {
+                        new { key = "type", match = new { value = documentType } },
+                    },
+                }
+                : null,
+        };
+
+        var response = await _httpClient.PostAsJsonAsync(
+            $"{baseUrl}/collections/{_config.CollectionName}/points/search",
+            searchRequest);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Failed to search in Qdrant: {error}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var json = JsonSerializer.Deserialize<JsonElement>(content);
+        var results = new List<RagSearchResult>();
+
+        foreach (var result in json.GetProperty("result").EnumerateArray())
+        {
+            var payload = result.GetProperty("payload");
+            var metadata = payload.GetProperty("metadata");
+            var metadataDict = new Dictionary<string, string>();
+
+            foreach (var prop in metadata.EnumerateObject())
+            {
+                metadataDict[prop.Name] = prop.Value.GetString() ?? string.Empty;
+            }
+
+            results.Add(new RagSearchResult
+            {
+                DocumentId = payload.GetProperty("document_id").GetString() ?? string.Empty,
+                Type = payload.GetProperty("type").GetString() ?? string.Empty,
+                Title = payload.GetProperty("title").GetString() ?? string.Empty,
+                Content = payload.GetProperty("content").GetString() ?? string.Empty,
+                Score = (float)result.GetProperty("score").GetDouble(),
+                Metadata = metadataDict,
+            });
+        }
+
+        return results;
+    }
+
+    private static bool IsMissingPayloadIndexError(Exception ex)
+        => ex.Message.Contains("Index required", StringComparison.OrdinalIgnoreCase)
+           || ex.Message.Contains("payload index", StringComparison.OrdinalIgnoreCase);
 
     public async Task DeleteDocumentAsync(string docId)
     {

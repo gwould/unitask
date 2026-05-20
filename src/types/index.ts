@@ -2,6 +2,7 @@
 export * from './job';
 export * from './application';
 export * from './user';
+export * from './careerAssistant';
 export * from './site';
 export * from './api';
 export * from './wallet';

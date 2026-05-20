@@ -43,6 +43,9 @@ public static class RagServiceExtensions
         // AI matching service cho website
         services.AddScoped<IAiMatchingService, AiMatchingService>();
 
+        services.AddHttpClient<CareerAssistantService>();
+        services.AddScoped<ICareerAssistantService>(sp => sp.GetRequiredService<CareerAssistantService>());
+
         return services;
     }
 }
