@@ -1,7 +1,9 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { User, UserRole, RegisterData } from '../types';
+import type { BackendAuthUser, LoginResponse, RegisterResponse } from '../types/api';
 import { STORAGE_KEYS } from '../constants';
-import { apiPost, normalizeUser, type ApiUser } from '../services';
+import { apiPost, apiPut } from '../services';
+import { profileService } from '../services/profileService';
 
 // Re-export types for consumers that import from AuthContext
 export type { User, UserRole };
@@ -18,6 +20,30 @@ interface AuthState {
 const AuthContext = createContext<AuthState | null>(null);
 
 const STORAGE_KEY = STORAGE_KEYS.USER;
+
+function mapBackendUser(user: BackendAuthUser): User {
+  const role = user.userType === 'business' ? 'business' : user.userType === 'admin' ? 'admin' : 'student';
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.fullName,
+    role,
+    avatar: user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U',
+    skills: [],
+    bio: '',
+  };
+}
+
+function persistTokens(token: string | null, refreshToken: string | null) {
+  try {
+    if (token) localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
+    else localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+    if (refreshToken) localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
+    else localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+  } catch {
+    // ignore storage errors
+  }
+}
 
 // Demo accounts seeded into "database"
 const DEMO_ACCOUNTS: (User & { password: string })[] = [
@@ -106,8 +132,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 
     try {
-      const apiUser = await apiPost<ApiUser>('/api/auth/login', { email, password });
-      const fromApi = normalizeUser(apiUser);
+      const auth = await apiPost<LoginResponse>('/api/auth/login', { email, password });
+      const fromApi = mapBackendUser(auth.user);
       const merged: User = {
         ...fromApi,
         balance: localMatch?.balance ?? 0,
@@ -119,7 +145,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         rating: localMatch?.rating ?? 0,
         phone: fromApi.phone ?? localMatch?.phone,
       };
-      persist(merged);
+      persistTokens(auth.token, auth.refreshToken);
+      const enriched = await profileService.enrichUser(merged);
+      persist(enriched);
       return true;
     } catch {
       // API unavailable or invalid credentials — fall back to local demo accounts
@@ -127,6 +155,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (!localMatch) return false;
     const { password: _, ...userData } = localMatch;
+    persistTokens(null, null);
     persist(userData);
     return true;
   };
@@ -156,16 +185,54 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     accounts.push(newUser);
     saveAccounts(accounts);
     const { password: _, ...userData } = newUser;
-    persist(userData);
+    try {
+      const auth = await apiPost<RegisterResponse>('/api/auth/register', {
+        email: data.email,
+        password: data.password,
+        fullName: data.name,
+        userType: data.role,
+        phone: undefined,
+        avatarUrl: undefined,
+        bio: undefined,
+      });
+      persistTokens(auth.token, auth.refreshToken);
+      const fromApi = mapBackendUser({
+        id: auth.id,
+        email: auth.email,
+        fullName: auth.fullName,
+        userType: auth.userType,
+      });
+      const enriched = await profileService.enrichUser({ ...fromApi, ...userData });
+      persist(enriched);
+    } catch {
+      persistTokens(null, null);
+      persist(userData);
+    }
     return true;
   };
 
-  const logout = () => persist(null);
+  const logout = () => {
+    persistTokens(null, null);
+    persist(null);
+  };
 
   const updateProfile = (data: Partial<User>) => {
     if (!user) return;
     const updated = { ...user, ...data };
     persist(updated);
+
+    void apiPut(`/api/users/${user.id}`, {
+      fullName: data.name,
+      phone: data.phone,
+      bio: data.bio,
+      avatarUrl: undefined,
+    }).catch(() => {});
+
+    if (user.role === 'student') {
+      void profileService.updateStudentProfile(String(user.id), data).catch(() => {});
+    } else if (user.role === 'business') {
+      void profileService.updateBusinessProfile(String(user.id), data).catch(() => {});
+    }
   };
 
   return (

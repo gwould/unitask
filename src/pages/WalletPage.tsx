@@ -5,6 +5,9 @@ import type { Transaction, BankMethod, TxFilter, WithdrawForm } from '../types';
 import { TX_TYPE_CONFIG, TX_STATUS_LABEL, STORAGE_KEYS } from '../constants';
 import { formatMoney as formatBalance, formatSignedMoney as formatMoney } from '../utils/format';
 import { simulateDelay } from '../utils/async';
+import { walletService } from '../services/walletService';
+import { paymentService } from '../services/paymentService';
+import { hasAuthToken } from '../utils/auth';
 
 /* ─── CONSTANTS ───────────────────────────────────── */
 
@@ -167,19 +170,41 @@ export default function WalletPage() {
   useEffect(() => {
     if (!user) return;
     let cancelled = false;
-    simulateDelay(700).then(() => {
-      if (cancelled) return;
-      const txs = loadTransactions(user.role, String(user.id));
+
+    const load = async () => {
+      if (hasAuthToken() && (user.role === 'student' || user.role === 'business')) {
+        const role = user.role;
+        const [summary, walletTxs, paymentTxs] = await Promise.all([
+          role === 'student' ? walletService.getWalletSummary() : Promise.resolve(null),
+          walletService.getTransactions(role),
+          paymentService.listAsTransactions(String(user.id), role),
+        ]);
+        if (cancelled) return;
+        if (summary?.balance != null) {
+          updateProfile({ balance: Number(summary.balance) });
+        }
+        const merged = [...paymentTxs, ...walletTxs];
+        const byId = new Map(merged.map((t) => [t.id, t]));
+        const combined = [...byId.values()].sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+        );
+        setTransactions(combined.length > 0 ? combined : loadTransactions(user.role, String(user.id)));
+      } else {
+        await simulateDelay(700);
+        if (cancelled) return;
+        setTransactions(loadTransactions(user.role, String(user.id)));
+      }
+
       const methods = loadBankMethods();
-      setTransactions(txs);
       setBankMethods(methods);
-      // Set default withdraw method
       const def = methods.find((m) => m.isDefault) || methods[0];
       if (def) setWithdrawForm((f) => f.methodId ? f : { ...f, methodId: def.id });
       setIsLoading(false);
-    });
+    };
+
+    void load();
     return () => { cancelled = true; };
-  }, [user]);
+  }, [user, updateProfile]);
 
   // Auto-dismiss toast
   useEffect(() => {
@@ -238,28 +263,50 @@ export default function WalletPage() {
 
     setWithdrawError('');
     setWithdrawLoading(true);
-    await simulateDelay(1200);
 
-    const newTx: Transaction = {
-      id: `tx-${Date.now()}`,
-      type: 'withdraw',
-      label: `Rút tiền về ${method.name} ${method.detail}`,
-      amount: -amount,
-      date: new Date().toISOString().slice(0, 10),
-      status: 'processing',
-    };
+    try {
+      let newTx: Transaction;
 
-    setTransactions((prev) => {
-      const updated = [newTx, ...prev];
-      saveTransactions(String(user.id), updated);
-      return updated;
-    });
+      if (user.role === 'student' && hasAuthToken()) {
+        const parts = method.detail.split('·').map((s) => s.trim());
+        newTx = await walletService.withdraw(amount, {
+          accountName: user.name,
+          accountNumber: parts[0]?.replace(/\*/g, '') || method.detail,
+          bankName: method.name,
+        });
+        const summary = await walletService.getWalletSummary();
+        if (summary?.balance != null) {
+          updateProfile({ balance: Number(summary.balance) });
+        } else {
+          updateProfile({ balance: (user.balance || 0) - amount });
+        }
+      } else {
+        await simulateDelay(1200);
+        newTx = {
+          id: `tx-${Date.now()}`,
+          type: 'withdraw',
+          label: `Rút tiền về ${method.name} ${method.detail}`,
+          amount: -amount,
+          date: new Date().toISOString().slice(0, 10),
+          status: 'processing',
+        };
+        updateProfile({ balance: (user.balance || 0) - amount });
+      }
 
-    updateProfile({ balance: (user.balance || 0) - amount });
-    setWithdrawLoading(false);
-    setShowWithdrawModal(false);
-    setWithdrawForm({ amount: '', methodId: bankMethods.find((m) => m.isDefault)?.id || '' });
-    showToast(`Đang xử lý rút ${formatBalance(amount)} về ${method.name}`);
+      setTransactions((prev) => {
+        const updated = [newTx, ...prev];
+        saveTransactions(String(user.id), updated);
+        return updated;
+      });
+
+      setShowWithdrawModal(false);
+      setWithdrawForm({ amount: '', methodId: bankMethods.find((m) => m.isDefault)?.id || '' });
+      showToast(`Đang xử lý rút ${formatBalance(amount)} về ${method.name}`);
+    } catch (err) {
+      setWithdrawError(err instanceof Error ? err.message : 'Không thể rút tiền');
+    } finally {
+      setWithdrawLoading(false);
+    }
   }, [withdrawForm, user, bankMethods, updateProfile, showToast]);
 
   const handleAddBank = useCallback(() => {

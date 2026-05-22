@@ -1,4 +1,6 @@
 export interface Category {
+  /** Backend category id (Guid) when loaded from API */
+  id?: string;
   icon: string;
   bg: string;
   name: string;

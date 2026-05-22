@@ -1,7 +1,7 @@
-import { apiDelete, apiGet, apiPost, apiPut } from './apiService';
+import { apiGet, apiPost, apiPut } from './apiService';
 import type { Application } from '../types';
-import type { Category, Feature, HowStep, Testimonial } from '../types';
 import type { CareerChatResponse } from '../types/careerAssistant';
+import { unwrapPaged, type PagedResult } from '../utils/paged';
 
 export type ApiUser = {
   id: number;
@@ -29,21 +29,20 @@ export const apiRepository = {
     create: (payload: unknown) => apiPost<unknown>('/api/jobs', payload),
   },
   applications: {
-    listByStudent: (studentId: string | number) => apiGet<Application[]>(`/api/applications?studentId=${studentId}`),
-    listAll: () => apiGet<Application[]>('/api/applications'),
-    listByJob: (jobId: string | number) => apiGet<Application[]>(`/api/applications?jobId=${jobId}`),
-    create: (payload: unknown) => apiPost<Application>('/api/applications', payload),
-    updateStatus: (appId: string | number, payload: unknown) => apiPut<Application>(`/api/applications/${appId}/status`, payload),
-    delete: (appId: string | number) => apiDelete(`/api/applications/${appId}`),
+    listByStudent: (_studentId: string | number) => apiGet<Application[]>('/api/my-applications'),
+    listAll: () => Promise.resolve([] as Application[]),
+    listByJob: async (jobId: string | number) =>
+      unwrapPaged(await apiGet<PagedResult<Application>>(`/api/jobs/${jobId}/applications?page=1&limit=100`)),
+    create: (jobId: string | number, payload: unknown) => apiPost<Application>(`/api/jobs/${jobId}/apply`, payload),
+    accept: (appId: string | number, payload: unknown) => apiPut<Application>(`/api/applications/${appId}/accept`, payload),
+    reject: (appId: string | number, payload: unknown) => apiPut<Application>(`/api/applications/${appId}/reject`, payload),
+    complete: (appId: string | number, payload: unknown) => apiPut<Application>(`/api/applications/${appId}/complete`, payload),
   },
   users: {
-    list: () => apiGet<ApiUser[]>('/api/users'),
+    list: () => Promise.resolve([] as ApiUser[]),
   },
   site: {
-    categories: () => apiGet<Category[]>('/api/categories'),
-    howSteps: (type: 'student' | 'business') => apiGet<HowStep[]>(`/api/howsteps?type=${type}`),
-    features: () => apiGet<Feature[]>('/api/features'),
-    testimonials: () => apiGet<Testimonial[]>('/api/testimonials'),
+    categories: () => apiGet<unknown[]>('/api/categories'),
   },
   insights: {
     recommendations: (payload: unknown) => apiPost<unknown>('/api/matching/recommendations', payload),

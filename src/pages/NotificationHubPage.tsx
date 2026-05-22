@@ -1,40 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { STORAGE_KEYS } from '../constants';
 import type { Notification } from '../types/automation';
-import { simulateDelay } from '../utils/async';
+import { STORAGE_KEYS } from '../constants';
+import { notificationService } from '../services/notificationService';
+import { hasAuthToken } from '../utils/auth';
 
-/* ─── HELPERS ─────────────────────────────────────── */
-
-function loadNotifications(recipientId: string): Notification[] {
-  try {
-    const all: Notification[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS) || '[]');
-    return all
-      .filter((n) => n.recipientId === recipientId)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  } catch {
-    return [];
-  }
-}
-
-function saveNotifications(notifications: Notification[]) {
-  try {
-    const all: Notification[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS) || '[]');
-    const ids = new Set(notifications.map((n) => n.id));
-    const kept = all.filter((n) => !ids.has(n.id));
-    localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify([...notifications, ...kept]));
-  } catch {
-    // Ignore storage errors in demo mode.
-  }
-}
-
-/* ─── SUB COMPONENTS ──────────────────────────────── */
-
-function NotificationItem({ notification, onMarkRead, onDelete }: {
+function NotificationItem({ notification, onMarkRead, onDelete, apiMode }: {
   notification: Notification;
   onMarkRead: (id: string) => void;
   onDelete: (id: string) => void;
+  apiMode: boolean;
 }) {
   const icons: Record<Notification['type'], string> = {
     job_match: '🎯',
@@ -78,9 +54,9 @@ function NotificationItem({ notification, onMarkRead, onDelete }: {
         <div className="notif-meta">
           <span className="notif-time">{timeAgo(notification.createdAt)}</span>
           {notification.actionUrl && (
-            <a href={notification.actionUrl} className="notif-action-link">
+            <Link to={notification.actionUrl} className="notif-action-link">
               Xem chi tiết →
-            </a>
+            </Link>
           )}
         </div>
       </div>
@@ -90,15 +66,15 @@ function NotificationItem({ notification, onMarkRead, onDelete }: {
             ✓
           </button>
         )}
-        <button className="btn-icon" onClick={() => onDelete(notification.id)} title="Xóa">
-          ✕
-        </button>
+        {!apiMode && (
+          <button className="btn-icon" onClick={() => onDelete(notification.id)} title="Xóa">
+            ✕
+          </button>
+        )}
       </div>
     </div>
   );
 }
-
-/* ─── MAIN PAGE ───────────────────────────────────── */
 
 export default function NotificationHubPage() {
   const { user } = useAuth();
@@ -106,6 +82,17 @@ export default function NotificationHubPage() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [filterType, setFilterType] = useState<'all' | 'unread'>('all');
   const [isLoading, setIsLoading] = useState(true);
+  const apiMode = hasAuthToken();
+
+  const load = useCallback(async () => {
+    if (!user) return;
+    const role = user.role === 'business' ? 'business' : 'student';
+    const rows = await notificationService.list(String(user.id), role, {
+      isRead: filterType === 'unread' ? false : undefined,
+      page: 1,
+    });
+    setNotifications(rows);
+  }, [user, filterType]);
 
   useEffect(() => {
     if (!user) {
@@ -114,16 +101,14 @@ export default function NotificationHubPage() {
     }
 
     let cancelled = false;
-    simulateDelay(300).then(() => {
-      if (cancelled) return;
-      setNotifications(loadNotifications(String(user.id)));
-      setIsLoading(false);
-    });
+    load()
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
 
-    return () => {
-      cancelled = true;
-    };
-  }, [user, navigate]);
+    return () => { cancelled = true; };
+  }, [user, navigate, load]);
 
   const filtered = useMemo(() => {
     if (filterType === 'unread') {
@@ -134,35 +119,30 @@ export default function NotificationHubPage() {
 
   const unreadCount = useMemo(() => notifications.filter((n) => !n.isRead).length, [notifications]);
 
-  const handleMarkRead = useCallback((id: string) => {
-    setNotifications((prev) => {
-      const updated = prev.map((n) => (n.id === id ? { ...n, isRead: true } : n));
-      saveNotifications(updated);
-      return updated;
-    });
+  const handleMarkRead = useCallback(async (id: string) => {
+    await notificationService.markRead(id);
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)));
   }, []);
 
   const handleDelete = useCallback((id: string) => {
-    setNotifications((prev) => {
-      const updated = prev.filter((n) => n.id !== id);
-      saveNotifications(updated);
-      return updated;
-    });
+    notificationService.deleteLocal(id);
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
   }, []);
 
-  const handleMarkAllRead = useCallback(() => {
-    setNotifications((prev) => {
-      const updated = prev.map((n) => ({ ...n, isRead: true }));
-      saveNotifications(updated);
-      return updated;
-    });
+  const handleMarkAllRead = useCallback(async () => {
+    await notificationService.markAllRead();
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
   }, []);
 
   const handleClearAll = useCallback(() => {
+    if (apiMode) {
+      window.alert('Thông báo trên server không hỗ trợ xóa hàng loạt. Dùng "Đánh dấu đã đọc".');
+      return;
+    }
     if (!window.confirm('Xoá tất cả thông báo?')) return;
     setNotifications([]);
     localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, '[]');
-  }, []);
+  }, [apiMode]);
 
   if (isLoading) return <div className="page-loading">Loading...</div>;
 
@@ -171,7 +151,7 @@ export default function NotificationHubPage() {
       <div className="page-header">
         <div>
           <h1>🔔 Trung tâm thông báo</h1>
-          <p>Quản lý tất cả thông báo tự động từ hệ thống</p>
+          <p>{apiMode ? 'Đồng bộ từ API backend' : 'Thông báo demo (localStorage)'}</p>
         </div>
       </div>
 
@@ -201,7 +181,7 @@ export default function NotificationHubPage() {
               ✓ Đánh dấu tất cả là đã đọc
             </button>
           )}
-          {notifications.length > 0 && (
+          {!apiMode && notifications.length > 0 && (
             <button className="btn btn-danger-ghost btn-sm" onClick={handleClearAll}>
               🗑️ Xóa tất cả
             </button>
@@ -221,12 +201,13 @@ export default function NotificationHubPage() {
         </div>
       ) : (
         <div className="notif-list">
-          {filtered.map((notification: Notification) => (
+          {filtered.map((notification) => (
             <NotificationItem
               key={notification.id}
               notification={notification}
               onMarkRead={handleMarkRead}
               onDelete={handleDelete}
+              apiMode={apiMode}
             />
           ))}
         </div>

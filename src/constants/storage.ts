@@ -1,6 +1,8 @@
 /** localStorage key constants — single source of truth */
 export const STORAGE_KEYS = {
   USER: 'unitask_user',
+  AUTH_TOKEN: 'unitask_auth_token',
+  REFRESH_TOKEN: 'unitask_refresh_token',
   ACCOUNTS: 'unitask_accounts',
   APPLICATIONS: 'unitask_applications',
   APPLICATION_SUBMISSIONS: 'unitask_application_submissions',

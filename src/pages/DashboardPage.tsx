@@ -6,8 +6,11 @@ import { formatMoney } from '../utils/format';
 import { simulateDelay, toIdString } from '../utils';
 import type { Application, Job } from '../types';
 import { serviceRegistry } from '../services';
+import { hasAuthToken } from '../utils/auth';
+import type { DashboardNotification } from '../services/dashboardService';
+import type { StudentDashboardData, BusinessDashboardData } from '../services/dashboardService';
 
-const { applications: applicationService, jobs: jobService } = serviceRegistry;
+const { applications: applicationService, jobs: jobService, dashboard: dashboardService } = serviceRegistry;
 
 type Period = '7d' | '30d' | 'all';
 
@@ -75,17 +78,69 @@ export default function DashboardPage() {
   const [postedJobs, setPostedJobs] = useState<Job[]>([]);
   const [allApplications, setAllApplications] = useState<Application[]>([]);
   const [jobsData, setJobsData] = useState<Job[]>([]);
+  const [studentDash, setStudentDash] = useState<StudentDashboardData | null>(null);
+  const [businessDash, setBusinessDash] = useState<BusinessDashboardData | null>(null);
+  const [dashNotifications, setDashNotifications] = useState<DashboardNotification[]>([]);
 
   const loadData = useCallback(async () => {
-    if (!user) return { userApps: [], companyJobs: [], allApps: [], jobs: [] };
+    if (!user) return;
     const uid = toIdString(user.id);
+
+    if (hasAuthToken()) {
+      if (user.role === 'student') {
+        const dash = await dashboardService.getStudent(uid);
+        if (dash) {
+          setStudentDash(dash);
+          setBusinessDash(null);
+          setDashNotifications(dash.notifications);
+          const [userApps, jobs] = await Promise.all([
+            applicationService.getByUser(uid),
+            jobService.getAll(),
+          ]);
+          setApps(userApps);
+          setPostedJobs([]);
+          setJobsData(jobs);
+          setAllApplications(userApps);
+          return;
+        }
+      }
+      if (user.role === 'business') {
+        const dash = await dashboardService.getBusiness(uid);
+        if (dash) {
+          setBusinessDash(dash);
+          setStudentDash(null);
+          setDashNotifications(dash.notifications);
+          const companyJobs = await jobService.getByCompanyUser(uid);
+          setPostedJobs(companyJobs);
+          setApps([]);
+          setJobsData(companyJobs);
+          const allApps = await applicationService.getApplicantsForManager(uid);
+          setAllApplications(allApps.map((a) => ({
+            id: a.id,
+            jobId: a.jobId,
+            userId: a.userId,
+            coverLetter: a.coverLetter,
+            status: a.status,
+            appliedAt: a.appliedAt,
+          })));
+          return;
+        }
+      }
+    }
+
+    setStudentDash(null);
+    setBusinessDash(null);
+    setDashNotifications([]);
     const [userApps, companyJobs, allApps, jobs] = await Promise.all([
       user.role === 'student' ? applicationService.getByUser(uid) : Promise.resolve([] as Application[]),
-      user.role === 'business' ? jobService.getByCompany(uid) : Promise.resolve([] as Job[]),
+      user.role === 'business' ? jobService.getByCompanyUser(uid) : Promise.resolve([] as Job[]),
       applicationService.getAll(),
       jobService.getAll(),
     ]);
-    return { userApps, companyJobs, allApps, jobs };
+    setApps(userApps);
+    setPostedJobs(companyJobs);
+    setAllApplications(allApps);
+    setJobsData(jobs);
   }, [user]);
 
   // Redirect
@@ -98,14 +153,7 @@ export default function DashboardPage() {
     if (!user) return;
     let cancelled = false;
     loadData()
-      .then((data) => {
-        if (!cancelled && data) {
-          setApps(data.userApps);
-          setPostedJobs(data.companyJobs);
-          setAllApplications(data.allApps);
-          setJobsData(data.jobs);
-        }
-      })
+      .then(() => {})
       .catch(() => {})
       .finally(() => {
         if (!cancelled) setIsLoading(false);
@@ -132,19 +180,35 @@ export default function DashboardPage() {
   const postedJobIds = new Set(postedJobs.map((j) => j.id));
   const applicationsOnMyJobs = allApplications.filter((a) => postedJobIds.has(a.jobId));
 
-  const stats = user?.role === 'business'
+  const walletBalance = studentDash?.wallet.balance ?? user?.balance ?? 0;
+
+  const stats = user?.role === 'business' && businessDash
     ? {
-        total: filteredPostedJobs.length,
-        accepted: applicationsOnMyJobs.filter((a) => a.status === 'accepted').length,
-        completed: filteredPostedJobs.filter((j) => isExpired(j.deadline)).length,
-        pending: applicationsOnMyJobs.filter((a) => a.status === 'pending').length,
+        total: businessDash.stats.openJobs,
+        accepted: Math.max(0, businessDash.stats.totalApplications - businessDash.stats.pendingApplications),
+        completed: businessDash.stats.completedProjects,
+        pending: businessDash.stats.pendingApplications,
       }
-    : {
-        total: filteredApps.length,
-        accepted: filteredApps.filter((a) => a.status === 'accepted').length,
-        completed: filteredApps.filter((a) => a.status === 'completed').length,
-        pending: filteredApps.filter((a) => a.status === 'pending').length,
-      };
+    : user?.role === 'student' && studentDash
+      ? {
+          total: studentDash.stats.pendingApplications + studentDash.stats.activeApplications + studentDash.stats.completedJobs,
+          accepted: studentDash.stats.activeApplications,
+          completed: studentDash.stats.completedJobs,
+          pending: studentDash.stats.pendingApplications,
+        }
+      : user?.role === 'business'
+        ? {
+            total: filteredPostedJobs.length,
+            accepted: applicationsOnMyJobs.filter((a) => a.status === 'accepted').length,
+            completed: filteredPostedJobs.filter((j) => isExpired(j.deadline)).length,
+            pending: applicationsOnMyJobs.filter((a) => a.status === 'pending').length,
+          }
+        : {
+            total: filteredApps.length,
+            accepted: filteredApps.filter((a) => a.status === 'accepted').length,
+            completed: filteredApps.filter((a) => a.status === 'completed').length,
+            pending: filteredApps.filter((a) => a.status === 'pending').length,
+          };
 
   const handleRefresh = useCallback(() => {
     if (!user) return;
@@ -189,11 +253,30 @@ export default function DashboardPage() {
 
             <div className="dash-wallet">
               <div className="dash-wallet-label">💰 Số dư ví</div>
-              <div className="dash-wallet-amount">{formatMoney(user.balance || 0)}</div>
+              <div className="dash-wallet-amount">{formatMoney(walletBalance)}</div>
               <Link to="/wallet" className="btn btn-primary btn-sm" style={{ width: '100%', justifyContent: 'center', marginTop: 8 }}>
                 {user.role === 'student' ? 'Xem ví →' : 'Nạp tiền Escrow →'}
               </Link>
             </div>
+
+            {studentDash && user.role === 'student' && (
+              <div className="dash-wallet" style={{ marginTop: 12 }}>
+                <div className="dash-wallet-label">📈 Tổng thu nhập</div>
+                <div className="dash-wallet-amount" style={{ fontSize: '1.1rem' }}>
+                  {formatMoney(studentDash.stats.totalEarnings)}
+                </div>
+                <div className="dash-uni">⭐ {studentDash.stats.averageRating.toFixed(1)} đánh giá TB</div>
+              </div>
+            )}
+
+            {businessDash && user.role === 'business' && (
+              <div className="dash-wallet" style={{ marginTop: 12 }}>
+                <div className="dash-wallet-label">💳 Đã chi</div>
+                <div className="dash-wallet-amount" style={{ fontSize: '1.1rem' }}>
+                  {formatMoney(businessDash.stats.totalSpent)}
+                </div>
+              </div>
+            )}
 
             <nav className="dash-nav">
               <Link to="/dashboard" className="dash-nav-item active">📊 Tổng quan</Link>
@@ -202,6 +285,8 @@ export default function DashboardPage() {
                   <Link to="/jobs" className="dash-nav-item">🔍 Tìm việc</Link>
                   <Link to="/my-applications" className="dash-nav-item">📋 Đơn ứng tuyển</Link>
                   <Link to="/wallet" className="dash-nav-item">💰 Ví & Giao dịch</Link>
+                  <Link to="/messages" className="dash-nav-item">💬 Tin nhắn</Link>
+                  <Link to="/notifications" className="dash-nav-item">🔔 Thông báo</Link>
                   <Link to="/profile" className="dash-nav-item">👤 Hồ sơ số</Link>
                 </>
               ) : (
@@ -210,6 +295,8 @@ export default function DashboardPage() {
                   <Link to="/manage-jobs" className="dash-nav-item">📂 Quản lý job</Link>
                   <Link to="/business-automation" className="dash-nav-item">🎯 Trung tâm tăng trưởng</Link>
                   <Link to="/wallet" className="dash-nav-item">💰 Escrow & Thanh toán</Link>
+                  <Link to="/messages" className="dash-nav-item">💬 Tin nhắn</Link>
+                  <Link to="/notifications" className="dash-nav-item">🔔 Thông báo</Link>
                 </>
               )}
               <button className="dash-nav-item" onClick={() => { logout(); navigate('/'); }}>
@@ -277,7 +364,9 @@ export default function DashboardPage() {
                   <Link to={user.role === 'student' ? '/my-applications' : '/manage-jobs'} className="btn btn-ghost btn-sm">Xem tất cả →</Link>
                 </div>
 
-                {(user.role === 'business' ? filteredPostedJobs.length === 0 : filteredApps.length === 0) ? (
+                {(user.role === 'business'
+                  ? (businessDash ? businessDash.openJobs.length === 0 && businessDash.recentApplications.length === 0 : filteredPostedJobs.length === 0)
+                  : (studentDash ? studentDash.recentJobs.length === 0 : filteredApps.length === 0)) ? (
                   <div className="dash-empty">
                     <p>
                       {period !== 'all'
@@ -298,42 +387,96 @@ export default function DashboardPage() {
                   </div>
                 ) : (
                   <div className="dash-apps-list">
-                    {user.role === 'business'
-                      ? filteredPostedJobs.map((job) => {
-                          const appCount = applicationsOnMyJobs.filter((a) => a.jobId === job.id).length;
-                          return (
+                    {user.role === 'business' && businessDash
+                      ? (
+                        <>
+                          {businessDash.recentApplications.map((app) => (
+                            <Link to="/manage-jobs" key={app.id} className="dash-app-row">
+                              <div className="jc-logo" style={{ background: 'linear-gradient(135deg,#00D4AA,#00A882)', width: 40, height: 40, fontSize: 14, flexShrink: 0 }}>
+                                {app.studentName.charAt(0)}
+                              </div>
+                              <div className="dash-app-info">
+                                <div className="dash-app-title">{app.studentName}</div>
+                                <div className="dash-app-company">{app.jobTitle}</div>
+                              </div>
+                              <span className="dash-status st-pending">{app.status}</span>
+                            </Link>
+                          ))}
+                          {businessDash.openJobs.map((job) => (
                             <Link to="/manage-jobs" key={job.id} className="dash-app-row">
-                              <div className="jc-logo" style={{ background: job.logoGradient, width: 40, height: 40, fontSize: 14, flexShrink: 0 }}>
-                                {job.logoText}
-                              </div>
                               <div className="dash-app-info">
                                 <div className="dash-app-title">{job.title}</div>
-                                <div className="dash-app-company">{job.location} · Đăng: {job.postedAt}</div>
+                                <div className="dash-app-company">{job.spotsFilled ?? 0}/{job.spotsTotal ?? 0} slot · {job.status}</div>
                               </div>
-                              <span className="dash-status st-pending">{appCount} ứng viên</span>
                             </Link>
-                          );
-                        })
-                      : filteredApps.map((app) => {
-                          const job = jobsData.find((j) => j.id === app.jobId);
-                          if (!job) return null;
-                          const st = STATUS_MAP[app.status] || STATUS_MAP.pending;
-                          return (
-                            <Link to={`/jobs/${job.id}`} key={app.id} className="dash-app-row">
-                              <div className="jc-logo" style={{ background: job.logoGradient, width: 40, height: 40, fontSize: 14, flexShrink: 0 }}>
-                                {job.logoText}
-                              </div>
+                          ))}
+                        </>
+                      )
+                      : user.role === 'business'
+                        ? filteredPostedJobs.map((job) => {
+                            const appCount = applicationsOnMyJobs.filter((a) => a.jobId === job.id).length;
+                            return (
+                              <Link to="/manage-jobs" key={job.id} className="dash-app-row">
+                                <div className="jc-logo" style={{ background: job.logoGradient, width: 40, height: 40, fontSize: 14, flexShrink: 0 }}>
+                                  {job.logoText}
+                                </div>
+                                <div className="dash-app-info">
+                                  <div className="dash-app-title">{job.title}</div>
+                                  <div className="dash-app-company">{job.location} · Đăng: {job.postedAt}</div>
+                                </div>
+                                <span className="dash-status st-pending">{appCount} ứng viên</span>
+                              </Link>
+                            );
+                          })
+                        : studentDash
+                          ? studentDash.recentJobs.map((job) => (
+                            <Link to={`/jobs/${job.id}`} key={job.id} className="dash-app-row">
                               <div className="dash-app-info">
                                 <div className="dash-app-title">{job.title}</div>
-                                <div className="dash-app-company">{job.company} · {app.appliedAt}</div>
+                                <div className="dash-app-company">{job.companyName ?? ''} · {job.status}</div>
                               </div>
-                              <span className={`dash-status ${st.cls}`}>{st.label}</span>
                             </Link>
-                          );
-                        })}
+                          ))
+                          : filteredApps.map((app) => {
+                              const job = jobsData.find((j) => j.id === app.jobId);
+                              if (!job) return null;
+                              const st = STATUS_MAP[app.status] || STATUS_MAP.pending;
+                              return (
+                                <Link to={`/jobs/${job.id}`} key={app.id} className="dash-app-row">
+                                  <div className="jc-logo" style={{ background: job.logoGradient, width: 40, height: 40, fontSize: 14, flexShrink: 0 }}>
+                                    {job.logoText}
+                                  </div>
+                                  <div className="dash-app-info">
+                                    <div className="dash-app-title">{job.title}</div>
+                                    <div className="dash-app-company">{job.company} · {app.appliedAt}</div>
+                                  </div>
+                                  <span className={`dash-status ${st.cls}`}>{st.label}</span>
+                                </Link>
+                              );
+                            })}
                   </div>
                 )}
               </div>
+
+              {dashNotifications.length > 0 && (
+                <div className="dash-section fade-up">
+                  <div className="dash-section-header">
+                    <h2>🔔 Thông báo gần đây</h2>
+                    <Link to="/notifications" className="btn btn-ghost btn-sm">Xem tất cả →</Link>
+                  </div>
+                  <div className="dash-apps-list">
+                    {dashNotifications.slice(0, 5).map((n) => (
+                      <Link to="/notifications" key={n.id} className="dash-app-row">
+                        <div className="dash-app-info">
+                          <div className="dash-app-title">{n.title ?? 'Thông báo'}</div>
+                          <div className="dash-app-company">{n.message}</div>
+                        </div>
+                        {!n.isRead && <span className="dash-status st-pending">Mới</span>}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* recommended */}
               {user.role === 'student' && (

@@ -1,10 +1,12 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { applicationsData, jobsData } from '../data/mockData';
 import { STORAGE_KEYS } from '../constants';
 import { formatMoney } from '../utils/format';
+import { paymentService } from '../services/paymentService';
 import type { Transaction, User } from '../types';
+import type { Payment } from '../types/payment';
 
 interface AppRecord {
   id: string;
@@ -37,6 +39,13 @@ function toDateKey(date: string): string {
 export default function AdminFinancePage() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [apiPayments, setApiPayments] = useState<Payment[]>([]);
+
+  useEffect(() => {
+    paymentService.list({ page: 1 })
+      .then(setApiPayments)
+      .catch(() => setApiPayments([]));
+  }, []);
 
   useEffect(() => {
     if (!user) navigate('/login');
@@ -122,6 +131,12 @@ export default function AdminFinancePage() {
   const commissionRevenue = Math.round(completedReleases * PLATFORM_TAKE_RATE);
   const escrowFeeRevenue = Math.round(completedEscrows * PLATFORM_ESCROW_FEE);
   const totalRevenue = commissionRevenue + escrowFeeRevenue;
+
+  const apiPaymentTotals = useMemo(() => {
+    const released = apiPayments.filter((p) => p.status === 'released').reduce((s, p) => s + p.amount, 0);
+    const pending = apiPayments.filter((p) => p.status === 'pending').reduce((s, p) => s + p.amount, 0);
+    return { released, pending, count: apiPayments.length };
+  }, [apiPayments]);
 
   const dailyRevenue = useMemo<DailyRevenuePoint[]>(() => {
     const map = new Map<string, number>();
@@ -271,7 +286,32 @@ export default function AdminFinancePage() {
               <li>Tổng người dùng hệ thống: <strong>{accounts.length}</strong></li>
               <li>Giao dịch completed: <strong>{completedTxs.length}</strong></li>
             </ul>
-            <p className="admin-note">Lưu ý: Dashboard đang dùng dữ liệu localStorage của môi trường demo hiện tại.</p>
+            <p className="admin-note">Local demo + API payments (GET /api/payments).</p>
+          </div>
+
+          <div className="admin-panel fade-up visible">
+            <h2>Thanh toán từ API ({apiPaymentTotals.count})</h2>
+            <ul className="admin-metrics-list">
+              <li>Đã giải phóng (released): <strong>{formatMoney(apiPaymentTotals.released)}</strong></li>
+              <li>Đang chờ (pending): <strong>{formatMoney(apiPaymentTotals.pending)}</strong></li>
+            </ul>
+            {apiPayments.length === 0 ? (
+              <p className="admin-note">Chưa có payment trên server hoặc API chưa chạy.</p>
+            ) : (
+              <div className="admin-revenue-list" style={{ marginTop: 12 }}>
+                {apiPayments.slice(0, 10).map((p) => (
+                  <div key={p.id} className="admin-revenue-row">
+                    <div>
+                      <div className="admin-revenue-name">{p.status} · {p.paymentMethod ?? 'escrow'}</div>
+                      <div className="admin-revenue-note">
+                        App {p.jobApplicationId.slice(0, 8)}… · {p.createdAt?.slice(0, 10) ?? '—'}
+                      </div>
+                    </div>
+                    <div className="admin-revenue-value">{formatMoney(p.amount)}</div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

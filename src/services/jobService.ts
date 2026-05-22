@@ -1,6 +1,19 @@
 import type { Job } from '../types';
+import { STORAGE_KEYS } from '../constants';
 import { jobsData } from '../data/siteData';
-import { apiGet, apiPost, requestWithFallback } from './apiService';
+import { apiGet, apiPost, apiPut, requestWithFallback } from './apiService';
+import { unwrapPaged, type PagedResult } from '../utils/paged';
+
+function getCurrentUserId(): string | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.USER);
+    if (!raw) return null;
+    const user = JSON.parse(raw) as { id?: string | number };
+    return user.id != null ? String(user.id) : null;
+  } catch {
+    return null;
+  }
+}
 
 type ApiJobListItem = {
   id: string;
@@ -71,12 +84,29 @@ type ApiJobDetailsResponse = {
   createdAt?: string | null;
 };
 
-type ApiJobListPage = {
-  total: number;
-  page: number;
-  limit: number;
-  data: ApiJobListItem[];
+type ApiJobListPage = PagedResult<ApiJobListItem>;
+
+type BusinessProfileRef = { id: string; userId: string };
+
+export type JobListFilters = {
+  status?: string;
+  categoryId?: string;
+  search?: string;
+  isRemote?: boolean;
+  page?: number;
+  limit?: number;
 };
+
+function buildJobsQuery(filters?: JobListFilters): string {
+  const params = new URLSearchParams();
+  params.set('page', String(filters?.page ?? 1));
+  params.set('limit', String(filters?.limit ?? 1000));
+  if (filters?.status) params.set('status', filters.status);
+  if (filters?.categoryId) params.set('categoryId', filters.categoryId);
+  if (filters?.search) params.set('search', filters.search);
+  if (filters?.isRemote != null) params.set('isRemote', String(filters.isRemote));
+  return params.toString();
+}
 
 function normalizeJob(raw: ApiJobListItem): Job {
   const spotsTotal = raw.spotsTotal ?? 0;
@@ -151,19 +181,22 @@ function normalizeJobDetails(raw: ApiJobDetailsResponse): Job {
   };
 }
 
+async function fetchJobPage(filters?: JobListFilters): Promise<ApiJobListItem[]> {
+  const page = await apiGet<ApiJobListPage>(`/api/jobs?${buildJobsQuery(filters)}`);
+  return unwrapPaged(page);
+}
+
 export const jobService = {
-  /** Get all jobs (seeded + custom from localStorage) */
-  async getAll(): Promise<Job[]> {
+  async getAll(filters?: JobListFilters): Promise<Job[]> {
     return requestWithFallback(
       async () => {
-        const page = await apiGet<ApiJobListPage>('/api/jobs?page=1&limit=1000');
-        return page.data.map(normalizeJob);
+        const items = await fetchJobPage({ ...filters, status: filters?.status ?? 'open' });
+        return items.map(normalizeJob);
       },
       jobsData,
     );
   },
 
-  /** Get a single job by id */
   async getById(id: string | number): Promise<Job | undefined> {
     try {
       const job = await apiGet<ApiJobDetailsResponse>(`/api/jobs/${id}`);
@@ -173,49 +206,72 @@ export const jobService = {
     }
   },
 
-  /** Synchronous version for immediate access */
   getAllSync(): Job[] {
     return [];
   },
 
-  /** Get jobs by company id (numeric or external code e.g. biz-1) */
+  /** Jobs owned by the logged-in business user (resolves profile id from user id). */
+  async getByCompanyUser(userId?: string): Promise<Job[]> {
+    const uid = userId ?? getCurrentUserId();
+    if (!uid) return [];
+
+    try {
+      const profile = await apiGet<BusinessProfileRef>(`/api/businesses/${uid}`);
+      const items = await fetchJobPage({ limit: 1000 });
+      return items.map(normalizeJob).filter((job) => String(job.companyId) === String(profile.id));
+    } catch {
+      return jobsData.filter((j) => String(j.companyId) === String(uid));
+    }
+  },
+
+  /** @deprecated Use getByCompanyUser — kept for callers passing business profile id */
   async getByCompany(companyId: string): Promise<Job[]> {
     return requestWithFallback(
       async () => {
-        const page = await apiGet<ApiJobListPage>('/api/jobs?page=1&limit=1000');
-        return page.data.map(normalizeJob).filter((job) => String(job.companyId) === String(companyId));
+        const items = await fetchJobPage({ limit: 1000 });
+        return items.map(normalizeJob).filter((job) => String(job.companyId) === String(companyId));
       },
       jobsData.filter((j) => String(j.companyId) === String(companyId)),
     );
   },
 
-  /** Create a new job */
-  async create(job: Omit<Job, 'id'>): Promise<Job> {
+  async create(job: Omit<Job, 'id'> & { categoryId?: string | null }): Promise<Job> {
     const created = await apiPost<ApiJobListItem>('/api/jobs', {
       title: job.title,
       description: job.description,
-      companyName: job.company,
-      companyCode: String(job.companyId),
-      companyUserId: String(job.companyId),
-      payMin: job.payMin,
-      payMax: job.payMax,
-      pay: job.pay,
-      deadline: job.deadline,
-      location: job.location,
-      category: job.category,
-      duration: job.duration,
-      logoText: job.logoText,
-      logoGradient: job.logoGradient,
-      verified: job.verified,
-      spotsLeft: job.spotsLeft,
+      categoryId: job.categoryId ?? null,
+      tags: job.tags.map((tag) => tag.label),
+      salaryMin: job.payMin,
+      salaryMax: job.payMax,
+      currency: job.pay.includes('₫') ? 'VND' : undefined,
+      durationType: job.duration || undefined,
+      durationDays: undefined,
+      requiredSkills: job.skills,
+      experienceLevel: undefined,
       spotsTotal: job.spotsTotal,
-      featured: job.featured ?? false,
-      postedAt: job.postedAt,
-      tags: job.tags,
-      skills: job.skills,
-      requirements: job.requirements,
-      deliverables: job.deliverables,
+      location: job.location,
+      isRemote: job.location.toLowerCase().includes('remote') ? true : undefined,
+      deadline: job.deadline ? new Date(job.deadline).toISOString() : undefined,
     });
     return normalizeJob(created);
+  },
+
+  async publish(jobId: string | number): Promise<void> {
+    await apiPut(`/api/jobs/${jobId}/publish`, {});
+  },
+
+  async update(jobId: string | number, payload: Partial<Job> & { categoryId?: string | null }): Promise<void> {
+    await apiPut(`/api/jobs/${jobId}`, {
+      title: payload.title,
+      description: payload.description,
+      categoryId: payload.categoryId,
+      status: undefined,
+      tags: payload.tags?.map((t) => t.label),
+      salaryMin: payload.payMin,
+      salaryMax: payload.payMax,
+      requiredSkills: payload.skills,
+      location: payload.location,
+      spotsTotal: payload.spotsTotal,
+    });
   },
 };

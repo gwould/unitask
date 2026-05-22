@@ -17,6 +17,7 @@ import ContactPage from './pages/ContactPage';
 import BusinessAutomationPage from './pages/BusinessAutomationPage';
 import AutomationRulesPage from './pages/AutomationRulesPage';
 import NotificationHubPage from './pages/NotificationHubPage.tsx';
+import MessagesPage from './pages/MessagesPage.tsx';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 
@@ -38,6 +39,8 @@ export default function App() {
         <Route path="/business-automation" element={<BusinessAutomationPage />} />
         <Route path="/automation-rules" element={<AutomationRulesPage />} />
         <Route path="/notifications" element={<NotificationHubPage />} />
+        <Route path="/messages" element={<MessagesPage />} />
+        <Route path="/messages/:conversationId" element={<MessagesPage />} />
         <Route path="/admin-finance" element={<AdminFinancePage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />

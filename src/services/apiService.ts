@@ -1,6 +1,10 @@
-const DEFAULT_API_BASE = 'http://localhost:5244';
+import { STORAGE_KEYS } from '../constants';
 
-export const API_BASE = (import.meta as { env?: Record<string, string> }).env?.VITE_API_URL || DEFAULT_API_BASE;
+/** Empty = same-origin (Vite dev proxy). Set VITE_API_URL for direct API host. */
+const DEFAULT_API_BASE = '';
+
+export const API_BASE =
+  (import.meta as { env?: Record<string, string> }).env?.VITE_API_URL ?? DEFAULT_API_BASE;
 
 type ApiBody = unknown;
 
@@ -25,21 +29,42 @@ async function parseResponse<T>(res: Response): Promise<T> {
   }
 }
 
+async function parseErrorMessage(res: Response): Promise<string> {
+  try {
+    const body = await res.json() as { message?: string; title?: string };
+    return body.message || body.title || `API error ${res.status}`;
+  } catch {
+    return `API error ${res.status}`;
+  }
+}
+
 export async function request<T>(path: string, options: ApiRequestOptions = {}): Promise<T> {
   const { body, headers, ...rest } = options;
+  const token = (() => {
+    try {
+      return localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+    } catch {
+      return null;
+    }
+  })();
+
   const response = await fetch(`${API_BASE}${path}`, {
     ...rest,
     headers: body === undefined
-      ? headers
+      ? {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...(headers || {}),
+        }
       : {
           'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
           ...(headers || {}),
         },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
 
   if (!response.ok) {
-    throw new Error(`API error ${response.status}`);
+    throw new Error(await parseErrorMessage(response));
   }
 
   return parseResponse<T>(response);

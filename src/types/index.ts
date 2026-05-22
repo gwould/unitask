@@ -6,3 +6,5 @@ export * from './careerAssistant';
 export * from './site';
 export * from './api';
 export * from './wallet';
+export * from './messaging';
+export * from './payment';

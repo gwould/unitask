@@ -60,6 +60,7 @@ export default function Navbar() {
             <Link to="/profile" onClick={closeMobile}>👤 Hồ sơ</Link>
             <Link to="/wallet" onClick={closeMobile}>💰 Ví</Link>
             <Link to="/notifications" onClick={closeMobile}>🔔 Thông báo</Link>
+            <Link to="/messages" onClick={closeMobile}>💬 Tin nhắn</Link>
             {user.role === 'student' && (
               <Link to="/my-applications" onClick={closeMobile}>📋 Đơn ứng tuyển</Link>
             )}
@@ -157,6 +158,7 @@ export default function Navbar() {
                     <Link to="/profile" className="nav-dd-item">👤 Hồ sơ</Link>
                     <Link to="/wallet" className="nav-dd-item">💰 Ví</Link>
                     <Link to="/notifications" className="nav-dd-item">🔔 Thông báo</Link>
+                    <Link to="/messages" className="nav-dd-item">💬 Tin nhắn</Link>
                     {user.role === 'student' && (
                       <Link to="/my-applications" className="nav-dd-item">📋 Đơn ứng tuyển</Link>
                     )}

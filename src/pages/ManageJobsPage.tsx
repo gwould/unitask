@@ -9,12 +9,14 @@ import { BulkActions } from '../components/BulkActions';
 import { AutomationSuggestions } from '../components/AutomationSuggestions';
 import { createNotification } from '../services/automationEngine';
 import { serviceRegistry } from '../services';
+import { paymentService } from '../services/paymentService';
+import { hasAuthToken } from '../utils/auth';
 
 /* ─── TYPES ───────────────────────────────────────── */
 
 type ApplicantStatus = AppStatus;
 
-const { applications: applicationService, jobs: jobService, usersApi: userApiService, buildUsersByDbId } = serviceRegistry;
+const { applications: applicationService, jobs: jobService } = serviceRegistry;
 
 
 /* ─── CONSTANTS ───────────────────────────────────── */
@@ -268,33 +270,17 @@ export default function ManageJobsPage() {
     let cancelled = false;
     setIsLoading(true);
     Promise.all([
-      jobService.getAll(),
-      applicationService.getAll(),
-      userApiService.getAllRaw(),
+      jobService.getByCompanyUser(String(user.id)),
+      applicationService.getApplicantsForManager(String(user.id)),
     ])
-      .then(([allJobs, allApps, rawUsers]) => {
+      .then(([allJobs, allApplicants]) => {
         if (cancelled) return;
         setJobs(allJobs);
         const submissionMap = loadSubmissionMap();
-        const usersByDbId = buildUsersByDbId(rawUsers);
-        const mappedApplicants: Applicant[] = allApps.map((app) => {
-          const dbId = typeof app.userId === 'number' ? app.userId : Number(app.userId);
-          const apUser = Number.isFinite(dbId) ? usersByDbId.get(dbId) : undefined;
-          return {
-            id: app.id,
-            appId: app.id,
-            jobId: app.jobId,
-            userId: app.userId,
-            coverLetter: app.coverLetter,
-            status: app.status,
-            appliedAt: app.appliedAt,
-            name: apUser?.name || 'Ứng viên',
-            university: apUser?.university,
-            skills: apUser?.skills,
-            rating: apUser?.rating,
-            submission: submissionMap[String(app.id)],
-          };
-        });
+        const mappedApplicants: Applicant[] = allApplicants.map((app) => ({
+          ...app,
+          submission: submissionMap[String(app.id)],
+        }));
         setApplicants(mappedApplicants);
         setIsLoading(false);
       })
@@ -312,10 +298,7 @@ export default function ManageJobsPage() {
   }, [toast]);
 
   // Computed
-  const myJobs = useMemo(() => {
-    if (!user) return [];
-    return jobs.filter((j) => String(j.companyId) === String(user.id));
-  }, [jobs, user]);
+  const myJobs = useMemo(() => jobs, [jobs]);
 
   const selectedJob = selectedJobId !== null
     ? myJobs.find((j) => j.id === selectedJobId) || null
@@ -564,6 +547,23 @@ export default function ManageJobsPage() {
     }
 
     const payout = selectedJob.payMax || selectedJob.payMin || 0;
+    const applicationId = String(targetApplicant.appId ?? targetApplicant.id);
+
+    if (hasAuthToken()) {
+      try {
+        const payment = await paymentService.create({
+          jobApplicationId: applicationId,
+          amount: payout,
+          paymentMethod: 'escrow',
+        });
+        await paymentService.release(payment.id);
+      } catch {
+        setActioningId(null);
+        showToast('Không thể xử lý thanh toán qua API. Vui lòng thử lại.', 'error');
+        return;
+      }
+    }
+
     const date = new Date().toISOString().slice(0, 10);
     const businessTx: Transaction = {
       id: `tx-release-${Date.now()}`,
