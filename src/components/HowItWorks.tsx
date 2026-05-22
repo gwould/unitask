@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import type { HowStep } from '../types';
 import { observeFadeUpElements } from '../hooks/useScroll';
-import { siteService } from '../services/siteService';
+import { serviceRegistry } from '../services';
+
+const { site: siteService } = serviceRegistry;
 
 function StepCard({ step }: { step: HowStep }) {
   return (

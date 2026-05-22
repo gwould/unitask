@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { aiMatchingService, type MatchedJob } from '../services/aiMatchingService';
+import { serviceRegistry, type MatchedJob } from '../services';
+
+const { aiMatching: aiMatchingService } = serviceRegistry;
 
 interface AIMatchingPanelProps {
   title?: string;

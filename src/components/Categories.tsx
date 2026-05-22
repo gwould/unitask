@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { observeFadeUpElements } from '../hooks/useScroll';
-import { siteService } from '../services/siteService';
+import { serviceRegistry } from '../services';
 import type { Category } from '../types';
+
+const { site: siteService } = serviceRegistry;
 
 export default function Categories() {
   const [categories, setCategories] = useState<Category[]>([]);

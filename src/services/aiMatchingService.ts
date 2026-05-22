@@ -1,15 +1,34 @@
-import { apiPost } from './apiClient';
 import { jobService } from './jobService';
 import type { Job, User } from '../types';
+import { apiRepository } from './apiRepository';
 
 export type MatchedJob = Job & {
   matchScore: number;
   matchReasons: string[];
 };
 
-type BackendMatchedJob = Omit<Job, 'company'> & {
-  company: string;
+type BackendMatchedJob = {
+  id: string;
   companyId: string;
+  company: string;
+  title: string;
+  logoText: string;
+  logoGradient: string;
+  verified: boolean;
+  location: string;
+  tags: Array<{ label: string; variant: 'p' | 't' | 'a' | 'g' }>;
+  spotsLeft: number;
+  spotsTotal: number;
+  pay: string;
+  payMin?: number | null;
+  payMax?: number | null;
+  deadline: string;
+  category: string;
+  featured?: boolean | null;
+  description: string;
+  requirements: string[];
+  duration: string;
+  postedAt: string;
   matchScore: number;
   matchReasons: string[];
 };
@@ -125,8 +144,14 @@ function scoreLocally(job: Job, request: MatchRequest): MatchedJob {
 function normalizeBackendJob(job: BackendMatchedJob): MatchedJob {
   return {
     ...job,
+    id: job.id,
     company: job.company,
     companyId: job.companyId,
+    skills: job.requirements ?? [],
+    deliverables: [],
+    payMin: job.payMin ?? 0,
+    payMax: job.payMax ?? 0,
+    featured: job.featured ?? false,
     matchScore: job.matchScore,
     matchReasons: job.matchReasons || [],
   };
@@ -137,7 +162,7 @@ export const aiMatchingService = {
     const request = buildRequest(user, query, topK);
 
     try {
-      const response = await apiPost<BackendMatchResponse>('/api/matching/recommendations', request);
+      const response = await apiRepository.insights.recommendations(request) as BackendMatchResponse;
       return response.matches.map(normalizeBackendJob);
     } catch {
       const jobs = await jobService.getAll();

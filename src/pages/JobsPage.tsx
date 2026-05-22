@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { jobService } from '../services/jobService';
 import type { Job } from '../types';
-import { siteService } from '../services/siteService';
 import type { Category } from '../types';
 import AIMatchingPanel from '../components/AIMatchingPanel';
 import { useAuth } from '../contexts/AuthContext';
-import { aiMatchingService } from '../services/aiMatchingService';
+import { serviceRegistry } from '../services';
+
+const { jobs: jobService, site: siteService, aiMatching: aiMatchingService } = serviceRegistry;
 
 export default function JobsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -21,7 +21,7 @@ export default function JobsPage() {
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const { user } = useAuth();
-  const [matchMap, setMatchMap] = useState<Record<number, number>>({});
+  const [matchMap, setMatchMap] = useState<Record<string, number>>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -44,7 +44,7 @@ export default function JobsPage() {
     aiMatchingService.getRecommendations(user, query.trim() || undefined, 50)
       .then((matches) => {
         if (cancelled) return;
-        const map: Record<number, number> = {};
+        const map: Record<string, number> = {};
         matches.forEach((m) => { map[m.id] = m.matchScore; });
         setMatchMap(map);
       })

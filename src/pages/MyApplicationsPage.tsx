@@ -5,9 +5,10 @@ import type { Application, EnrichedApplication, Job, TaskSubmission } from '../t
 import { APP_STATUS_MAP, STORAGE_KEYS } from '../constants';
 import type { Notification } from '../types/automation';
 import { ConfirmModal, RatingModal } from '../components/ui';
-import { applicationService } from '../services/applicationService';
-import { jobService } from '../services/jobService';
+import { serviceRegistry } from '../services';
 import { simulateDelay } from '../utils/async';
+
+const { applications: applicationService, jobs: jobService } = serviceRegistry;
 
 /* ─── LOCAL TYPES ─────────────────────────────────── */
 

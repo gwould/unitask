@@ -2,9 +2,10 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { createNotification } from '../services/automationEngine';
-import { applicationService } from '../services/applicationService';
-import { jobService } from '../services/jobService';
+import { serviceRegistry } from '../services';
 import type { Job } from '../types';
+
+const { applications: applicationService, jobs: jobService } = serviceRegistry;
 
 export default function JobDetailPage() {
   const { id } = useParams();
@@ -27,7 +28,7 @@ export default function JobDetailPage() {
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
-    jobService.getById(Number(id))
+    jobService.getById(id)
       .then((data) => {
         if (!cancelled) {
           setJob(data ?? null);

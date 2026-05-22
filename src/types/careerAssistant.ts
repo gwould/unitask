@@ -8,7 +8,7 @@ export interface CareerChatMessage {
 }
 
 export interface CareerJobCard {
-  id: number;
+  id: number | string;
   title: string;
   company: string;
   location: string;

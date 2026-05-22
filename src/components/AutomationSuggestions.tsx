@@ -1,6 +1,10 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Applicant } from '../types/application';
+import { useAuth } from '../contexts/AuthContext';
+import { serviceRegistry, type AutomationSuggestion } from '../services';
+
+const { insights: insightsService } = serviceRegistry;
 
 interface AutomationSuggestionsProps {
   applicants: Applicant[];
@@ -8,16 +12,42 @@ interface AutomationSuggestionsProps {
 }
 
 export function AutomationSuggestions({ applicants }: AutomationSuggestionsProps) {
+  const { user } = useAuth();
+  const [apiSuggestions, setApiSuggestions] = useState<AutomationSuggestion[] | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!user) {
+      setApiSuggestions(null);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    insightsService.getAutomationSuggestions(user.id)
+      .then((response) => {
+        if (!cancelled) {
+          setApiSuggestions(response.suggestions);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setApiSuggestions(null);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
   const suggestions = useMemo(() => {
-    const result: Array<{
-      id: string;
-      icon: string;
-      title: string;
-      description: string;
-      benefit: string;
-      action: string;
-      actionLink?: string;
-    }> = [];
+    if (apiSuggestions && apiSuggestions.length > 0) {
+      return apiSuggestions;
+    }
+
+    const result: AutomationSuggestion[] = [];
 
     // Calculate stats
     const pending = applicants.filter(a => a.status === 'pending').length;
@@ -37,6 +67,7 @@ export function AutomationSuggestions({ applicants }: AutomationSuggestionsProps
         benefit: 'Tiết kiệm thời gian, xử lý nhanh các ứng viên tốt',
         action: 'Setup auto-accept rule',
         actionLink: '/automation-rules',
+        priority: 'high',
       });
     }
 
@@ -50,6 +81,7 @@ export function AutomationSuggestions({ applicants }: AutomationSuggestionsProps
         benefit: 'Loại bỏ tự động những ứng viên không phù hợp',
         action: 'Setup auto-reject rule',
         actionLink: '/automation-rules',
+        priority: 'normal',
       });
     }
 
@@ -62,6 +94,7 @@ export function AutomationSuggestions({ applicants }: AutomationSuggestionsProps
         description: `${pending} ứng viên đang chờ xử lý`,
         benefit: 'Duyệt một lúc nhiều ứng viên thay vì từng cái một',
         action: 'Sử dụng bulk actions ở trang này',
+        priority: 'high',
       });
     }
 
@@ -75,6 +108,7 @@ export function AutomationSuggestions({ applicants }: AutomationSuggestionsProps
         benefit: 'Giữ liên lạc tự động, nâng cao trải nghiệm ứng viên',
         action: 'Setup auto-notify rule',
         actionLink: '/automation-rules',
+        priority: 'normal',
       });
     }
 
@@ -88,11 +122,12 @@ export function AutomationSuggestions({ applicants }: AutomationSuggestionsProps
         benefit: 'Tỷ lệ hoàn thành cao, bạn có thể tăng giá hoặc quy mô',
         action: 'Xem Business Automation',
         actionLink: '/business-automation',
+        priority: 'low',
       });
     }
 
     return result;
-  }, [applicants]);
+  }, [applicants, apiSuggestions]);
 
   if (suggestions.length === 0) {
     return null;

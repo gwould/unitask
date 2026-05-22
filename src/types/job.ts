@@ -4,7 +4,7 @@ export interface JobTag {
 }
 
 export interface Job {
-  id: number;
+  id: number | string;
   logoText: string;
   logoGradient: string;
   title: string;

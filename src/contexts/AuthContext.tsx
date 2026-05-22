@@ -1,8 +1,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { User, UserRole, RegisterData } from '../types';
 import { STORAGE_KEYS } from '../constants';
-import { apiPost } from '../services/apiClient';
-import { normalizeUser, type ApiUser } from '../services/userApiService';
+import { apiPost, normalizeUser, type ApiUser } from '../services';
 
 // Re-export types for consumers that import from AuthContext
 export type { User, UserRole };

@@ -8,13 +8,13 @@ import { formatMoney } from '../utils/format';
 import { BulkActions } from '../components/BulkActions';
 import { AutomationSuggestions } from '../components/AutomationSuggestions';
 import { createNotification } from '../services/automationEngine';
-import { applicationService } from '../services/applicationService';
-import { jobService } from '../services/jobService';
-import { buildUsersByDbId, userApiService } from '../services/userApiService';
+import { serviceRegistry } from '../services';
 
 /* ─── TYPES ───────────────────────────────────────── */
 
 type ApplicantStatus = AppStatus;
+
+const { applications: applicationService, jobs: jobService, usersApi: userApiService, buildUsersByDbId } = serviceRegistry;
 
 
 /* ─── CONSTANTS ───────────────────────────────────── */
@@ -244,7 +244,7 @@ export default function ManageJobsPage() {
   const navigate = useNavigate();
 
   // States
-  const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
+  const [selectedJobId, setSelectedJobId] = useState<number | string | null>(null);
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);

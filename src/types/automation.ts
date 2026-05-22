@@ -44,7 +44,7 @@ export interface Notification {
   title: string;
   message: string;
   type: 'job_match' | 'application_status' | 'submission_request' | 'approval' | 'payment' | 'system' | 'reminder';
-  relatedJobId?: number;
+  relatedJobId?: number | string;
   relatedApplicationId?: string;
   isRead: boolean;
   createdAt: string;

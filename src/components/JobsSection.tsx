@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Job } from '../types';
 import { observeFadeUpElements } from '../hooks/useScroll';
-import { jobService } from '../services/jobService';
+import { serviceRegistry } from '../services';
+
+const { jobs: jobService } = serviceRegistry;
 
 const TABS = [
   { label: 'Tất cả', cat: 'all' },

@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { careerAssistantService } from '../services/careerAssistantService';
+import { serviceRegistry } from '../services';
 import type { CareerChatMessage, CareerJobCard } from '../types/careerAssistant';
+
+const { careerAssistant: careerAssistantService } = serviceRegistry;
 
 const WELCOME: CareerChatMessage = {
   role: 'assistant',

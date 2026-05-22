@@ -1,6 +1,6 @@
 import type { CareerChatResponse, CareerUserContext } from '../types/careerAssistant';
 import type { User } from '../types';
-import { apiPost } from './apiClient';
+import { apiRepository } from './apiRepository';
 
 export function buildUserContext(user: User | null): CareerUserContext | undefined {
   if (!user) return undefined;
@@ -21,11 +21,24 @@ export const careerAssistantService = {
     history: { role: 'user' | 'assistant'; content: string }[],
     topK = 5,
   ): Promise<CareerChatResponse> {
-    return apiPost<CareerChatResponse>('/api/career-assistant/chat', {
+    const response = await apiRepository.insights.careerChat({
       message,
       user: buildUserContext(user),
       history,
       topK,
     });
+
+    return {
+      ...response,
+      jobs: response.jobs.map((job) => ({
+        ...job,
+        id: job.id,
+        logoText: job.logoText,
+        logoGradient: job.logoGradient,
+        verified: job.verified,
+        matchScore: job.matchScore,
+        matchReasons: job.matchReasons || [],
+      })),
+    };
   },
 };

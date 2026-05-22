@@ -5,8 +5,9 @@ import { APP_STATUS_MAP } from '../constants';
 import { formatMoney } from '../utils/format';
 import { simulateDelay, toIdString } from '../utils';
 import type { Application, Job } from '../types';
-import { applicationService } from '../services/applicationService';
-import { jobService } from '../services/jobService';
+import { serviceRegistry } from '../services';
+
+const { applications: applicationService, jobs: jobService } = serviceRegistry;
 
 type Period = '7d' | '30d' | 'all';
 

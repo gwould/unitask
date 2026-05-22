@@ -1,17 +1,7 @@
 import type { User } from '../types';
-import { apiGet } from './apiClient';
+import { apiRepository, type ApiUser } from './apiRepository';
 
-export type ApiUser = {
-  id: number;
-  externalCode?: string | null;
-  fullName: string;
-  email: string;
-  role: string;
-  companyName?: string | null;
-  university?: string | null;
-  phone?: string | null;
-  major?: string | null;
-};
+export type { ApiUser };
 
 export function normalizeUser(user: ApiUser): User {
   return {
@@ -38,11 +28,11 @@ export function buildUsersByDbId(users: ApiUser[]): Map<number, User> {
 
 export const userApiService = {
   async getAll(): Promise<User[]> {
-    const users = await apiGet<ApiUser[]>('/api/users');
+    const users = await apiRepository.users.list();
     return users.map(normalizeUser);
   },
 
   async getAllRaw(): Promise<ApiUser[]> {
-    return apiGet<ApiUser[]>('/api/users');
+    return apiRepository.users.list();
   },
 };

@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { observeFadeUpElements } from '../hooks/useScroll';
-import { siteService } from '../services/siteService';
+import { serviceRegistry } from '../services';
 import type { Testimonial } from '../types';
+
+const { site: siteService } = serviceRegistry;
 
 export default function Testimonials() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
