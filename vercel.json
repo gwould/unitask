@@ -1,6 +1,16 @@
 {
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "http://52.62.106.186/api/$1" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/api/(.*)",
+      "destination": "http://ec2-52-62-106-186.ap-southeast-2.compute.amazonaws.com/api/$1"
+    },
+    {
+      "source": "/health",
+      "destination": "http://ec2-52-62-106-186.ap-southeast-2.compute.amazonaws.com/health"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }
