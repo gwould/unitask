@@ -28,7 +28,7 @@ export default function HomePage() {
   };
 
   return (
-    <>
+    <div className="home-page">
       <Hero />
       <TrustStrip />
       <Categories />
@@ -45,6 +45,6 @@ export default function HomePage() {
       <PricingSection />
       <Testimonials />
       <CTABanner />
-    </>
+    </div>
   );
 }

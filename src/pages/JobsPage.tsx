@@ -1,10 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import type { Job } from '../types';
 import type { Category } from '../types';
 import AIMatchingPanel from '../components/AIMatchingPanel';
 import { useAuth } from '../contexts/AuthContext';
 import { serviceRegistry } from '../services';
+
+const ThreeBackground = lazy(() => import('../components/three/ThreeBackground'));
 
 const { jobs: jobService, site: siteService, aiMatching: aiMatchingService } = serviceRegistry;
 
@@ -125,17 +127,29 @@ export default function JobsPage() {
 
   return (
     <section className="page-jobs">
-      <div className="container">
-        {/* page header */}
-        <div className="pj-header fade-up">
-          <h1 className="section-title">Tìm việc làm</h1>
-          <p className="section-sub">
-            {filtered.length} job phù hợp
-            {query && <> với "<strong>{query}</strong>"</>}
-          </p>
+      <div className="page-jobs-hero">
+        <Suspense fallback={<div className="three-fallback jobs-three-fallback" />}>
+          <ThreeBackground variant="jobs" className="jobs-three" />
+        </Suspense>
+        <div className="container page-jobs-hero-inner">
+          <div className="pj-header fade-up">
+            <div className="pj-header-text">
+              <span className="pj-eyebrow">🌐 Smart Matching + 3D</span>
+              <h1 className="section-title">Tìm việc làm</h1>
+              <p className="section-sub">
+                {filtered.length} job phù hợp
+                {query && <> với "<strong>{query}</strong>"</>}
+              </p>
+            </div>
+            <div className="pj-globe-hint" aria-hidden>
+              <span className="pj-globe-ring" />
+              <span>Live network</span>
+            </div>
+          </div>
         </div>
+      </div>
 
-        {/* filters bar */}
+      <div className="container">
         <div className="pj-filters fade-up">
           <div className="pj-search-row">
             <div className="pj-input-wrap">

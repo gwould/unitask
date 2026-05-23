@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+
+const ThreeBackground = lazy(() => import('../components/three/ThreeBackground'));
 import { APP_STATUS_MAP } from '../constants';
 import { formatMoney } from '../utils/format';
 import { simulateDelay, toIdString } from '../utils';
@@ -224,6 +226,9 @@ export default function DashboardPage() {
 
   return (
     <section className="page-dashboard">
+      <Suspense fallback={null}>
+        <ThreeBackground variant="dashboard" className="dashboard-three" />
+      </Suspense>
       <div className="container">
         <div className="dash-grid">
           {/* sidebar */}

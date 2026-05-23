@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useCounterObserver } from '../hooks/useScroll';
+import ThreeBackground from './three/ThreeBackground';
 
 export default function Hero() {
   const statsRef = useRef<HTMLDivElement>(null);
@@ -9,15 +10,15 @@ export default function Hero() {
   return (
     <section className="hero">
       <div className="hero-bg">
+        <ThreeBackground variant="home" className="hero-three" />
         <div className="hero-grid" />
         <div className="hero-orb orb1" />
         <div className="hero-orb orb2" />
         <div className="hero-orb orb3" />
+        <div className="hero-vignette" />
+        <div className="hero-scanline" aria-hidden />
       </div>
-      <div
-        className="container"
-        style={{ position: 'relative', zIndex: 2, display: 'flex', alignItems: 'center', width: '100%' }}
-      >
+      <div className="container hero-container">
         <div className="hero-content">
           <div className="hero-badge">
             <div className="pulse" />
@@ -58,6 +59,10 @@ export default function Hero() {
           </div>
         </div>
         <div className="hero-visual">
+          <div className="hero-globe-label" aria-hidden>
+            <span className="hero-globe-tag">🌐 Kết nối toàn quốc</span>
+          </div>
+          <div className="hero-visual-glow" aria-hidden />
           <div className="floating-cards">
             <div className="float-card">
               <div className="fc-company">

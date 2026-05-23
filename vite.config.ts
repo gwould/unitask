@@ -8,6 +8,20 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            three: ['three'],
+            'three-scenes': [
+              './src/components/three/homeSceneFactory.ts',
+              './src/components/three/globeSceneFactory.ts',
+              './src/components/three/jobsSceneFactory.ts',
+            ],
+          },
+        },
+      },
+    },
     server: {
       proxy: {
         '/api': {
