@@ -9,13 +9,15 @@ export default function TrustStrip() {
 
   return (
     <div className="trust-strip">
-      <div className="trust-inner">
-        {items.map((item, i) => (
-          <div className="trust-item" key={i}>
-            <span className="icon">{item.icon}</span>
-            <div>{item.text}</div>
-          </div>
-        ))}
+      <div className="container">
+        <div className="trust-inner">
+          {items.map((item, i) => (
+            <div className="trust-item" key={i}>
+              <span className="icon">{item.icon}</span>
+              <div>{item.text}</div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

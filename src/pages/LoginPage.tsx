@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth, type UserRole } from '../contexts/AuthContext';
-import { lazy, Suspense } from 'react';
-
-const ThreeBackground = lazy(() => import('../components/three/ThreeBackground'));
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -46,9 +43,7 @@ export default function LoginPage() {
 
   return (
     <section className="auth-page">
-      <Suspense fallback={null}>
-        <ThreeBackground variant="auth" className="auth-three" />
-      </Suspense>
+      <div className="auth-bg-gradient" aria-hidden />
       <div className="auth-container">
         <div className="auth-card">
           <div className="auth-header">

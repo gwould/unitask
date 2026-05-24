@@ -1357,3 +1357,80 @@ input:checked + .slider:before{transform:translateX(20px)}
   .float-card:hover{transform:none}
   .cta-box::before{animation:none}
 }
+
+/* ─── Static gradient backgrounds (lightweight, replaces three.js) ─── */
+.auth-bg-gradient,
+.jobs-bg-gradient,
+.dashboard-bg-gradient,
+.cta-bg-gradient{
+  position:absolute;inset:0;pointer-events:none;z-index:0;
+}
+.auth-bg-gradient{
+  background:
+    radial-gradient(ellipse 65% 55% at 20% 25%,rgba(91,79,255,.22),transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 75%,rgba(0,212,170,.14),transparent 55%),
+    radial-gradient(ellipse 35% 30% at 50% 50%,rgba(124,114,255,.08),transparent 65%);
+}
+.jobs-bg-gradient{
+  background:
+    radial-gradient(ellipse 70% 60% at 75% 30%,rgba(91,79,255,.2),transparent 60%),
+    radial-gradient(ellipse 50% 45% at 15% 80%,rgba(255,107,53,.1),transparent 55%);
+}
+.dashboard-bg-gradient{
+  background:
+    radial-gradient(ellipse 60% 50% at 10% 15%,rgba(91,79,255,.14),transparent 55%),
+    radial-gradient(ellipse 45% 40% at 90% 85%,rgba(0,212,170,.08),transparent 50%);
+  opacity:.7;
+}
+.cta-bg-gradient{
+  background:
+    radial-gradient(ellipse 60% 60% at 30% 30%,rgba(255,255,255,.08),transparent 60%),
+    radial-gradient(ellipse 70% 55% at 80% 80%,rgba(255,255,255,.04),transparent 65%);
+  border-radius:inherit;
+}
+
+/* ─── Polish: typography & spacing refinements ─── */
+:root{
+  --t2:#B5AFD0;
+  --shadow-card-hover:0 8px 40px rgba(0,0,0,.55),0 0 0 1px rgba(124,114,255,.25);
+  --focus-ring:0 0 0 3px rgba(124,114,255,.4);
+}
+h1,h2,h3,h4{font-family:var(--font-display);letter-spacing:-.01em;line-height:1.2}
+h1{letter-spacing:-.02em}
+p{color:var(--t2)}
+small{color:var(--t3)}
+
+/* Better focus rings for keyboard users */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible{
+  outline:none;
+  box-shadow:var(--focus-ring);
+}
+
+/* Smoother button transitions */
+.btn{transition:transform .18s ease,box-shadow .25s ease,background .25s ease,border-color .2s ease}
+
+/* Card hover refinement — only one transition, no jumpy effect */
+.float-card,
+.job-card,
+.dash-card,
+.cat-card,
+.feature-card{
+  transition:transform .2s ease,box-shadow .25s ease,border-color .2s ease;
+}
+
+/* Slight contrast bump on disabled state for clarity */
+.btn:disabled{opacity:.45}
+input:disabled,select:disabled,textarea:disabled{opacity:.55;cursor:not-allowed}
+
+/* Tighter section spacing on mobile */
+@media(max-width:768px){
+  section{padding-left:0;padding-right:0}
+  .container{padding:0 20px}
+  h1{font-size:clamp(1.85rem,7vw,2.5rem)}
+  h2{font-size:clamp(1.5rem,5.5vw,2rem)}
+}
+

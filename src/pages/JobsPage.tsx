@@ -1,12 +1,10 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import type { Job } from '../types';
 import type { Category } from '../types';
 import AIMatchingPanel from '../components/AIMatchingPanel';
 import { useAuth } from '../contexts/AuthContext';
 import { serviceRegistry } from '../services';
-
-const ThreeBackground = lazy(() => import('../components/three/ThreeBackground'));
 
 const { jobs: jobService, site: siteService, aiMatching: aiMatchingService } = serviceRegistry;
 
@@ -128,13 +126,11 @@ export default function JobsPage() {
   return (
     <section className="page-jobs">
       <div className="page-jobs-hero">
-        <Suspense fallback={<div className="three-fallback jobs-three-fallback" />}>
-          <ThreeBackground variant="jobs" className="jobs-three" />
-        </Suspense>
+        <div className="jobs-bg-gradient" aria-hidden />
         <div className="container page-jobs-hero-inner">
           <div className="pj-header fade-up">
             <div className="pj-header-text">
-              <span className="pj-eyebrow">🌐 Smart Matching + 3D</span>
+              <span className="pj-eyebrow">🌐 Smart Matching</span>
               <h1 className="section-title">Tìm việc làm</h1>
               <p className="section-sub">
                 {filtered.length} job phù hợp

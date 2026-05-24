@@ -45,39 +45,38 @@ export default function AIMatchingPanel({
   }, [user, query, topK]);
 
   return (
-    <section
-      className="ai-match-section fade-up"
-      style={{
-        marginTop: 28,
-        marginBottom: compact ? 18 : 40,
-        padding: 22,
-        borderRadius: 24,
-        background: 'linear-gradient(135deg, rgba(91,79,255,.16), rgba(0,212,170,.08))',
-        border: '1px solid rgba(255,255,255,.08)',
-        boxShadow: '0 18px 50px rgba(0,0,0,.18)',
-      }}
-    >
-      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 18, alignItems: 'flex-end', flexWrap: 'wrap', marginBottom: 20 }}>
-        <div>
-          <div className="section-eyebrow" style={{ marginBottom: 8 }}>AI Matching</div>
-          <h2 className="section-title" style={{ marginBottom: 8, fontSize: compact ? '28px' : undefined }}>{title}</h2>
-          <p className="section-sub" style={{ maxWidth: 820, marginBottom: 0 }}>{subtitle}</p>
-        </div>
-        {query && (
-          <div style={{ color: 'var(--t2)', fontSize: 13, padding: '10px 14px', borderRadius: 999, border: '1px solid rgba(255,255,255,.08)', background: 'rgba(255,255,255,.04)' }}>
-            Từ khóa đang dùng: <strong style={{ color: '#fff' }}>{query}</strong>
+    <section className="ai-match-section fade-up" style={{ marginTop: 28, marginBottom: compact ? 18 : 40 }}>
+      <div className="container">
+        <div
+          style={{
+            padding: 'clamp(20px, 3vw, 32px)',
+            borderRadius: 24,
+            background: 'linear-gradient(135deg, rgba(91,79,255,.16), rgba(0,212,170,.08))',
+            border: '1px solid rgba(255,255,255,.08)',
+            boxShadow: '0 18px 50px rgba(0,0,0,.18)',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 18, alignItems: 'flex-end', flexWrap: 'wrap', marginBottom: 20 }}>
+            <div>
+              <div className="section-eyebrow" style={{ marginBottom: 8 }}>AI Matching</div>
+              <h2 className="section-title" style={{ marginBottom: 8, fontSize: compact ? '28px' : undefined }}>{title}</h2>
+              <p className="section-sub" style={{ maxWidth: 820, marginBottom: 0 }}>{subtitle}</p>
+            </div>
+            {query && (
+              <div style={{ color: 'var(--t2)', fontSize: 13, padding: '10px 14px', borderRadius: 999, border: '1px solid rgba(255,255,255,.08)', background: 'rgba(255,255,255,.04)' }}>
+                Từ khóa đang dùng: <strong style={{ color: '#fff' }}>{query}</strong>
+              </div>
+            )}
           </div>
-        )}
-      </div>
 
-      {loading ? (
-        <div style={{ color: 'var(--t2)', textAlign: 'center', padding: '22px 0' }}>Đang tính điểm phù hợp từ hồ sơ của bạn...</div>
-      ) : matches.length === 0 ? (
-        <div style={{ color: 'var(--t2)', textAlign: 'center', padding: '22px 0' }}>
-          Chưa có job phù hợp đủ mạnh. Hãy cập nhật hồ sơ hoặc thử từ khóa khác.
-        </div>
-      ) : (
-        <div className="jobs-grid" style={{ gridTemplateColumns: compact ? 'repeat(2, minmax(0, 1fr))' : 'repeat(3, minmax(0, 1fr))' }}>
+          {loading ? (
+            <div style={{ color: 'var(--t2)', textAlign: 'center', padding: '22px 0' }}>Đang tính điểm phù hợp từ hồ sơ của bạn...</div>
+          ) : matches.length === 0 ? (
+            <div style={{ color: 'var(--t2)', textAlign: 'center', padding: '22px 0' }}>
+              Chưa có job phù hợp đủ mạnh. Hãy cập nhật hồ sơ hoặc thử từ khóa khác.
+            </div>
+          ) : (
+            <div className="jobs-grid" style={{ gridTemplateColumns: compact ? 'repeat(2, minmax(0, 1fr))' : 'repeat(3, minmax(0, 1fr))' }}>
           {matches.map((job) => (
             <Link to={`/jobs/${job.id}`} key={job.id} className={`job-card${job.featured ? ' featured' : ''}`}>
               <div className="jc-header">
@@ -122,8 +121,10 @@ export default function AIMatchingPanel({
               </div>
             </Link>
           ))}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </section>
   );
 }
