@@ -146,8 +146,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         phone: fromApi.phone ?? localMatch?.phone,
       };
       persistTokens(auth.token, auth.refreshToken);
-      const enriched = await profileService.enrichUser(merged);
-      persist(enriched);
+      let finalUser = merged;
+      try {
+        finalUser = await profileService.enrichUser(merged);
+      } catch {
+        // enrichUser failed (DB issue) — keep the user data we have
+      }
+      persist(finalUser);
       return true;
     } catch {
       // API unavailable or invalid credentials — fall back to local demo accounts

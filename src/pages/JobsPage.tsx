@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import type { Job } from '../types';
 import type { Category } from '../types';
@@ -14,6 +14,7 @@ export default function JobsPage() {
   const initialCat = searchParams.get('cat') || '';
 
   const [query, setQuery] = useState(initialQ);
+  const [debouncedQuery, setDebouncedQuery] = useState(initialQ);
   const [category, setCategory] = useState(initialCat);
   const [location, setLocation] = useState('');
   const [sort, setSort] = useState<'newest' | 'pay-high' | 'pay-low' | 'deadline'>('newest');
@@ -22,6 +23,12 @@ export default function JobsPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const { user } = useAuth();
   const [matchMap, setMatchMap] = useState<Record<string, number>>({});
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    debounceRef.current = setTimeout(() => setDebouncedQuery(query), 400);
+    return () => clearTimeout(debounceRef.current);
+  }, [query]);
 
   useEffect(() => {
     let cancelled = false;
@@ -40,8 +47,9 @@ export default function JobsPage() {
 
   useEffect(() => {
     let cancelled = false;
+    const trimmed = debouncedQuery.trim();
     setMatchMap({});
-    aiMatchingService.getRecommendations(user, query.trim() || undefined, 50)
+    aiMatchingService.getRecommendations(user, trimmed || undefined, 50)
       .then((matches) => {
         if (cancelled) return;
         const map: Record<string, number> = {};
@@ -53,7 +61,7 @@ export default function JobsPage() {
       });
 
     return () => { cancelled = true; };
-  }, [user, query]);
+  }, [user, debouncedQuery]);
 
   useEffect(() => {
     let cancelled = false;

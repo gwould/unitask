@@ -116,16 +116,10 @@ export const applicationService = {
     }
   },
 
-  async getApplicantsForManager(businessUserId?: string): Promise<Applicant[]> {
+  async getApplicantsForManager(_businessUserId?: string): Promise<Applicant[]> {
     try {
-      const jobs = await jobService.getByCompanyUser(businessUserId);
-      const nested = await Promise.all(
-        jobs.map(async (job) => {
-          const apps = await fetchJobApplications(job.id);
-          return apps.map(normalizeApplicant);
-        }),
-      );
-      return nested.flat();
+      const apps = await apiGet<BackendJobApplication[]>('/api/my-business-applicants');
+      return apps.map(normalizeApplicant);
     } catch {
       return [];
     }

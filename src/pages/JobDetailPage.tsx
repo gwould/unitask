@@ -17,6 +17,7 @@ export default function JobDetailPage() {
   const [showApply, setShowApply] = useState(false);
   const [coverLetter, setCoverLetter] = useState('');
   const [applied, setApplied] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
   useEffect(() => {
@@ -76,8 +77,9 @@ export default function JobDetailPage() {
       navigate('/login');
       return;
     }
-    if (!coverLetter.trim()) return;
+    if (!coverLetter.trim() || submitting) return;
 
+    setSubmitting(true);
     let appId: number | string | null = null;
     try {
       const created = await applicationService.apply({
@@ -86,8 +88,14 @@ export default function JobDetailPage() {
         coverLetter: coverLetter.trim(),
       });
       appId = created.id;
-    } catch {
-      setToast('Không thể gửi ứng tuyển ngay lúc này. Vui lòng thử lại.');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : '';
+      if (msg.includes('hết hạn') || msg.includes('401')) {
+        setToast('Phiên đăng nhập hết hạn. Vui lòng đăng xuất và đăng nhập lại.');
+      } else {
+        setToast(msg || 'Không thể gửi ứng tuyển. Kiểm tra kết nối và thử lại.');
+      }
+      setSubmitting(false);
       return;
     }
 
@@ -115,6 +123,7 @@ export default function JobDetailPage() {
       actionUrl: `/jobs/${job.id}`,
     });
 
+    setSubmitting(false);
     setToast('Đã gửi ứng tuyển. Thông báo đã được cập nhật.');
     setApplied(true);
     setShowApply(false);
@@ -227,9 +236,9 @@ export default function JobDetailPage() {
                       className="btn btn-primary"
                       style={{ flex: 1 }}
                       onClick={handleApply}
-                      disabled={!coverLetter.trim()}
+                      disabled={!coverLetter.trim() || submitting}
                     >
-                      Gửi ứng tuyển
+                      {submitting ? 'Đang gửi...' : 'Gửi ứng tuyển'}
                     </button>
                     <button className="btn btn-ghost" onClick={() => setShowApply(false)}>
                       Hủy

@@ -10,6 +10,7 @@ type ApiBody = unknown;
 
 export type ApiRequestOptions = Omit<RequestInit, 'body'> & {
   body?: ApiBody;
+  _isRetry?: boolean;
 };
 
 async function parseResponse<T>(res: Response): Promise<T> {
@@ -38,15 +39,64 @@ async function parseErrorMessage(res: Response): Promise<string> {
   }
 }
 
-export async function request<T>(path: string, options: ApiRequestOptions = {}): Promise<T> {
-  const { body, headers, ...rest } = options;
-  const token = (() => {
+function getToken(): string | null {
+  try {
+    return localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+  } catch {
+    return null;
+  }
+}
+
+function clearAuthAndRedirect() {
+  try {
+    localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+    localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+    localStorage.removeItem(STORAGE_KEYS.USER);
+  } catch { /* ignore */ }
+  if (window.location.pathname !== '/login') {
+    window.location.href = '/login';
+  }
+}
+
+let refreshPromise: Promise<boolean> | null = null;
+
+async function tryRefreshToken(): Promise<boolean> {
+  if (refreshPromise) return refreshPromise;
+
+  refreshPromise = (async () => {
     try {
-      return localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+      const refreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
+      if (!refreshToken) return false;
+
+      const res = await fetch(`${API_BASE}/api/auth/refresh-token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      if (!res.ok) return false;
+
+      const data = await res.json() as { token?: string; refreshToken?: string };
+      if (!data.token) return false;
+
+      localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, data.token);
+      if (data.refreshToken) {
+        localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, data.refreshToken);
+      }
+      return true;
     } catch {
-      return null;
+      return false;
+    } finally {
+      refreshPromise = null;
     }
   })();
+
+  return refreshPromise;
+}
+
+export async function request<T>(path: string, options: ApiRequestOptions = {}): Promise<T> {
+  const { body, headers, _isRetry, ...rest } = options;
+  const token = getToken();
 
   const response = await fetch(`${API_BASE}${path}`, {
     ...rest,
@@ -62,6 +112,15 @@ export async function request<T>(path: string, options: ApiRequestOptions = {}):
         },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
+
+  if (response.status === 401 && !_isRetry && token) {
+    const refreshed = await tryRefreshToken();
+    if (refreshed) {
+      return request<T>(path, { ...options, _isRetry: true });
+    }
+    clearAuthAndRedirect();
+    throw new Error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+  }
 
   if (!response.ok) {
     throw new Error(await parseErrorMessage(response));
