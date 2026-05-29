@@ -10,6 +10,7 @@ export interface Job {
   title: string;
   company: string;
   companyId: number | string;
+  companyUserId?: string;
   verified: boolean;
   location: string;
   tags: JobTag[];

@@ -57,6 +57,7 @@ type ApiJobDetailsResponse = {
   } | null;
   business?: {
     id: string;
+    userId?: string;
     companyName: string;
     rating?: number | null;
   } | null;
@@ -157,6 +158,7 @@ function normalizeJobDetails(raw: ApiJobDetailsResponse): Job {
     title: raw.title,
     company: companyName,
     companyId: raw.business?.id ?? '',
+    companyUserId: raw.business?.userId,
     verified: raw.business?.rating ? raw.business.rating >= 4.5 : false,
     location: raw.location ?? 'Remote',
     tags: (raw.tags || []).map((label) => ({ label, variant: 'p' as const })),

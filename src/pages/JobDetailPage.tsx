@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { createNotification } from '../services/automationEngine';
 import { serviceRegistry } from '../services';
+import { conversationService } from '../services/conversationService';
 import type { Job } from '../types';
 
 const { applications: applicationService, jobs: jobService } = serviceRegistry;
@@ -256,9 +257,22 @@ export default function JobDetailPage() {
                   >
                     🚀 Ứng tuyển ngay
                   </button>
-                  <button className="btn btn-ghost" style={{ width: '100%', justifyContent: 'center', marginTop: 8 }}>
-                    🔖 Lưu job
-                  </button>
+                  {user && job.companyUserId && String(job.companyUserId) !== String(user.id) && (
+                    <button
+                      className="btn btn-ghost"
+                      style={{ width: '100%', justifyContent: 'center', marginTop: 8 }}
+                      onClick={async () => {
+                        try {
+                          const conv = await conversationService.start(String(job.companyUserId));
+                          navigate(`/messages/${conv.id}`);
+                        } catch {
+                          setToast('Không thể bắt đầu cuộc trò chuyện. Thử lại sau.');
+                        }
+                      }}
+                    >
+                      💬 Nhắn tin cho doanh nghiệp
+                    </button>
+                  )}
                   <div className="pd-escrow-note">
                     🛡️ Job này được bảo vệ bởi <strong>Escrow UniTask</strong>. Tiền đã được giữ — bạn sẽ nhận đủ khi hoàn thành.
                   </div>

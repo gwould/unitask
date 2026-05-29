@@ -10,6 +10,7 @@ import { AutomationSuggestions } from '../components/AutomationSuggestions';
 import { createNotification } from '../services/automationEngine';
 import { serviceRegistry } from '../services';
 import { paymentService } from '../services/paymentService';
+import { conversationService } from '../services/conversationService';
 import { hasAuthToken } from '../utils/auth';
 
 /* ─── TYPES ───────────────────────────────────────── */
@@ -81,12 +82,13 @@ function updateAccountBalance(userId: string, delta: number) {
 
 /* ─── SUB COMPONENTS ──────────────────────────────── */
 
-function ApplicantCard({ ap, onAccept, onReject, onApprove, onRequestRevision, isActioning, isSelected, onSelectChange }: {
+function ApplicantCard({ ap, onAccept, onReject, onApprove, onRequestRevision, onMessage, isActioning, isSelected, onSelectChange }: {
   ap: Applicant;
   onAccept: (id: number | string) => void;
   onReject: (id: number | string) => void;
   onApprove: (id: number | string) => void;
   onRequestRevision: (id: number | string) => void;
+  onMessage: (userId: string) => void;
   isActioning: boolean;
   isSelected?: boolean;
   onSelectChange?: (id: string, selected: boolean) => void;
@@ -172,6 +174,9 @@ function ApplicantCard({ ap, onAccept, onReject, onApprove, onRequestRevision, i
       )}
 
       <div className="manage-ap-actions">
+        <button className="btn btn-ghost btn-sm" onClick={() => onMessage(String(ap.userId))}>
+          💬 Nhắn tin
+        </button>
         {ap.status === 'pending' && (
           <>
             <button className="btn btn-primary btn-sm" onClick={() => onAccept(ap.id)}>
@@ -611,6 +616,15 @@ export default function ManageJobsPage() {
     showToast(`Đã duyệt bài và thanh toán ${formatMoney(payout)} cho ${targetApplicant.name} ✅`);
   }, [applicants, selectedJob, showToast, updateProfile, user]);
 
+  const handleMessage = useCallback(async (userId: string) => {
+    try {
+      const conv = await conversationService.start(userId);
+      navigate(`/messages/${conv.id}`);
+    } catch {
+      window.alert('Không thể bắt đầu cuộc trò chuyện. Vui lòng thử lại.');
+    }
+  }, [navigate]);
+
   const handleAccept = useCallback((id: number | string) => {
     const ap = applicants.find((a) => a.id === id);
     setConfirmAction({ id, name: ap?.name || 'ứng viên', action: 'accept' });
@@ -777,6 +791,7 @@ export default function ManageJobsPage() {
                         onReject={handleReject}
                         onApprove={handleApprove}
                         onRequestRevision={handleRevision}
+                        onMessage={handleMessage}
                         isActioning={actioningId !== null && String(actioningId) === String(ap.id)}
                         isSelected={selectedApplicantIds.has(String(ap.id))}
                         onSelectChange={handleSelectApplicant}

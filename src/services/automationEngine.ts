@@ -6,6 +6,8 @@
 import type { AutomationRule, AutomationLog, Notification } from '../types/automation';
 import type { Applicant } from '../types/application';
 import { STORAGE_KEYS } from '../constants';
+import { apiPost } from './apiService';
+import { hasAuthToken } from '../utils/auth';
 
 /* ─── STORAGE HELPERS ─────────────────────────────── */
 
@@ -44,14 +46,24 @@ export function createNotification(data: Omit<Notification, 'id' | 'createdAt' |
     createdAt: new Date().toISOString(),
     isRead: false,
   };
-  
+
+  if (hasAuthToken()) {
+    apiPost('/api/notifications', {
+      recipientId: data.recipientId,
+      type: data.type ?? 'system',
+      title: data.title,
+      message: data.message,
+      relatedJobId: data.relatedJobId ?? null,
+    }).catch(() => {});
+  }
+
   try {
     const all: Notification[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS) || '[]');
     localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify([notification, ...all]));
   } catch {
     // Ignore storage errors in demo mode.
   }
-  
+
   return notification;
 }
 
