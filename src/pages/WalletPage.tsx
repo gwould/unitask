@@ -166,36 +166,6 @@ export default function WalletPage() {
   const [depositAmount, setDepositAmount] = useState('');
   const [depositLoading, setDepositLoading] = useState(false);
 
-  // Handle MoMo return
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('momo') === 'return') {
-      const resultCode = params.get('resultCode');
-      if (resultCode === '0') {
-        showToast('Nạp tiền MoMo thành công! Số dư sẽ cập nhật trong giây lát.');
-      } else if (resultCode) {
-        showToast('Giao dịch MoMo không thành công.', 'error');
-      }
-      window.history.replaceState({}, '', '/wallet');
-    }
-  }, []);
-
-  const handleMomoDeposit = useCallback(async () => {
-    const amount = parseInt(depositAmount.replace(/\D/g, ''), 10);
-    if (!amount || amount < 10000) {
-      showToast('Số tiền nạp tối thiểu 10,000đ', 'error');
-      return;
-    }
-    setDepositLoading(true);
-    try {
-      const res = await apiPost<{ payUrl: string }>('/api/payments/momo/create', { amount });
-      window.location.href = res.payUrl;
-    } catch {
-      showToast('Không tạo được giao dịch MoMo. Thử lại sau.', 'error');
-      setDepositLoading(false);
-    }
-  }, [depositAmount, showToast]);
-
   // Redirect if not logged in
   useEffect(() => {
     if (!user) navigate('/login');
@@ -278,6 +248,36 @@ export default function WalletPage() {
   const showToast = useCallback((message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type });
   }, []);
+
+  // Handle MoMo return
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('momo') === 'return') {
+      const resultCode = params.get('resultCode');
+      if (resultCode === '0') {
+        showToast('Nạp tiền MoMo thành công! Số dư sẽ cập nhật trong giây lát.');
+      } else if (resultCode) {
+        showToast('Giao dịch MoMo không thành công.', 'error');
+      }
+      window.history.replaceState({}, '', '/wallet');
+    }
+  }, [showToast]);
+
+  const handleMomoDeposit = useCallback(async () => {
+    const amount = parseInt(depositAmount.replace(/\D/g, ''), 10);
+    if (!amount || amount < 10000) {
+      showToast('Số tiền nạp tối thiểu 10,000đ', 'error');
+      return;
+    }
+    setDepositLoading(true);
+    try {
+      const res = await apiPost<{ payUrl: string }>('/api/payments/momo/create', { amount });
+      window.location.href = res.payUrl;
+    } catch {
+      showToast('Không tạo được giao dịch MoMo. Thử lại sau.', 'error');
+      setDepositLoading(false);
+    }
+  }, [depositAmount, showToast]);
 
   const handleWithdraw = useCallback(async () => {
     if (!user) return;
