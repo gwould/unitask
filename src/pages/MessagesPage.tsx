@@ -56,16 +56,30 @@ export default function MessagesPage() {
     if (!user || !activeId || !hasAuthToken()) return;
     let cancelled = false;
 
-    conversationService.getMessages(activeId, String(user.id))
-      .then((rows) => {
-        if (!cancelled) setMessages(rows);
-      })
-      .catch(() => {
-        if (!cancelled) setMessages([]);
-      });
+    const fetchMessages = () => {
+      conversationService.getMessages(activeId, String(user.id))
+        .then((rows) => {
+          if (!cancelled) setMessages(rows);
+        })
+        .catch(() => {
+          if (!cancelled) setMessages([]);
+        });
+    };
 
-    return () => { cancelled = true; };
+    fetchMessages();
+    const timer = setInterval(fetchMessages, 5000);
+    return () => { cancelled = true; clearInterval(timer); };
   }, [user, activeId]);
+
+  useEffect(() => {
+    if (!user || !hasAuthToken()) return;
+    const timer = setInterval(() => {
+      conversationService.list()
+        .then((rows) => setConversations(rows))
+        .catch(() => {});
+    }, 15000);
+    return () => clearInterval(timer);
+  }, [user]);
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });

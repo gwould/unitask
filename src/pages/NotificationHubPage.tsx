@@ -107,7 +107,8 @@ export default function NotificationHubPage() {
         if (!cancelled) setIsLoading(false);
       });
 
-    return () => { cancelled = true; };
+    const timer = setInterval(() => { load().catch(() => {}); }, 15000);
+    return () => { cancelled = true; clearInterval(timer); };
   }, [user, navigate, load]);
 
   const filtered = useMemo(() => {

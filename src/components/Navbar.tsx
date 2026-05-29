@@ -2,12 +2,14 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useScrolled } from '../hooks/useScroll';
 import { useAuth } from '../contexts/AuthContext';
+import { useNotifications } from '../contexts/NotificationContext';
 
 export default function Navbar() {
   const scrolled = useScrolled(60);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { user, logout } = useAuth();
+  const { unreadCount } = useNotifications();
   const location = useLocation();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -59,7 +61,7 @@ export default function Navbar() {
             <Link to="/dashboard" onClick={closeMobile}>📊 Dashboard</Link>
             <Link to="/profile" onClick={closeMobile}>👤 Hồ sơ</Link>
             <Link to="/wallet" onClick={closeMobile}>💰 Ví</Link>
-            <Link to="/notifications" onClick={closeMobile}>🔔 Thông báo</Link>
+            <Link to="/notifications" onClick={closeMobile}>🔔 Thông báo{unreadCount > 0 && ` (${unreadCount})`}</Link>
             <Link to="/messages" onClick={closeMobile}>💬 Tin nhắn</Link>
             {user.role === 'student' && (
               <Link to="/my-applications" onClick={closeMobile}>📋 Đơn ứng tuyển</Link>
@@ -157,7 +159,7 @@ export default function Navbar() {
                     <Link to="/dashboard" className="nav-dd-item">📊 Dashboard</Link>
                     <Link to="/profile" className="nav-dd-item">👤 Hồ sơ</Link>
                     <Link to="/wallet" className="nav-dd-item">💰 Ví</Link>
-                    <Link to="/notifications" className="nav-dd-item">🔔 Thông báo</Link>
+                    <Link to="/notifications" className="nav-dd-item">🔔 Thông báo{unreadCount > 0 && <span style={{ marginLeft: 6, background: '#ff4444', color: '#fff', borderRadius: 999, padding: '2px 7px', fontSize: 11, fontWeight: 700 }}>{unreadCount}</span>}</Link>
                     <Link to="/messages" className="nav-dd-item">💬 Tin nhắn</Link>
                     {user.role === 'student' && (
                       <Link to="/my-applications" className="nav-dd-item">📋 Đơn ứng tuyển</Link>
