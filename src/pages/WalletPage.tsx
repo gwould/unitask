@@ -252,16 +252,39 @@ export default function WalletPage() {
   // Handle MoMo return
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('momo') === 'return') {
-      const resultCode = params.get('resultCode');
-      if (resultCode === '0') {
-        showToast('Nạp tiền MoMo thành công! Số dư sẽ cập nhật trong giây lát.');
-      } else if (resultCode) {
-        showToast('Giao dịch MoMo không thành công.', 'error');
+    if (params.get('momo') !== 'return') return;
+
+    const resultCode = params.get('resultCode');
+    const amount = parseInt(params.get('amount') || '0', 10);
+    const orderId = params.get('orderId') || '';
+
+    if (resultCode === '0' && amount > 0) {
+      showToast(`Nạp tiền MoMo thành công: ${amount.toLocaleString('vi-VN')}đ`);
+
+      const newTx: Transaction = {
+        id: `momo-${orderId || Date.now()}`,
+        type: 'income',
+        label: `Nạp tiền qua MoMo`,
+        amount,
+        date: new Date().toISOString().slice(0, 10),
+        status: 'completed',
+      };
+      setTransactions((prev) => {
+        if (prev.some((t) => t.id === newTx.id)) return prev;
+        const updated = [newTx, ...prev];
+        if (user) saveTransactions(String(user.id), updated);
+        return updated;
+      });
+
+      if (user) {
+        updateProfile({ balance: (user.balance || 0) + amount });
       }
-      window.history.replaceState({}, '', '/wallet');
+    } else if (resultCode) {
+      showToast('Giao dịch MoMo không thành công.', 'error');
     }
-  }, [showToast]);
+
+    window.history.replaceState({}, '', '/wallet');
+  }, [showToast, user, updateProfile]);
 
   const handleMomoDeposit = useCallback(async () => {
     const amount = parseInt(depositAmount.replace(/\D/g, ''), 10);
