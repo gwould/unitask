@@ -7,6 +7,7 @@ import { formatMoney as formatBalance, formatSignedMoney as formatMoney } from '
 import { simulateDelay } from '../utils/async';
 import { walletService } from '../services/walletService';
 import { paymentService } from '../services/paymentService';
+import { apiPost } from '../services/apiService';
 import { hasAuthToken } from '../utils/auth';
 
 /* ─── CONSTANTS ───────────────────────────────────── */
@@ -160,6 +161,40 @@ export default function WalletPage() {
 
   const [newBank, setNewBank] = useState({ name: '', detail: '', icon: '🏦' });
   const [bankError, setBankError] = useState('');
+
+  const [showDepositModal, setShowDepositModal] = useState(false);
+  const [depositAmount, setDepositAmount] = useState('');
+  const [depositLoading, setDepositLoading] = useState(false);
+
+  // Handle MoMo return
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('momo') === 'return') {
+      const resultCode = params.get('resultCode');
+      if (resultCode === '0') {
+        showToast('Nạp tiền MoMo thành công! Số dư sẽ cập nhật trong giây lát.');
+      } else if (resultCode) {
+        showToast('Giao dịch MoMo không thành công.', 'error');
+      }
+      window.history.replaceState({}, '', '/wallet');
+    }
+  }, []);
+
+  const handleMomoDeposit = useCallback(async () => {
+    const amount = parseInt(depositAmount.replace(/\D/g, ''), 10);
+    if (!amount || amount < 10000) {
+      showToast('Số tiền nạp tối thiểu 10,000đ', 'error');
+      return;
+    }
+    setDepositLoading(true);
+    try {
+      const res = await apiPost<{ payUrl: string }>('/api/payments/momo/create', { amount });
+      window.location.href = res.payUrl;
+    } catch {
+      showToast('Không tạo được giao dịch MoMo. Thử lại sau.', 'error');
+      setDepositLoading(false);
+    }
+  }, [depositAmount, showToast]);
 
   // Redirect if not logged in
   useEffect(() => {
@@ -368,19 +403,16 @@ export default function WalletPage() {
           <div className="wc-card wc-balance">
             <div className="wc-label">Số dư khả dụng</div>
             <div className="wc-amount">{formatBalance(user.balance || 0)}</div>
-            <button
-              className="btn btn-primary btn-sm"
-              style={{ marginTop: 12 }}
-              onClick={() => {
-                if (user.role === 'student') {
-                  setShowWithdrawModal(true);
-                } else {
-                  showToast('Tính năng nạp Escrow sẽ sớm hỗ trợ!');
-                }
-              }}
-            >
-              {user.role === 'student' ? '🏦 Rút tiền' : '💳 Nạp tiền Escrow'}
-            </button>
+            <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
+              {user.role === 'student' && (
+                <button className="btn btn-primary btn-sm" onClick={() => setShowWithdrawModal(true)}>
+                  🏦 Rút tiền
+                </button>
+              )}
+              <button className="btn btn-accent btn-sm" onClick={() => setShowDepositModal(true)}>
+                📱 Nạp tiền qua MoMo
+              </button>
+            </div>
           </div>
           {user.role === 'student' ? (
             <>
@@ -641,6 +673,53 @@ export default function WalletPage() {
               <button className="btn btn-ghost btn-sm" onClick={() => setShowAddBankModal(false)}>Hủy</button>
               <button className="btn btn-primary btn-sm" onClick={handleAddBank}>
                 ✓ Thêm phương thức
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Deposit MoMo Modal */}
+      {showDepositModal && (
+        <div className="modal-overlay" onClick={() => setShowDepositModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3>📱 Nạp tiền qua MoMo</h3>
+            <p style={{ fontSize: 13, color: 'var(--t3)', marginBottom: 16 }}>
+              Bạn sẽ được chuyển sang MoMo để thanh toán. Số dư sẽ cập nhật tự động sau khi thành công.
+            </p>
+
+            <div className="pj-field" style={{ marginBottom: 12 }}>
+              <label>Số tiền nạp (VNĐ)</label>
+              <input
+                type="text"
+                inputMode="numeric"
+                placeholder="VD: 500000"
+                value={depositAmount}
+                onChange={(e) => setDepositAmount(e.target.value.replace(/\D/g, ''))}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+              {[50000, 100000, 200000, 500000, 1000000].map((v) => (
+                <button
+                  key={v}
+                  className={`btn btn-ghost btn-sm${depositAmount === String(v) ? ' active' : ''}`}
+                  onClick={() => setDepositAmount(String(v))}
+                  style={depositAmount === String(v) ? { background: 'var(--p)', color: '#fff' } : {}}
+                >
+                  {v.toLocaleString('vi-VN')}đ
+                </button>
+              ))}
+            </div>
+
+            <div className="modal-actions">
+              <button className="btn btn-ghost btn-sm" onClick={() => setShowDepositModal(false)}>Hủy</button>
+              <button
+                className="btn btn-accent btn-sm"
+                onClick={handleMomoDeposit}
+                disabled={depositLoading || !depositAmount}
+              >
+                {depositLoading ? 'Đang tạo giao dịch...' : '📱 Thanh toán MoMo'}
               </button>
             </div>
           </div>
