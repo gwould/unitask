@@ -21,7 +21,7 @@ const VALUES = [
   { icon: '🎯', title: 'Thực chiến, không lý thuyết', desc: 'Mỗi job trên UniTask đều là dự án thật, không phải bài tập mô phỏng.' },
   { icon: '🛡️', title: 'An toàn với Escrow', desc: 'Hệ thống giữ tiền đảm bảo sinh viên được trả công, doanh nghiệp nhận sản phẩm chất lượng.' },
   { icon: '🤝', title: 'Win-win cho cả hai bên', desc: 'Sinh viên có kinh nghiệm + thu nhập. Doanh nghiệp có nhân lực chất lượng giá hợp lý.' },
-  { icon: '🚀', title: 'Nhanh chóng & Hiệu quả', desc: 'Smart Matching AI kết nối bạn với job/ứng viên phù hợp trong vài phút.' },
+  { icon: '🚀', title: 'Nhanh chóng & Hiệu quả', desc: 'Hệ thống tự động kết nối bạn với job/ứng viên phù hợp trong vài phút.' },
 ];
 
 const SUBSCRIPTION_PLANS = [
@@ -34,7 +34,7 @@ const SUBSCRIPTION_PLANS = [
     features: [
       '5 job/tháng',
       'Hiển thị cơ bản trong kết quả tìm kiếm',
-      'AI matching cơ bản',
+      'Gợi ý việc làm phù hợp',
       'Hỗ trợ email trong giờ hành chính',
     ],
     cta: 'Dùng miễn phí',
@@ -49,7 +49,7 @@ const SUBSCRIPTION_PLANS = [
     features: [
       '30 job/tháng',
       'Ưu tiên hiển thị bài đăng',
-      'AI matching ứng viên phù hợp',
+      'Gợi ý ứng viên phù hợp',
       'Giảm phí giao dịch',
       'Thống kê hiệu quả tuyển dụng',
     ],
@@ -65,7 +65,7 @@ const SUBSCRIPTION_PLANS = [
     features: [
       'Job không giới hạn',
       'Ưu tiên hiển thị bài đăng',
-      'AI matching ứng viên phù hợp',
+      'Gợi ý ứng viên phù hợp',
       'Giảm phí giao dịch',
       'Thống kê hiệu quả tuyển dụng',
     ],

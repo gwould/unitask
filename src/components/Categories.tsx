@@ -35,7 +35,7 @@ export default function Categories() {
           <div className="section-eyebrow">Khám phá ngành nghề</div>
           <h2 className="section-title">Chọn đúng ngành — Nhận đúng job</h2>
           <p className="section-sub">
-            Hệ thống Smart Matching gợi ý job phù hợp với chuyên ngành bạn đang học
+            Hệ thống gợi ý job phù hợp với chuyên ngành bạn đang học
           </p>
         </div>
         {loading ? (

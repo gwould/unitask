@@ -23,7 +23,7 @@ export default function JobsPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const { user } = useAuth();
   const [matchMap, setMatchMap] = useState<Record<string, number>>({});
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
     debounceRef.current = setTimeout(() => setDebouncedQuery(query), 400);
@@ -138,7 +138,7 @@ export default function JobsPage() {
         <div className="container page-jobs-hero-inner">
           <div className="pj-header fade-up">
             <div className="pj-header-text">
-              <span className="pj-eyebrow">🌐 Smart Matching</span>
+              <span className="pj-eyebrow">🌐 Việc làm</span>
               <h1 className="section-title">Tìm việc làm</h1>
               <p className="section-sub">
                 {filtered.length} job phù hợp
@@ -208,7 +208,7 @@ export default function JobsPage() {
           query={query.trim() || undefined}
           topK={6}
           title="Job phù hợp nhất với hồ sơ và truy vấn của bạn"
-          subtitle="AI tự động chấm điểm job theo hồ sơ cá nhân, kỹ năng, ngành học và từ khóa tìm kiếm hiện tại."
+          subtitle="Hệ thống tự động chấm điểm job theo hồ sơ cá nhân, kỹ năng, ngành học và từ khóa tìm kiếm hiện tại."
         />
 
         {/* results */}

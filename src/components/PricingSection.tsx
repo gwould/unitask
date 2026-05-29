@@ -11,7 +11,7 @@ const HOME_PLANS = [
     features: [
       '5 job/tháng',
       'Hiển thị cơ bản',
-      'AI matching cơ bản',
+      'Gợi ý việc làm phù hợp',
       'Hỗ trợ email',
     ],
     cta: 'Bắt đầu miễn phí',
@@ -26,7 +26,7 @@ const HOME_PLANS = [
     features: [
       '30 job/tháng',
       'Ưu tiên hiển thị bài đăng',
-      'AI matching ứng viên phù hợp',
+      'Gợi ý ứng viên phù hợp',
       'Giảm phí giao dịch',
       'Thống kê hiệu quả tuyển dụng',
     ],
@@ -42,7 +42,7 @@ const HOME_PLANS = [
     features: [
       'Job không giới hạn',
       'Ưu tiên hiển thị bài đăng',
-      'AI matching ứng viên phù hợp',
+      'Gợi ý ứng viên phù hợp',
       'Giảm phí giao dịch',
       'Thống kê hiệu quả tuyển dụng',
     ],

@@ -495,7 +495,7 @@ export const categoriesData: Category[] = [
 /* ──────────────────── HOW ──────────────────────────── */
 export const studentSteps: HowStep[] = [
   { num: '01', icon: '🎓', title: 'Đăng ký & Xác thực', desc: 'Tạo tài khoản với email .edu hoặc thẻ sinh viên. Hệ thống xác minh trong 24h.' },
-  { num: '02', icon: '🤖', title: 'Smart Matching', desc: 'Hệ thống gợi ý job phù hợp với ngành học và kỹ năng bạn đã có sẵn.' },
+  { num: '02', icon: '🎯', title: 'Gợi ý việc làm', desc: 'Hệ thống gợi ý job phù hợp với ngành học và kỹ năng bạn đã có sẵn.' },
   { num: '03', icon: '⚡', title: 'Làm việc & Nộp bài', desc: 'Nhận job, thực hiện, nộp sản phẩm qua hệ thống. Doanh nghiệp review trực tuyến.' },
   { num: '04', icon: '🏆', title: 'Nhận tiền + Hồ sơ số', desc: 'Tiền Escrow tự động chuyển ví. Project tự động cập nhật vào CV điện tử của bạn.' },
 ];
@@ -551,9 +551,9 @@ export const featuresData: Feature[] = [
     ],
   },
   {
-    icon: '🤖',
+    icon: '🎯',
     iconBg: 'rgba(0,212,170,.1)',
-    title: 'Smart Matching theo ngành học',
+    title: 'Gợi ý việc theo ngành học',
     desc: 'Sinh viên Ngôn ngữ Anh thấy job dịch thuật. Sinh viên IT thấy job code. Không lãng phí thời gian lọc thủ công.',
   },
   {

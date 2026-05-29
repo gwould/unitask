@@ -14,7 +14,7 @@ interface AIMatchingPanelProps {
 }
 
 export default function AIMatchingPanel({
-  title = 'AI matching dành cho bạn',
+  title = 'Gợi ý việc làm dành cho bạn',
   subtitle = 'Hệ thống tự động gợi ý job theo hồ sơ, ngành học, kỹ năng và từ khóa bạn đang tìm kiếm.',
   query,
   topK = 6,
@@ -58,7 +58,7 @@ export default function AIMatchingPanel({
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: 18, alignItems: 'flex-end', flexWrap: 'wrap', marginBottom: 20 }}>
             <div>
-              <div className="section-eyebrow" style={{ marginBottom: 8 }}>AI Matching</div>
+              <div className="section-eyebrow" style={{ marginBottom: 8 }}>Smart Matching</div>
               <h2 className="section-title" style={{ marginBottom: 8, fontSize: compact ? '28px' : undefined }}>{title}</h2>
               <p className="section-sub" style={{ maxWidth: 820, marginBottom: 0 }}>{subtitle}</p>
             </div>
@@ -85,7 +85,7 @@ export default function AIMatchingPanel({
                   <span style={{ padding: '6px 10px', borderRadius: 999, background: 'rgba(91,79,255,.14)', color: '#C8C2FF', fontSize: 12, fontWeight: 800 }}>
                     {Math.round(job.matchScore)}% match
                   </span>
-                  <span style={{ fontSize: 11, color: 'var(--t3)' }}>AI đề xuất</span>
+                  <span style={{ fontSize: 11, color: 'var(--t3)' }}>Đề xuất cho bạn</span>
                 </div>
               </div>
               <div className="jc-title">{job.title}</div>

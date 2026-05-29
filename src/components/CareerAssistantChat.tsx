@@ -108,16 +108,16 @@ export default function CareerAssistantChat() {
         type="button"
         className="ca-fab"
         onClick={() => setOpen((v) => !v)}
-        aria-label="Mở trợ lý nghề nghiệp AI"
+        aria-label="Mở trợ lý nghề nghiệp"
       >
         {open ? '✕' : '🤖'}
       </button>
 
       {open && (
-        <div className="ca-panel" role="dialog" aria-label="AI Career Assistant">
+        <div className="ca-panel" role="dialog" aria-label="Trợ lý nghề nghiệp">
           <div className="ca-header">
             <div>
-              <div className="ca-title">Trợ lý nghề nghiệp AI</div>
+              <div className="ca-title">Trợ lý nghề nghiệp</div>
               <div className="ca-sub">Gợi ý job theo kỹ năng & hội thoại tự nhiên</div>
             </div>
             <button type="button" className="ca-close" onClick={() => setOpen(false)} aria-label="Đóng">
