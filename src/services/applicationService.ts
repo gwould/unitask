@@ -44,6 +44,7 @@ type BackendJobApplication = {
   appliedAt?: string | null;
   student: {
     id: string;
+    userId: string;
     name: string;
     university?: string | null;
     rating?: number | null;
@@ -71,7 +72,7 @@ function normalizeApplicant(app: BackendJobApplication): Applicant {
     id: app.id,
     appId: app.id,
     jobId: app.jobId,
-    userId: app.studentId,
+    userId: app.student.userId,
     coverLetter: app.coverLetter ?? '',
     status: app.status,
     appliedAt: app.appliedAt ?? new Date().toISOString(),
