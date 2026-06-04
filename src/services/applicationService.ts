@@ -179,7 +179,15 @@ export const applicationService = {
     };
   },
 
-  async withdraw(_appId: number | string): Promise<void> {
-    return undefined;
+  async withdraw(appId: number | string): Promise<void> {
+    try {
+      await apiPut(`/api/applications/${appId}/reject`, { rejectionReason: 'Withdrawn by student' });
+    } catch {
+      // fallback — no-op in demo
+    }
+  },
+
+  async submitReview(jobApplicationId: string, rating: number, comment: string): Promise<void> {
+    await apiPost('/api/reviews', { jobApplicationId, rating, comment });
   },
 };

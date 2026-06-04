@@ -621,9 +621,9 @@ export default function ManageJobsPage() {
       const conv = await conversationService.start(userId);
       navigate(`/messages/${conv.id}`);
     } catch {
-      window.alert('Không thể bắt đầu cuộc trò chuyện. Vui lòng thử lại.');
+      showToast('Không thể bắt đầu cuộc trò chuyện. Vui lòng thử lại.', 'error');
     }
-  }, [navigate]);
+  }, [navigate, showToast]);
 
   const handleAccept = useCallback((id: number | string) => {
     const ap = applicants.find((a) => a.id === id);

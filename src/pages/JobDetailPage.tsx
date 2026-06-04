@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { createNotification } from '../services/automationEngine';
 import { serviceRegistry } from '../services';
 import { conversationService } from '../services/conversationService';
+import { useNotifications } from '../contexts/NotificationContext';
 import type { Job } from '../types';
 
 const { applications: applicationService, jobs: jobService } = serviceRegistry;
@@ -12,6 +13,7 @@ export default function JobDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { refresh: refreshBadge } = useNotifications();
   const [job, setJob] = useState<Job | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -128,6 +130,7 @@ export default function JobDetailPage() {
     setToast('Đã gửi ứng tuyển. Thông báo đã được cập nhật.');
     setApplied(true);
     setShowApply(false);
+    refreshBadge();
   };
 
   return (

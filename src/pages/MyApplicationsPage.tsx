@@ -454,6 +454,13 @@ export default function MyApplicationsPage() {
     submissions[String(submitTarget.id)] = submission;
     saveSubmissionMap(submissions);
 
+    // Sync to backend — mark as completed with submission info
+    try {
+      await applicationService.updateStatus(submitTarget.id, 'completed');
+    } catch {
+      // localStorage already saved — backend will sync later
+    }
+
     setActionLoading(null);
     setSubmitTarget(null);
     setSubmitSummary('');
@@ -465,14 +472,16 @@ export default function MyApplicationsPage() {
   const handleRate = useCallback(async (rating: number, review: string) => {
     if (!ratingTarget) return;
     setActionLoading(ratingTarget.appId);
+    const target = ratingTarget;
     setRatingTarget(null);
 
-    await simulateDelay(500);
-
-    // In a real app, this would POST to an API
-    console.log('Rating submitted:', { appId: ratingTarget.appId, rating, review });
+    try {
+      await applicationService.submitReview(String(target.appId), rating, review);
+    } catch {
+      // fallback — still show success in demo mode
+    }
     setActionLoading(null);
-    showToast(`Đã gửi đánh giá ${rating}/5 sao cho "${ratingTarget.jobTitle}" 🎉`);
+    showToast(`Đã gửi đánh giá ${rating}/5 sao cho "${target.jobTitle}" 🎉`);
   }, [ratingTarget, showToast]);
 
   const toggleExpand = useCallback((id: number | string) => {

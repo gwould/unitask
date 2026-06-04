@@ -153,8 +153,9 @@ export default function DashboardPage() {
     if (!user) return;
     let cancelled = false;
     loadData()
-      .then(() => {})
-      .catch(() => {})
+      .catch(() => {
+        // API failed — data fallback to localStorage is handled inside loadData
+      })
       .finally(() => {
         if (!cancelled) setIsLoading(false);
       });

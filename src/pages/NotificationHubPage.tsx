@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import type { Notification } from '../types/automation';
 import { STORAGE_KEYS } from '../constants';
 import { notificationService } from '../services/notificationService';
+import { useNotifications } from '../contexts/NotificationContext';
 import { hasAuthToken } from '../utils/auth';
 
 function NotificationItem({ notification, onMarkRead, onDelete, apiMode }: {
@@ -78,6 +79,7 @@ function NotificationItem({ notification, onMarkRead, onDelete, apiMode }: {
 
 export default function NotificationHubPage() {
   const { user } = useAuth();
+  const { refresh: refreshBadge } = useNotifications();
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [filterType, setFilterType] = useState<'all' | 'unread'>('all');
@@ -123,16 +125,19 @@ export default function NotificationHubPage() {
   const handleMarkRead = useCallback(async (id: string) => {
     await notificationService.markRead(id);
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)));
-  }, []);
+    refreshBadge();
+  }, [refreshBadge]);
 
   const handleDelete = useCallback((id: string) => {
     notificationService.deleteLocal(id);
     setNotifications((prev) => prev.filter((n) => n.id !== id));
-  }, []);
+    refreshBadge();
+  }, [refreshBadge]);
 
   const handleMarkAllRead = useCallback(async () => {
     await notificationService.markAllRead();
     setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+    refreshBadge();
   }, []);
 
   const handleClearAll = useCallback(() => {
