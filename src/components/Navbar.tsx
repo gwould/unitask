@@ -75,7 +75,10 @@ export default function Navbar() {
               </>
             )}
             {user.role === 'admin' && (
-              <Link to="/admin-finance" onClick={closeMobile}>📈 Admin Finance</Link>
+              <>
+                <Link to="/admin-finance" onClick={closeMobile}>📈 Admin Finance</Link>
+                <Link to="/admin-messages" onClick={closeMobile}>🛡️ Giám sát tin nhắn</Link>
+              </>
             )}
             <button
               style={{ marginTop: 16, textAlign: 'left', background: 'none', border: 'none', color: 'inherit', font: 'inherit', cursor: 'pointer', padding: '12px 0' }}
@@ -173,7 +176,10 @@ export default function Navbar() {
                       </>
                     )}
                     {user.role === 'admin' && (
-                      <Link to="/admin-finance" className="nav-dd-item">📈 Admin Finance</Link>
+                      <>
+                        <Link to="/admin-finance" className="nav-dd-item">📈 Admin Finance</Link>
+                        <Link to="/admin-messages" className="nav-dd-item">🛡️ Giám sát tin nhắn</Link>
+                      </>
                     )}
                     <button className="nav-dd-item nav-dd-logout" onClick={logout}>
                       🚪 Đăng xuất
