@@ -23,7 +23,6 @@ const MessagesPage = lazy(() => import('./pages/MessagesPage.tsx'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const AdminMessagesPage = lazy(() => import('./pages/AdminMessagesPage'));
-const LandingPage = lazy(() => import('./pages/LandingPage'));
 
 function PageLoader() {
   return (
@@ -37,9 +36,6 @@ export default function App() {
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>
-        {/* Landing page quang cao — khong co navbar/footer */}
-        <Route path="/landing" element={<LandingPage />} />
-
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
