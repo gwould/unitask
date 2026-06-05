@@ -316,6 +316,45 @@ section{padding:96px 0;position:relative}
 .faq-icon{font-size:20px;color:var(--p);flex-shrink:0;width:24px;text-align:center}
 .faq-answer{padding:0 22px 18px;color:var(--t2);font-size:14px;line-height:1.7}
 
+/* ─── AD LANDING PAGE ─── */
+.landing-ad{min-height:100vh}
+.landing-topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 32px;position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,10,26,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06)}
+.landing-hero{position:relative;padding:120px 0 60px;overflow:hidden}
+.landing-hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(91,79,255,.2) 0%,transparent 60%),radial-gradient(ellipse at 70% 80%,rgba(0,212,170,.12) 0%,transparent 50%);z-index:0}
+.landing-hero-content{max-width:640px}
+.landing-badge{display:inline-block;padding:6px 16px;border-radius:999px;background:rgba(91,79,255,.15);color:var(--p);font-size:13px;font-weight:700;margin-bottom:20px;border:1px solid rgba(91,79,255,.2)}
+.landing-hero h1{font-size:clamp(32px,5vw,52px);line-height:1.15;margin-bottom:16px}
+.landing-hero p{font-size:17px;color:var(--t2);line-height:1.7;max-width:520px}
+.landing-stats{display:flex;gap:32px;flex-wrap:wrap;margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,.06)}
+.landing-stat-num{font-size:28px;font-weight:800;color:#fff}
+.landing-stat-label{font-size:13px;color:var(--t3)}
+.landing-section{padding:64px 0}
+.landing-benefits{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.landing-benefit-card{padding:28px;border-radius:18px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);transition:border-color .2s}
+.landing-benefit-card:hover{border-color:rgba(91,79,255,.25)}
+.landing-benefit-icon{font-size:32px;margin-bottom:12px}
+.landing-benefit-card h3{font-size:17px;margin-bottom:8px}
+.landing-benefit-card p{font-size:14px;color:var(--t2);line-height:1.6}
+.landing-steps{display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+.landing-step{text-align:center;padding:24px 20px;position:relative;flex:1;min-width:180px}
+.landing-step-num{font-size:36px;margin-bottom:8px}
+.landing-step h4{font-size:15px;margin-bottom:6px}
+.landing-step p{font-size:13px;color:var(--t3)}
+.landing-step-arrow{position:absolute;right:-12px;top:36px;font-size:20px;color:var(--t3)}
+.landing-testimonials{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.landing-testi-card{padding:24px;border-radius:16px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02)}
+.landing-testi-card p{font-size:14px;color:var(--t2);line-height:1.7;margin-bottom:16px;font-style:italic}
+.landing-testi-author{display:flex;align-items:center;gap:10px}
+.landing-final-cta{padding:80px 0;background:linear-gradient(135deg,rgba(91,79,255,.08),rgba(0,212,170,.06))}
+.landing-footer{border-top:1px solid rgba(255,255,255,.06)}
+@media(max-width:768px){
+  .landing-topbar{padding:12px 16px}
+  .landing-hero-content{text-align:center}
+  .landing-hero-content .btn{width:100%;justify-content:center}
+  .landing-stats{justify-content:center}
+  .landing-step-arrow{display:none}
+}
+
 .cta-section{padding:96px 0}
 .cta-section{position:relative}
 .cta-box{background:linear-gradient(135deg,var(--pd) 0%,var(--p) 40%,rgba(0,212,170,.6) 100%);border-radius:var(--r28);padding:72px 60px;text-align:center;position:relative;overflow:hidden;isolation:isolate}
