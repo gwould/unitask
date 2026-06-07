@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Test accounts (local only)
+TEST_ACCOUNTS.md

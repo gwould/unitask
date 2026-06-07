@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth, type UserRole } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -27,20 +27,6 @@ export default function LoginPage() {
     }
   };
 
-  const fillDemo = (role: UserRole) => {
-    if (role === 'student') {
-      setEmail('student@demo.com');
-      setPassword('demo123');
-    } else if (role === 'business') {
-      setEmail('business@demo.com');
-      setPassword('demo123');
-    } else {
-      setEmail('admin@demo.com');
-      setPassword('demo123');
-    }
-    setError('');
-  };
-
   return (
     <section className="auth-page">
       <div className="auth-bg-gradient" aria-hidden />
@@ -49,20 +35,6 @@ export default function LoginPage() {
           <div className="auth-header">
             <h1>Đăng nhập</h1>
             <p>Chào mừng bạn quay lại UniTask</p>
-          </div>
-
-          {/* Demo quick-fill */}
-          <div className="demo-accounts">
-            <span className="demo-label">🚀 Tài khoản demo:</span>
-            <button type="button" className="demo-btn" onClick={() => fillDemo('student')}>
-              👨‍🎓 Sinh viên
-            </button>
-            <button type="button" className="demo-btn" onClick={() => fillDemo('business')}>
-              🏢 Doanh nghiệp
-            </button>
-            <button type="button" className="demo-btn" onClick={() => fillDemo('admin')}>
-              🛡️ Admin
-            </button>
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form">
