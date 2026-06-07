@@ -14,6 +14,8 @@ const TABS = [
   { label: '📢 Marketing', cat: 'marketing' },
 ];
 
+const JOBS_PER_PAGE = 9;
+
 function JobCard({ job }: { job: Job }) {
   const spotsPct = ((job.spotsTotal - job.spotsLeft) / job.spotsTotal) * 100;
   return (
@@ -50,6 +52,7 @@ export default function JobsSection() {
   const [activeTab, setActiveTab] = useState('all');
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     let cancelled = false;
@@ -69,9 +72,26 @@ export default function JobsSection() {
     return () => { cancelled = true; };
   }, []);
 
+  // Reset page when tab changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab]);
+
   const filtered = activeTab === 'all'
     ? jobs
     : jobs.filter((j) => j.category === activeTab);
+
+  const totalPages = Math.ceil(filtered.length / JOBS_PER_PAGE);
+  const paginatedJobs = filtered.slice(
+    (currentPage - 1) * JOBS_PER_PAGE,
+    currentPage * JOBS_PER_PAGE
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    document.getElementById('jobs')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    requestAnimationFrame(() => observeFadeUpElements());
+  };
 
   return (
     <section className="jobs-section" id="jobs">
@@ -105,11 +125,42 @@ export default function JobsSection() {
         {loading ? (
           <div style={{ textAlign: 'center', color: 'var(--text-2)' }}>Đang tải job...</div>
         ) : (
-          <div className="jobs-grid">
-            {filtered.map((job) => (
-              <JobCard key={job.id} job={job} />
-            ))}
-          </div>
+          <>
+            <div className="jobs-grid">
+              {paginatedJobs.map((job) => (
+                <JobCard key={job.id} job={job} />
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="jobs-pagination">
+                <button
+                  className="jobs-page-btn"
+                  disabled={currentPage === 1}
+                  onClick={() => handlePageChange(currentPage - 1)}
+                >
+                  ← Trước
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    className={`jobs-page-btn${currentPage === page ? ' active' : ''}`}
+                    onClick={() => handlePageChange(page)}
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button
+                  className="jobs-page-btn"
+                  disabled={currentPage === totalPages}
+                  onClick={() => handlePageChange(currentPage + 1)}
+                >
+                  Sau →
+                </button>
+              </div>
+            )}
+          </>
         )}
         <div style={{ textAlign: 'center', marginTop: 44 }} className="fade-up">
           <Link to="/jobs" className="btn btn-ghost">Xem tất cả 1.100+ job →</Link>

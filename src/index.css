@@ -203,6 +203,11 @@ section{padding:96px 0;position:relative}
 .job-tab{padding:9px 22px;border-radius:var(--r6);font-size:13px;font-weight:600;color:var(--t2);cursor:pointer;transition:all .25s}
 .job-tab.active{background:var(--p);color:#fff;box-shadow:0 4px 16px rgba(91,79,255,.4)}
 .jobs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.jobs-pagination{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:36px}
+.jobs-page-btn{padding:8px 16px;border-radius:10px;border:1px solid var(--bd);background:var(--s1);color:var(--t2);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.jobs-page-btn:hover:not(:disabled){border-color:var(--pl);color:var(--pl);background:rgba(91,79,255,.08)}
+.jobs-page-btn.active{background:var(--p);color:#fff;border-color:var(--p)}
+.jobs-page-btn:disabled{opacity:.4;cursor:not-allowed}
 .job-card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r14);padding:22px;transition:all .3s ease;cursor:pointer;position:relative;overflow:hidden}
 .job-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--p),var(--pl));opacity:0;transition:opacity .3s}
 .job-card:hover{border-color:rgba(91,79,255,.45);transform:translateY(-5px);box-shadow:0 16px 50px rgba(91,79,255,.18)}

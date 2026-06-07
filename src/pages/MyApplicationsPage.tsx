@@ -6,7 +6,7 @@ import { APP_STATUS_MAP, STORAGE_KEYS } from '../constants';
 import type { Notification } from '../types/automation';
 import { ConfirmModal, RatingModal } from '../components/ui';
 import { serviceRegistry } from '../services';
-import { simulateDelay } from '../utils/async';
+// import { simulateDelay } from '../utils/async';
 
 const { applications: applicationService, jobs: jobService } = serviceRegistry;
 

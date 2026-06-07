@@ -1,7 +1,7 @@
 import { createContext, useContext, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import { notificationService } from '../services/notificationService';
-import { hasAuthToken } from '../utils/auth';
+// import { hasAuthToken } from '../utils/auth';
 
 interface NotificationState {
   unreadCount: number;
