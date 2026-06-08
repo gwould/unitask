@@ -568,6 +568,33 @@ a.nav-logo{text-decoration:none;color:inherit}
 .pj-card-skills{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
 .pj-card-skills span{padding:3px 10px;border-radius:var(--rpill);font-size:11px;font-weight:600;background:rgba(91,79,255,.1);color:var(--pl);border:1px solid rgba(91,79,255,.2)}
 .pj-empty{text-align:center;padding:80px 20px;color:var(--text-2);font-size:15px}
+.pj-result-info{font-size:13.5px;color:var(--t3);margin-bottom:16px}
+.pj-result-info strong{color:var(--t2)}
+.pj-pagination{
+  display:flex;align-items:center;justify-content:center;
+  gap:6px;margin-top:48px;flex-wrap:wrap;
+}
+.pj-page-btn{
+  min-width:40px;height:40px;padding:0 14px;
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:10px;border:1px solid var(--bd);
+  background:var(--s1);color:var(--t2);
+  font-size:14px;font-weight:600;cursor:pointer;
+  transition:all .2s;
+}
+.pj-page-btn:hover:not(:disabled){
+  border-color:var(--pl);color:var(--pl);background:rgba(91,79,255,.08);
+}
+.pj-page-btn.active{
+  background:var(--p);border-color:var(--p);color:#fff;
+  box-shadow:0 4px 16px rgba(91,79,255,.35);
+}
+.pj-page-btn:disabled{opacity:.35;cursor:not-allowed}
+.pj-page-nav{padding:0 18px;font-size:13px}
+.pj-page-dots{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:40px;height:40px;color:var(--t3);font-size:15px;letter-spacing:1px;
+}
 
 /* ─── JOB DETAIL PAGE ─────────────────────────────── */
 .page-detail{padding:100px 0 60px}
@@ -1695,6 +1722,12 @@ input:disabled,select:disabled,textarea:disabled{opacity:.55;cursor:not-allowed}
 [data-theme="light"] .pj-sort-btn{border-color:rgba(0,0,0,.1);color:#52546A;background:#F4F5F7}
 [data-theme="light"] .pj-sort-btn:hover{border-color:#5B4FFF;color:#5B4FFF;background:rgba(91,79,255,.06)}
 [data-theme="light"] .pj-sort-btn.active{background:#5B4FFF;border-color:#5B4FFF;color:#fff}
+[data-theme="light"] .pj-page-btn{background:#fff;border-color:rgba(0,0,0,.1);color:#52546A}
+[data-theme="light"] .pj-page-btn:hover:not(:disabled){border-color:#5B4FFF;color:#5B4FFF;background:rgba(91,79,255,.06)}
+[data-theme="light"] .pj-page-btn.active{background:#5B4FFF;border-color:#5B4FFF;color:#fff}
+[data-theme="light"] .pj-page-dots{color:#9496AA}
+[data-theme="light"] .pj-result-info{color:#9496AA}
+[data-theme="light"] .pj-result-info strong{color:#52546A}
 [data-theme="light"] .pj-card{background:#fff;border-color:rgba(0,0,0,.08);color:#1C1D26}
 [data-theme="light"] .pj-card:hover{border-color:#5B4FFF;box-shadow:0 8px 32px rgba(91,79,255,.1)}
 [data-theme="light"] .pj-card-title{color:#1C1D26}

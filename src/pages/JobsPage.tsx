@@ -21,8 +21,10 @@ export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const { user } = useAuth();
   const [matchMap, setMatchMap] = useState<Record<string, number>>({});
+  const JOBS_PER_PAGE = 12;
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
@@ -124,11 +126,26 @@ export default function JobsPage() {
     return list;
   }, [filtered, matchMap]);
 
+  // Reset page khi filter/sort thay đổi
+  useEffect(() => { setCurrentPage(1); }, [query, category, location, sort]);
+
+  const totalPages = Math.ceil(displayed.length / JOBS_PER_PAGE);
+  const paginatedJobs = displayed.slice(
+    (currentPage - 1) * JOBS_PER_PAGE,
+    currentPage * JOBS_PER_PAGE,
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    document.querySelector('.pj-filters')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   const handleSearch = () => {
     const params = new URLSearchParams();
     if (query) params.set('q', query);
     if (category) params.set('cat', category);
     setSearchParams(params);
+    setCurrentPage(1);
   };
 
   return (
@@ -211,7 +228,7 @@ export default function JobsPage() {
           subtitle="Hệ thống tự động chấm điểm job theo hồ sơ cá nhân, kỹ năng, ngành học và từ khóa tìm kiếm hiện tại."
         />
 
-        {/* results */}
+        {/* Results */}
         {loading ? (
           <div className="pj-empty fade-up">
             <div style={{ fontSize: 48, marginBottom: 16 }}>⏳</div>
@@ -225,48 +242,102 @@ export default function JobsPage() {
             <p>Thử thay đổi bộ lọc hoặc tìm với từ khóa khác.</p>
           </div>
         ) : (
-          <div className="pj-grid">
-            {displayed.map((job) => (
-              <Link to={`/jobs/${job.id}`} key={job.id} className="pj-card fade-up">
-                <div className="pj-card-top">
-                  <div className="jc-logo" style={{ background: job.logoGradient }}>
-                    {job.logoText}
-                  </div>
-                  <div className="pj-card-meta">
-                    <div className="pj-card-title">{job.title}</div>
-                    <div className="pj-card-company">
-                      {job.company} {job.verified && '✅'} · {job.location}
+          <>
+            {/* Kết quả info */}
+            <div className="pj-result-info">
+              Hiển thị <strong>{(currentPage - 1) * JOBS_PER_PAGE + 1}–{Math.min(currentPage * JOBS_PER_PAGE, displayed.length)}</strong> trong <strong>{displayed.length}</strong> job
+            </div>
+
+            <div className="pj-grid">
+              {paginatedJobs.map((job) => (
+                <Link to={`/jobs/${job.id}`} key={job.id} className="pj-card fade-up">
+                  <div className="pj-card-top">
+                    <div className="jc-logo" style={{ background: job.logoGradient }}>
+                      {job.logoText}
+                    </div>
+                    <div className="pj-card-meta">
+                      <div className="pj-card-title">{job.title}</div>
+                      <div className="pj-card-company">
+                        {job.company} {job.verified && '✅'} · {job.location}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="jc-tags" style={{ marginBottom: 10 }}>
-                  {job.tags.map((t, i) => (
-                    <span key={i} className={`tag tag-${t.variant}`}>{t.label}</span>
-                  ))}
-                </div>
-                <div className="pj-card-skills">
-                  {job.skills.slice(0, 4).map((s) => (
-                    <span key={s} className="pj-skill">{s}</span>
-                  ))}
-                </div>
-                <div className="pj-card-bottom">
-                  <span className="pj-pay">💰 {job.pay}</span>
-                  <span className="pj-deadline">⏰ {job.deadline}</span>
-                </div>
-                <div className="pj-card-spots">
-                  Còn {job.spotsLeft}/{job.spotsTotal} chỗ
-                  <div className="spots-bar" style={{ flex: 1 }}>
-                    <div
-                      className="spots-fill"
-                      style={{
-                        width: `${((job.spotsTotal - job.spotsLeft) / job.spotsTotal) * 100}%`,
-                      }}
-                    />
+                  <div className="jc-tags" style={{ marginBottom: 10 }}>
+                    {job.tags.map((t, i) => (
+                      <span key={i} className={`tag tag-${t.variant}`}>{t.label}</span>
+                    ))}
                   </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+                  <div className="pj-card-skills">
+                    {job.skills.slice(0, 4).map((s) => (
+                      <span key={s} className="pj-skill">{s}</span>
+                    ))}
+                  </div>
+                  <div className="pj-card-bottom">
+                    <span className="pj-pay">💰 {job.pay}</span>
+                    <span className="pj-deadline">⏰ {job.deadline}</span>
+                  </div>
+                  <div className="pj-card-spots">
+                    Còn {job.spotsLeft}/{job.spotsTotal} chỗ
+                    <div className="spots-bar" style={{ flex: 1 }}>
+                      <div
+                        className="spots-fill"
+                        style={{
+                          width: `${((job.spotsTotal - job.spotsLeft) / job.spotsTotal) * 100}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="pj-pagination">
+                <button
+                  className="pj-page-btn pj-page-nav"
+                  disabled={currentPage === 1}
+                  onClick={() => handlePageChange(currentPage - 1)}
+                >
+                  ← Trước
+                </button>
+
+                {/* Smart page numbers */}
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter((p) =>
+                    p === 1 ||
+                    p === totalPages ||
+                    Math.abs(p - currentPage) <= 2
+                  )
+                  .reduce<(number | '...')[]>((acc, p, i, arr) => {
+                    if (i > 0 && p - (arr[i - 1] as number) > 1) acc.push('...');
+                    acc.push(p);
+                    return acc;
+                  }, [])
+                  .map((p, i) =>
+                    p === '...' ? (
+                      <span key={`dots-${i}`} className="pj-page-dots">…</span>
+                    ) : (
+                      <button
+                        key={p}
+                        className={`pj-page-btn${currentPage === p ? ' active' : ''}`}
+                        onClick={() => handlePageChange(p as number)}
+                      >
+                        {p}
+                      </button>
+                    ),
+                  )}
+
+                <button
+                  className="pj-page-btn pj-page-nav"
+                  disabled={currentPage === totalPages}
+                  onClick={() => handlePageChange(currentPage + 1)}
+                >
+                  Sau →
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </section>
