@@ -359,6 +359,78 @@ export default function DashboardPage() {
                 </div>
               </div>
 
+              {/* Student onboarding checklist */}
+              {user.role === 'student' && stats.total === 0 && (
+                <div className="dash-onboard fade-up">
+                  <div className="dash-onboard-header">
+                    <h2>🚀 Bắt đầu hành trình của bạn</h2>
+                    <p>Hoàn thành các bước sau để tăng cơ hội được nhận job</p>
+                  </div>
+                  <div className="dash-onboard-steps">
+                    <Link to="/profile" className={`dash-onboard-step${user.bio ? ' done' : ''}`}>
+                      <span className="dash-ob-num">{user.bio ? '✓' : '1'}</span>
+                      <div className="dash-ob-info">
+                        <strong>Hoàn thiện hồ sơ</strong>
+                        <span>Thêm kỹ năng, trường, bio để nổi bật</span>
+                      </div>
+                      <span className="dash-ob-arrow">→</span>
+                    </Link>
+                    <Link to="/jobs" className="dash-onboard-step">
+                      <span className="dash-ob-num">2</span>
+                      <div className="dash-ob-info">
+                        <strong>Tìm job phù hợp</strong>
+                        <span>Duyệt job theo kỹ năng, AI gợi ý thông minh</span>
+                      </div>
+                      <span className="dash-ob-arrow">→</span>
+                    </Link>
+                    <div className="dash-onboard-step disabled">
+                      <span className="dash-ob-num">3</span>
+                      <div className="dash-ob-info">
+                        <strong>Ứng tuyển & nhận việc</strong>
+                        <span>Viết cover letter và chờ phản hồi</span>
+                      </div>
+                    </div>
+                    <div className="dash-onboard-step disabled">
+                      <span className="dash-ob-num">4</span>
+                      <div className="dash-ob-info">
+                        <strong>Hoàn thành & nhận tiền</strong>
+                        <span>Nộp bài, được duyệt và nhận thanh toán qua Escrow</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Quick actions for students */}
+              {user.role === 'student' && (
+                <div className="dash-quick-actions fade-up">
+                  <Link to="/jobs" className="dash-qa-card">
+                    <span className="dash-qa-icon">🔍</span>
+                    <span className="dash-qa-label">Tìm việc</span>
+                  </Link>
+                  <Link to="/my-applications" className="dash-qa-card">
+                    <span className="dash-qa-icon">📋</span>
+                    <span className="dash-qa-label">Đơn ứng tuyển</span>
+                  </Link>
+                  <Link to="/wallet" className="dash-qa-card">
+                    <span className="dash-qa-icon">💰</span>
+                    <span className="dash-qa-label">Ví tiền</span>
+                  </Link>
+                  <Link to="/profile" className="dash-qa-card">
+                    <span className="dash-qa-icon">👤</span>
+                    <span className="dash-qa-label">Hồ sơ</span>
+                  </Link>
+                  <Link to="/messages" className="dash-qa-card">
+                    <span className="dash-qa-icon">💬</span>
+                    <span className="dash-qa-label">Tin nhắn</span>
+                  </Link>
+                  <Link to="/notifications" className="dash-qa-card">
+                    <span className="dash-qa-icon">🔔</span>
+                    <span className="dash-qa-label">Thông báo</span>
+                  </Link>
+                </div>
+              )}
+
               {/* recent applications */}
               <div className="dash-section fade-up">
                 <div className="dash-section-header">

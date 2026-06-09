@@ -230,10 +230,28 @@ export default function JobsPage() {
 
         {/* Results */}
         {loading ? (
-          <div className="pj-empty fade-up">
-            <div style={{ fontSize: 48, marginBottom: 16 }}>⏳</div>
-            <h3>Đang tải dữ liệu job</h3>
-            <p>Vui lòng chờ trong giây lát.</p>
+          <div className="pj-grid">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="pj-card pj-card-skeleton" style={{ animationDelay: `${i * 0.08}s` }}>
+                <div className="pj-card-top">
+                  <div className="skeleton" style={{ width: 44, height: 44, borderRadius: 10 }} />
+                  <div className="pj-card-meta">
+                    <div className="skeleton" style={{ width: '70%', height: 16, borderRadius: 4, marginBottom: 6 }} />
+                    <div className="skeleton" style={{ width: '50%', height: 12, borderRadius: 4 }} />
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
+                  <div className="skeleton" style={{ width: 60, height: 22, borderRadius: 20 }} />
+                  <div className="skeleton" style={{ width: 50, height: 22, borderRadius: 20 }} />
+                </div>
+                <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+                  <div className="skeleton" style={{ width: 70, height: 20, borderRadius: 4 }} />
+                  <div className="skeleton" style={{ width: 80, height: 20, borderRadius: 4 }} />
+                </div>
+                <div className="skeleton" style={{ width: '55%', height: 14, borderRadius: 4, marginBottom: 8 }} />
+                <div className="skeleton" style={{ width: '40%', height: 14, borderRadius: 4 }} />
+              </div>
+            ))}
           </div>
         ) : filtered.length === 0 ? (
           <div className="pj-empty fade-up">
