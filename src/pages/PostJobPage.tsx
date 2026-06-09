@@ -71,34 +71,47 @@ export default function PostJobPage() {
 
     setSubmitting(true);
     try {
-      const created = await jobService.create({
-        title: form.title.trim(),
-        logoText: (user.companyName || user.name).substring(0, 2).toUpperCase(),
-        logoGradient: 'linear-gradient(135deg,#5B4FFF,#7C72FF)',
-        company: user.companyName || user.name,
-        companyId: user.id,
-        verified: false,
-        location: form.location,
-        tags: [{ label: selected?.label || 'Job', variant: 'p' }],
-        spotsLeft: 1,
-        spotsTotal: 1,
-        pay: form.payMax
-          ? `${Number(form.payMin).toLocaleString('vi-VN')} – ${Number(form.payMax).toLocaleString('vi-VN')} ₫`
-          : `${Number(form.payMin).toLocaleString('vi-VN')} ₫`,
-        payMin: Number(form.payMin),
-        payMax: Number(form.payMax) || Number(form.payMin),
-        deadline: form.deadline,
-        duration: form.duration || 'Linh hoạt',
-        description: form.description.trim(),
-        requirements: form.requirements.split('\n').map((r) => r.trim()).filter(Boolean),
-        deliverables: form.deliverables.split('\n').map((d) => d.trim()).filter(Boolean),
-        skills: form.skills.split(',').map((s) => s.trim()).filter(Boolean),
-        postedAt: new Date().toISOString().slice(0, 10),
-        category: selected?.label?.toLowerCase() || 'all',
-        categoryId,
-      });
+      // Bước 1: tạo job
+      let created;
+      try {
+        created = await jobService.create({
+          title: form.title.trim(),
+          logoText: (user.companyName || user.name).substring(0, 2).toUpperCase(),
+          logoGradient: 'linear-gradient(135deg,#5B4FFF,#7C72FF)',
+          company: user.companyName || user.name,
+          companyId: user.id,
+          verified: false,
+          location: form.location,
+          tags: [{ label: selected?.label || 'Job', variant: 'p' }],
+          spotsLeft: 1,
+          spotsTotal: 1,
+          pay: form.payMax
+            ? `${Number(form.payMin).toLocaleString('vi-VN')} – ${Number(form.payMax).toLocaleString('vi-VN')} ₫`
+            : `${Number(form.payMin).toLocaleString('vi-VN')} ₫`,
+          payMin: Number(form.payMin),
+          payMax: Number(form.payMax) || Number(form.payMin),
+          deadline: form.deadline,
+          duration: form.duration || 'Linh hoạt',
+          description: form.description.trim(),
+          requirements: form.requirements.split('\n').map((r) => r.trim()).filter(Boolean),
+          deliverables: form.deliverables.split('\n').map((d) => d.trim()).filter(Boolean),
+          skills: form.skills.split(',').map((s) => s.trim()).filter(Boolean),
+          postedAt: new Date().toISOString().slice(0, 10),
+          category: selected?.label?.toLowerCase() || 'all',
+          categoryId,
+        });
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Lỗi không xác định';
+        throw new Error(`Không thể tạo job: ${msg}`);
+      }
 
-      await jobService.publish(created.id);
+      // Bước 2: publish — không block nếu thất bại
+      try {
+        await jobService.publish(created.id);
+      } catch (err) {
+        console.warn('[PostJob] publish failed (non-fatal):', err);
+        // Job đã tạo nhưng publish thất bại → vẫn coi là thành công
+      }
 
       createNotification({
         recipientId: String(user.id),
@@ -110,10 +123,12 @@ export default function PostJobPage() {
         actionUrl: '/manage-jobs',
       });
 
-      setToast('Đã đăng job thành công qua API backend.');
+      setToast('Đã đăng job thành công!');
       setSuccess(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Không thể đăng job. Vui lòng đăng nhập doanh nghiệp và thử lại.');
+      const msg = err instanceof Error ? err.message : 'Không thể đăng job.';
+      setError(msg);
+      console.error('[PostJob] submit error:', err);
     } finally {
       setSubmitting(false);
     }

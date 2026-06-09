@@ -238,23 +238,43 @@ export const jobService = {
   },
 
   async create(job: Omit<Job, 'id'> & { categoryId?: string | null }): Promise<Job> {
-    const created = await apiPost<ApiJobListItem>('/api/jobs', {
+    // Chỉ gửi các field có giá trị thật, bỏ null/undefined tránh crash backend
+    const payload: Record<string, unknown> = {
       title: job.title,
       description: job.description,
-      categoryId: job.categoryId ?? null,
       tags: job.tags.map((tag) => tag.label),
       salaryMin: job.payMin,
-      salaryMax: job.payMax,
-      currency: job.pay.includes('₫') ? 'VND' : undefined,
-      durationType: job.duration || undefined,
-      durationDays: undefined,
-      requiredSkills: job.skills,
-      experienceLevel: undefined,
-      spotsTotal: job.spotsTotal,
+      salaryMax: job.payMax || job.payMin,
+      currency: 'VND',
+      spotsTotal: job.spotsTotal ?? 1,
       location: job.location,
-      isRemote: job.location.toLowerCase().includes('remote') ? true : undefined,
-      deadline: job.deadline ? new Date(job.deadline).toISOString() : undefined,
-    });
+      requiredSkills: job.skills?.length ? job.skills : [],
+    };
+
+    // categoryId chỉ gửi khi là GUID thật (không gửi null để tránh FK crash)
+    if (job.categoryId && job.categoryId.length > 10) {
+      payload.categoryId = job.categoryId;
+    }
+
+    if (job.duration) {
+      payload.durationType = job.duration;
+    }
+
+    if (job.location.toLowerCase().includes('remote')) {
+      payload.isRemote = true;
+    }
+
+    if (job.deadline) {
+      try {
+        payload.deadline = new Date(job.deadline).toISOString();
+      } catch {
+        payload.deadline = job.deadline;
+      }
+    }
+
+    console.log('[jobService.create] payload:', JSON.stringify(payload, null, 2));
+
+    const created = await apiPost<ApiJobListItem>('/api/jobs', payload);
     return normalizeJob(created);
   },
 

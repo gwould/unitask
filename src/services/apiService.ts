@@ -32,10 +32,32 @@ async function parseResponse<T>(res: Response): Promise<T> {
 
 async function parseErrorMessage(res: Response): Promise<string> {
   try {
-    const body = await res.json() as { message?: string; title?: string };
-    return body.message || body.title || `API error ${res.status}`;
+    const text = await res.text();
+    if (!text) return `Lỗi server ${res.status}`;
+
+    // Log raw response để debug
+    console.error(`[API ${res.status}] ${res.url}\n`, text);
+
+    const body = JSON.parse(text) as {
+      message?: string;
+      title?: string;
+      detail?: string;
+      errors?: Record<string, string[]>;
+      traceId?: string;
+    };
+
+    // .NET validation errors (400)
+    if (body.errors) {
+      const msgs = Object.entries(body.errors)
+        .flatMap(([field, errs]) => errs.map((e) => `${field}: ${e}`))
+        .join('; ');
+      return msgs || body.title || `Lỗi validation ${res.status}`;
+    }
+
+    // .NET problem details
+    return body.detail || body.message || body.title || `Lỗi server ${res.status}`;
   } catch {
-    return `API error ${res.status}`;
+    return `Lỗi server ${res.status}`;
   }
 }
 
