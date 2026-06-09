@@ -9,6 +9,17 @@ import type { Job } from '../types';
 
 const { applications: applicationService, jobs: jobService } = serviceRegistry;
 
+function timeUntilDeadline(deadline: string): string {
+  if (!deadline) return '';
+  const diff = new Date(deadline).getTime() - Date.now();
+  if (diff <= 0) return 'Đã hết hạn';
+  const days = Math.floor(diff / 86_400_000);
+  if (days > 30) return `${Math.floor(days / 30)} tháng`;
+  if (days > 0) return `${days} ngày`;
+  const hours = Math.floor(diff / 3_600_000);
+  return `${hours} giờ`;
+}
+
 export default function JobDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -16,6 +27,7 @@ export default function JobDetailPage() {
   const { refresh: refreshBadge } = useNotifications();
   const [job, setJob] = useState<Job | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [relatedJobs, setRelatedJobs] = useState<Job[]>([]);
 
   const [showApply, setShowApply] = useState(false);
   const [coverLetter, setCoverLetter] = useState('');
@@ -32,6 +44,7 @@ export default function JobDetailPage() {
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
+    setIsLoading(true);
     jobService.getById(id)
       .then((data) => {
         if (!cancelled) {
@@ -48,14 +61,46 @@ export default function JobDetailPage() {
     return () => { cancelled = true; };
   }, [id]);
 
+  // Load related jobs
+  useEffect(() => {
+    if (!job) return;
+    let cancelled = false;
+    jobService.getAll()
+      .then((all) => {
+        if (cancelled) return;
+        const related = all
+          .filter((j) => j.id !== job.id)
+          .filter((j) =>
+            j.category === job.category ||
+            j.skills.some((s) => job.skills.includes(s))
+          )
+          .slice(0, 3);
+        setRelatedJobs(related);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [job]);
+
   if (isLoading) {
     return (
       <section className="page-detail">
-        <div className="container" style={{ textAlign: 'center', paddingTop: 160 }}>
-          <h2 className="section-title">Đang tải job...</h2>
-          <p className="section-sub" style={{ margin: '0 auto 24px' }}>
-            Vui lòng đợi trong giây lát.
-          </p>
+        <div className="container" style={{ paddingTop: 120 }}>
+          <div className="pd-loading">
+            <div className="pd-loading-card">
+              <div className="skeleton" style={{ width: 56, height: 56, borderRadius: 14 }} />
+              <div style={{ flex: 1 }}>
+                <div className="skeleton" style={{ width: '60%', height: 24, borderRadius: 6, marginBottom: 8 }} />
+                <div className="skeleton" style={{ width: '40%', height: 14, borderRadius: 4 }} />
+              </div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, margin: '20px 0' }}>
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="skeleton" style={{ height: 60, borderRadius: 10 }} />
+              ))}
+            </div>
+            <div className="skeleton" style={{ height: 120, borderRadius: 14, marginBottom: 16 }} />
+            <div className="skeleton" style={{ height: 80, borderRadius: 14 }} />
+          </div>
         </div>
       </section>
     );
@@ -65,6 +110,7 @@ export default function JobDetailPage() {
     return (
       <section className="page-detail">
         <div className="container" style={{ textAlign: 'center', paddingTop: 160 }}>
+          <div style={{ fontSize: 64, marginBottom: 16 }}>🔍</div>
           <h2 className="section-title">Job không tồn tại</h2>
           <p className="section-sub" style={{ margin: '0 auto 24px' }}>
             Có thể job đã bị xóa hoặc link không đúng.
@@ -127,16 +173,26 @@ export default function JobDetailPage() {
     });
 
     setSubmitting(false);
-    setToast('Đã gửi ứng tuyển. Thông báo đã được cập nhật.');
+    setToast('Đã gửi ứng tuyển thành công! 🎉');
     setApplied(true);
     setShowApply(false);
     refreshBadge();
   };
 
+  const deadlineText = timeUntilDeadline(job.deadline);
+  const spotsPercent = job.spotsTotal > 0 ? ((job.spotsTotal - job.spotsLeft) / job.spotsTotal) * 100 : 0;
+
   return (
     <section className="page-detail">
       <div className="container">
-        <Link to="/jobs" className="pd-back fade-up">← Quay lại danh sách việc làm</Link>
+        {/* Breadcrumb */}
+        <div className="pd-breadcrumb fade-up">
+          <Link to="/">Trang chủ</Link>
+          <span>/</span>
+          <Link to="/jobs">Việc làm</Link>
+          <span>/</span>
+          <span className="pd-bread-current">{job.title}</span>
+        </div>
 
         <div className="pd-layout">
           {/* main */}
@@ -165,50 +221,98 @@ export default function JobDetailPage() {
                 </div>
                 <div className="pd-info-item">
                   <span className="pd-info-label">⏱ Thời gian</span>
-                  <span className="pd-info-value">{job.duration}</span>
+                  <span className="pd-info-value">{job.duration || 'Linh hoạt'}</span>
                 </div>
                 <div className="pd-info-item">
                   <span className="pd-info-label">⏰ Hạn ứng tuyển</span>
-                  <span className="pd-info-value">{job.deadline}</span>
+                  <span className="pd-info-value">
+                    {deadlineText && <span className={deadlineText === 'Đã hết hạn' ? 'pd-expired' : ''}>{deadlineText}</span>}
+                    {!deadlineText && job.deadline}
+                  </span>
                 </div>
                 <div className="pd-info-item">
                   <span className="pd-info-label">👥 Còn lại</span>
                   <span className="pd-info-value">{job.spotsLeft}/{job.spotsTotal} chỗ</span>
+                  <div className="pd-spots-bar">
+                    <div className="pd-spots-fill" style={{ width: `${spotsPercent}%` }} />
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="pd-section">
-              <h2>Mô tả công việc</h2>
-              <p>{job.description}</p>
-            </div>
-
-            <div className="pd-section">
-              <h2>Yêu cầu</h2>
-              <ul className="pd-list">
-                {job.requirements.map((r, i) => (
-                  <li key={i}>{r}</li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="pd-section">
-              <h2>Sản phẩm cần nộp</h2>
-              <ul className="pd-list">
-                {job.deliverables.map((d, i) => (
-                  <li key={i}>{d}</li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="pd-section">
-              <h2>Kỹ năng cần thiết</h2>
-              <div className="pd-skills">
-                {job.skills.map((s) => (
-                  <span key={s} className="pj-skill">{s}</span>
-                ))}
+            {job.description && (
+              <div className="pd-section">
+                <h2>Mô tả công việc</h2>
+                <p>{job.description}</p>
               </div>
-            </div>
+            )}
+
+            {job.requirements.length > 0 && (
+              <div className="pd-section">
+                <h2>Yêu cầu</h2>
+                <ul className="pd-list">
+                  {job.requirements.map((r, i) => (
+                    <li key={i}>{r}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {job.deliverables.length > 0 && (
+              <div className="pd-section">
+                <h2>Sản phẩm cần nộp</h2>
+                <ul className="pd-list">
+                  {job.deliverables.map((d, i) => (
+                    <li key={i}>{d}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {job.skills.length > 0 && (
+              <div className="pd-section">
+                <h2>Kỹ năng cần thiết</h2>
+                <div className="pd-skills">
+                  {job.skills.map((s) => (
+                    <span key={s} className="pj-skill">{s}</span>
+                  ))}
+                </div>
+                {user?.role === 'student' && user.skills && user.skills.length > 0 && (
+                  <div className="pd-skill-match">
+                    <span className="pd-skill-match-label">Kỹ năng phù hợp:</span>
+                    {job.skills.filter(s => user.skills?.some(us => us.toLowerCase() === s.toLowerCase())).length > 0 ? (
+                      <span className="pd-skill-match-count pd-match-good">
+                        ✓ {job.skills.filter(s => user.skills?.some(us => us.toLowerCase() === s.toLowerCase())).length}/{job.skills.length}
+                      </span>
+                    ) : (
+                      <span className="pd-skill-match-count pd-match-none">
+                        0/{job.skills.length} — Hãy cập nhật kỹ năng trong <Link to="/profile">hồ sơ</Link>
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Related jobs */}
+            {relatedJobs.length > 0 && (
+              <div className="pd-section pd-related">
+                <h2>Job tương tự</h2>
+                <div className="pd-related-grid">
+                  {relatedJobs.map((rj) => (
+                    <Link to={`/jobs/${rj.id}`} key={rj.id} className="pd-related-card">
+                      <div className="jc-logo" style={{ background: rj.logoGradient, width: 36, height: 36, fontSize: 13 }}>
+                        {rj.logoText}
+                      </div>
+                      <div className="pd-related-info">
+                        <div className="pd-related-title">{rj.title}</div>
+                        <div className="pd-related-meta">{rj.company} · {rj.pay}</div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* sidebar */}
@@ -216,33 +320,54 @@ export default function JobDetailPage() {
             <div className="pd-sticky">
               {applied ? (
                 <div className="pd-applied-box">
-                  <div style={{ fontSize: 36, marginBottom: 12 }}>✅</div>
-                  <h3>Đã ứng tuyển!</h3>
+                  <div style={{ fontSize: 48, marginBottom: 12 }}>🎉</div>
+                  <h3>Ứng tuyển thành công!</h3>
                   <p>Doanh nghiệp sẽ xem hồ sơ và phản hồi bạn qua hệ thống.</p>
-                  <Link to="/dashboard" className="btn btn-ghost" style={{ width: '100%', justifyContent: 'center', marginTop: 12 }}>
-                    Xem Dashboard
-                  </Link>
+                  <div className="pd-applied-actions">
+                    <Link to="/my-applications" className="btn btn-primary btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
+                      📋 Theo dõi đơn
+                    </Link>
+                    <Link to="/dashboard" className="btn btn-ghost btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
+                      Về Dashboard
+                    </Link>
+                  </div>
                 </div>
               ) : showApply ? (
                 <div className="pd-apply-form">
-                  <h3>Viết thư ứng tuyển</h3>
+                  <h3>✍️ Viết thư ứng tuyển</h3>
                   <p style={{ fontSize: 13, color: 'var(--t3)', marginBottom: 12 }}>
                     Giới thiệu ngắn gọn vì sao bạn phù hợp với job này.
                   </p>
                   <textarea
-                    placeholder="VD: Em là sinh viên năm 4 CNTT, có kinh nghiệm 2 năm React..."
+                    placeholder="VD: Em là sinh viên năm 4 CNTT, có kinh nghiệm 2 năm React. Em rất hứng thú với dự án này vì..."
                     rows={6}
                     value={coverLetter}
                     onChange={(e) => setCoverLetter(e.target.value)}
+                    maxLength={1000}
                   />
+                  <div className="pd-apply-footer">
+                    <span className={`pd-char-count${coverLetter.length > 800 ? ' pd-char-warn' : ''}`}>
+                      {coverLetter.length}/1000
+                    </span>
+                    {coverLetter.length < 30 && coverLetter.length > 0 && (
+                      <span className="pd-hint-text">Nên viết ít nhất 30 ký tự</span>
+                    )}
+                  </div>
                   <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
                     <button
                       className="btn btn-primary"
                       style={{ flex: 1 }}
                       onClick={handleApply}
-                      disabled={!coverLetter.trim() || submitting}
+                      disabled={!coverLetter.trim() || coverLetter.trim().length < 10 || submitting}
                     >
-                      {submitting ? 'Đang gửi...' : 'Gửi ứng tuyển'}
+                      {submitting ? (
+                        <>
+                          <span className="btn-spinner" />
+                          Đang gửi...
+                        </>
+                      ) : (
+                        '🚀 Gửi ứng tuyển'
+                      )}
                     </button>
                     <button className="btn btn-ghost" onClick={() => setShowApply(false)}>
                       Hủy
@@ -252,14 +377,20 @@ export default function JobDetailPage() {
               ) : (
                 <div className="pd-action-box">
                   <div className="pd-action-pay">💰 {job.pay}</div>
-                  <div className="pd-action-duration">⏱ {job.duration}</div>
-                  <button
-                    className="btn btn-accent"
-                    style={{ width: '100%', justifyContent: 'center' }}
-                    onClick={() => user ? setShowApply(true) : navigate('/login')}
-                  >
-                    🚀 Ứng tuyển ngay
-                  </button>
+                  <div className="pd-action-duration">⏱ {job.duration || 'Linh hoạt'}</div>
+                  {deadlineText === 'Đã hết hạn' ? (
+                    <div className="pd-expired-notice">
+                      ⏰ Job này đã hết hạn ứng tuyển
+                    </div>
+                  ) : (
+                    <button
+                      className="btn btn-accent"
+                      style={{ width: '100%', justifyContent: 'center' }}
+                      onClick={() => user ? setShowApply(true) : navigate('/login')}
+                    >
+                      🚀 Ứng tuyển ngay
+                    </button>
+                  )}
                   {user && job.companyUserId && String(job.companyUserId) !== String(user.id) && (
                     <button
                       className="btn btn-ghost"
@@ -275,6 +406,11 @@ export default function JobDetailPage() {
                     >
                       💬 Nhắn tin cho doanh nghiệp
                     </button>
+                  )}
+                  {!user && (
+                    <p className="pd-login-hint">
+                      <Link to="/login">Đăng nhập</Link> hoặc <Link to="/register">đăng ký</Link> để ứng tuyển
+                    </p>
                   )}
                   <div className="pd-escrow-note">
                     🛡️ Job này được bảo vệ bởi <strong>Escrow UniTask</strong>. Tiền đã được giữ — bạn sẽ nhận đủ khi hoàn thành.

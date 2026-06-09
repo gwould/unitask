@@ -694,6 +694,47 @@ a.nav-logo{text-decoration:none;color:inherit}
 .pd-applied-box{text-align:center;background:rgba(17,14,36,.8);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(0,212,170,.2);border-radius:var(--r20);padding:32px;animation:scaleIn .3s ease}
 .pd-applied-box h3{font-size:18px;color:var(--teal);margin-bottom:8px}
 .pd-applied-box p{font-size:13.5px;color:var(--text-2);line-height:1.6}
+.pd-applied-actions{display:flex;gap:8px;margin-top:16px}
+
+/* Breadcrumb */
+.pd-breadcrumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);margin-bottom:24px;flex-wrap:wrap}
+.pd-breadcrumb a{color:var(--text-2);transition:color .2s}
+.pd-breadcrumb a:hover{color:var(--pl)}
+.pd-breadcrumb span{color:var(--t3)}
+.pd-bread-current{color:var(--t0);font-weight:600}
+
+/* Spots bar in info item */
+.pd-spots-bar{width:100%;height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;margin-top:6px}
+.pd-spots-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--p));border-radius:2px;transition:width .5s}
+
+/* Apply form extras */
+.pd-apply-footer{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+.pd-char-count{font-size:12px;color:var(--t3)}
+.pd-char-count.pd-char-warn{color:var(--gold)}
+.pd-hint-text{font-size:12px;color:var(--gold)}
+.pd-expired{color:var(--red);font-weight:700}
+.pd-expired-notice{text-align:center;padding:14px;background:rgba(255,77,107,.06);border:1px solid rgba(255,77,107,.2);border-radius:var(--r10);color:var(--red);font-size:14px;font-weight:600}
+.pd-login-hint{text-align:center;margin-top:12px;font-size:13px;color:var(--text-2)}
+.pd-login-hint a{color:var(--pl);font-weight:600}
+
+/* Skill match indicator */
+.pd-skill-match{display:flex;align-items:center;gap:10px;margin-top:14px;padding:12px;background:rgba(91,79,255,.04);border:1px solid rgba(91,79,255,.1);border-radius:var(--r8)}
+.pd-skill-match-label{font-size:13px;color:var(--text-2);font-weight:600}
+.pd-skill-match-count{font-size:13px;font-weight:700}
+.pd-skill-match-count.pd-match-good{color:var(--teal)}
+.pd-skill-match-count.pd-match-none{color:var(--text-2)}
+.pd-skill-match-count a{color:var(--pl);font-weight:600}
+
+/* Related jobs */
+.pd-related-grid{display:flex;flex-direction:column;gap:8px}
+.pd-related-card{display:flex;align-items:center;gap:14px;padding:14px;border-radius:var(--r10);background:rgba(91,79,255,.03);border:1px solid rgba(91,79,255,.08);text-decoration:none;color:inherit;transition:all .2s}
+.pd-related-card:hover{background:rgba(91,79,255,.08);border-color:rgba(91,79,255,.18);transform:translateX(4px)}
+.pd-related-title{font-size:14px;font-weight:600;color:var(--t0);margin-bottom:2px}
+.pd-related-meta{font-size:12.5px;color:var(--text-2)}
+
+/* Loading state */
+.pd-loading{max-width:700px}
+.pd-loading-card{display:flex;align-items:center;gap:16px;margin-bottom:20px}
 
 /* ─── DASHBOARD PAGE ──────────────────────────────── */
 .page-dashboard{padding:100px 0 60px;position:relative;overflow:hidden}
@@ -2341,6 +2382,16 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
 [data-theme="light"] .pd-apply-form textarea{background:#F4F5F7;border-color:rgba(0,0,0,.1);color:#1C1D26}
 [data-theme="light"] .pd-applied-box{background:rgba(255,255,255,.92);border-color:rgba(0,212,170,.15)}
 [data-theme="light"] .pd-applied-box h3{color:#00A882}
+[data-theme="light"] .pd-breadcrumb a{color:#9496AA}
+[data-theme="light"] .pd-breadcrumb a:hover{color:var(--p)}
+[data-theme="light"] .pd-bread-current{color:#1C1D26}
+[data-theme="light"] .pd-skill-match{background:rgba(91,79,255,.03);border-color:rgba(0,0,0,.06)}
+[data-theme="light"] .pd-related-card{background:rgba(91,79,255,.02);border-color:rgba(0,0,0,.06)}
+[data-theme="light"] .pd-related-card:hover{background:rgba(91,79,255,.06)}
+[data-theme="light"] .pd-related-title{color:#1C1D26}
+[data-theme="light"] .pd-related-meta{color:#9496AA}
+[data-theme="light"] .pd-login-hint{color:#52546A}
+[data-theme="light"] .pd-expired-notice{background:rgba(255,77,107,.04);border-color:rgba(255,77,107,.15)}
 
 /* ─── LIGHT MODE: PROFILE ────────────────────────── */
 [data-theme="light"] .page-profile{background:#F4F5F7}
