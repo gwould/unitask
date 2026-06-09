@@ -10,7 +10,7 @@ import type { Category } from '../types';
 const FALLBACK_CATEGORIES = JOB_CATEGORIES;
 
 export default function PostJobPage() {
-  const { user } = useAuth();
+  const { user, isApiAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const [apiCategories, setApiCategories] = useState<Category[]>([]);
@@ -172,6 +172,19 @@ export default function PostJobPage() {
         </div>
 
         <form className="pj-form fade-up" onSubmit={handleSubmit}>
+          {/* Cảnh báo tài khoản demo */}
+          {!isApiAuthenticated && (
+            <div className="demo-mode-warning">
+              <span className="demo-mode-icon">⚠️</span>
+              <div>
+                <strong>Bạn đang dùng tài khoản demo (chỉ local)</strong>
+                <p>
+                  Tài khoản <code>{user?.email}</code> không tồn tại trên server thật — chức năng đăng việc sẽ bị lỗi 401/500.
+                  Vui lòng <a href="/register">đăng ký tài khoản mới</a> hoặc <a href="/login">đăng nhập</a> bằng tài khoản đã đăng ký trên hệ thống.
+                </p>
+              </div>
+            </div>
+          )}
           {error && <div className="auth-error">{error}</div>}
 
           <div className="pj-form-grid">

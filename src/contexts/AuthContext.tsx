@@ -11,6 +11,8 @@ export type { User, UserRole };
 interface AuthState {
   user: User | null;
   isLoading: boolean;
+  /** true = đăng nhập thành công với backend thật (có JWT). false = chỉ demo local, không có token. */
+  isApiAuthenticated: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   register: (data: RegisterData) => Promise<boolean>;
   logout: () => void;
@@ -18,6 +20,10 @@ interface AuthState {
 }
 
 const AuthContext = createContext<AuthState | null>(null);
+
+function hasRealToken(): boolean {
+  try { return !!localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN); } catch { return false; }
+}
 
 const STORAGE_KEY = STORAGE_KEYS.USER;
 
@@ -109,6 +115,7 @@ function saveAccounts(accounts: (User & { password: string })[]) {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isApiAuthenticated, setIsApiAuthenticated] = useState(() => hasRealToken());
 
   // Restore session
   useEffect(() => {
@@ -146,6 +153,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         phone: fromApi.phone ?? localMatch?.phone,
       };
       persistTokens(auth.token, auth.refreshToken);
+      setIsApiAuthenticated(true);
       let finalUser = merged;
       try {
         finalUser = await profileService.enrichUser(merged);
@@ -161,6 +169,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!localMatch) return false;
     const { password: _, ...userData } = localMatch;
     persistTokens(null, null);
+    setIsApiAuthenticated(false);
     persist(userData);
     return true;
   };
@@ -241,7 +250,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout, updateProfile }}>
+    <AuthContext.Provider value={{ user, isLoading, isApiAuthenticated, login, register, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );
