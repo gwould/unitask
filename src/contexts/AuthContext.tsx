@@ -217,32 +217,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         userType: auth.userType,
       });
 
-      // Đảm bảo profile tồn tại trên backend ngay sau khi đăng ký
-      if (data.role === 'business') {
-        // Thử tạo business profile — bỏ qua lỗi nếu đã tồn tại
-        await apiPost('/api/businesses', {
-          companyName: data.companyName || data.name,
-          description: '',
-        }).catch(() =>
-          // Nếu POST thất bại (profile đã tồn tại), thử PUT để update
-          apiPut(`/api/businesses/${auth.id}`, {
-            companyName: data.companyName || data.name,
-            description: '',
-          }).catch(() => null),
-        );
-      } else if (data.role === 'student') {
-        await apiPost('/api/students', {
-          university: data.university || '',
-          major: data.major || '',
-          bio: '',
-        }).catch(() =>
-          apiPut(`/api/students/${auth.id}`, {
-            university: data.university || '',
-            major: data.major || '',
-          }).catch(() => null),
-        );
-      }
-
+      // Backend tự tạo profile khi register — chỉ enrich data
       const enriched = await profileService.enrichUser({ ...fromApi, ...userData });
       persist(enriched);
     } catch {

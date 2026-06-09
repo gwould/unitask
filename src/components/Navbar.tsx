@@ -79,6 +79,7 @@ export default function Navbar() {
             {user.role === 'admin' && (
               <>
                 <Link to="/admin-finance" onClick={closeMobile}>📈 Admin Finance</Link>
+                <Link to="/admin-accounts" onClick={closeMobile}>👥 Quản lý tài khoản</Link>
                 <Link to="/admin-messages" onClick={closeMobile}>🛡️ Giám sát tin nhắn</Link>
               </>
             )}
@@ -136,9 +137,14 @@ export default function Navbar() {
               </Link>
             )}
             {user?.role === 'admin' && (
-              <Link to="/admin-finance" className={location.pathname === '/admin-finance' ? 'active' : ''}>
-                Admin Finance
-              </Link>
+              <>
+                <Link to="/admin-finance" className={location.pathname === '/admin-finance' ? 'active' : ''}>
+                  Admin Finance
+                </Link>
+                <Link to="/admin-accounts" className={location.pathname === '/admin-accounts' ? 'active' : ''}>
+                  Quản lý TK
+                </Link>
+              </>
             )}
           </nav>
           <div className="nav-actions">
@@ -197,6 +203,7 @@ export default function Navbar() {
                     {user.role === 'admin' && (
                       <>
                         <Link to="/admin-finance" className="nav-dd-item">📈 Admin Finance</Link>
+                        <Link to="/admin-accounts" className="nav-dd-item">👥 Quản lý tài khoản</Link>
                         <Link to="/admin-messages" className="nav-dd-item">🛡️ Giám sát tin nhắn</Link>
                       </>
                     )}

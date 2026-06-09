@@ -238,28 +238,7 @@ export const jobService = {
   },
 
   async create(job: Omit<Job, 'id'> & { categoryId?: string | null }): Promise<Job> {
-    // Bước 0: resolve businessId từ userId (backend có thể cần cả hai)
-    const userId = getCurrentUserId();
-    let resolvedBusinessId: string | undefined;
-    if (userId) {
-      try {
-        const profile = await apiGet<{ id: string; userId: string }>(`/api/businesses/${userId}`);
-        resolvedBusinessId = profile?.id;
-      } catch {
-        // Profile chưa tồn tại — thử tạo mới rồi lấy lại
-        try {
-          const created = await apiPost<{ id: string }>('/api/businesses', {
-            companyName: job.company || 'My Company',
-            description: '',
-          });
-          resolvedBusinessId = created?.id;
-        } catch {
-          // Bỏ qua, để backend tự xử lý từ JWT
-        }
-      }
-    }
-
-    // Bước 1: build payload — chỉ gửi field có giá trị thật
+    // Backend tự resolve businessId từ JWT — không cần gửi businessId
     const payload: Record<string, unknown> = {
       title: job.title,
       description: job.description,
@@ -271,10 +250,6 @@ export const jobService = {
       location: job.location,
       requiredSkills: job.skills?.length ? job.skills : [],
     };
-
-    if (resolvedBusinessId) {
-      payload.businessId = resolvedBusinessId;
-    }
 
     if (job.categoryId && job.categoryId.length > 10) {
       payload.categoryId = job.categoryId;

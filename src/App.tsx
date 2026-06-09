@@ -23,6 +23,7 @@ const MessagesPage = lazy(() => import('./pages/MessagesPage.tsx'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const AdminMessagesPage = lazy(() => import('./pages/AdminMessagesPage'));
+const AdminAccountsPage = lazy(() => import('./pages/AdminAccountsPage'));
 
 function PageLoader() {
   return (
@@ -55,6 +56,7 @@ export default function App() {
           <Route path="/messages/:conversationId" element={<MessagesPage />} />
           <Route path="/admin-finance" element={<AdminFinancePage />} />
           <Route path="/admin-messages" element={<AdminMessagesPage />} />
+          <Route path="/admin-accounts" element={<AdminAccountsPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/terms" element={<TermsPage />} />

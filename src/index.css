@@ -1976,3 +1976,74 @@ input:disabled,select:disabled,textarea:disabled{opacity:.55;cursor:not-allowed}
   .nh-item-actions{flex-direction:row}
 }
 
+/* ─── ADMIN ACCOUNTS PAGE ───────────────────────── */
+.adm-page{min-height:80vh;padding:100px 20px 60px}
+.adm-container{max-width:1100px;margin:0 auto}
+.adm-header{margin-bottom:28px}
+.adm-title{font-size:1.8rem;font-weight:800;color:var(--t0);font-family:var(--font-display)}
+.adm-subtitle{color:var(--t2);font-size:.95rem;margin-top:4px}
+.adm-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+.adm-stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r14);padding:20px;text-align:center}
+.adm-stat-num{font-size:2rem;font-weight:800;color:var(--t0);font-family:var(--font-display)}
+.adm-stat-label{font-size:.85rem;color:var(--t2);margin-top:4px}
+.adm-stat-success{border-color:rgba(0,212,170,.3)}
+.adm-stat-success .adm-stat-num{color:var(--teal)}
+.adm-stat-warning{border-color:rgba(255,179,64,.3)}
+.adm-stat-warning .adm-stat-num{color:var(--gold)}
+.adm-controls{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.adm-tabs{display:flex;gap:6px}
+.adm-tab{padding:8px 16px;border-radius:var(--rpill);font-size:.85rem;font-weight:600;background:var(--s2);color:var(--t2);border:1px solid var(--border);transition:.2s}
+.adm-tab:hover{color:var(--t1);background:var(--s3)}
+.adm-tab.active{background:var(--p);color:#fff;border-color:var(--p)}
+.adm-search{display:flex;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rpill);padding:6px 16px;min-width:260px}
+.adm-search input{background:none;border:none;color:var(--t1);font-size:.9rem;width:100%;outline:none}
+.adm-table-wrap{overflow-x:auto;border-radius:var(--r14);border:1px solid var(--border);background:var(--card)}
+.adm-table{width:100%;border-collapse:collapse;font-size:.9rem}
+.adm-table thead{background:var(--s2)}
+.adm-table th{text-align:left;padding:14px 16px;color:var(--t2);font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.adm-table td{padding:14px 16px;border-top:1px solid var(--border);color:var(--t1)}
+.adm-table tbody tr:hover{background:rgba(91,79,255,.04)}
+.adm-biz-name{display:flex;align-items:center;gap:12px}
+.adm-biz-avatar{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--p),var(--pl));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.95rem;flex-shrink:0}
+.adm-biz-meta{font-size:.78rem;color:var(--t2);margin-top:2px}
+.adm-chip{display:inline-block;padding:3px 10px;border-radius:var(--rpill);background:var(--s2);color:var(--t2);font-size:.8rem}
+.adm-rating{color:var(--gold);font-weight:600}
+.adm-no-data{color:var(--t3)}
+.adm-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:var(--rpill);font-size:.8rem;font-weight:600}
+.adm-badge-success{background:rgba(0,212,170,.12);color:var(--teal)}
+.adm-badge-pending{background:rgba(255,179,64,.12);color:var(--gold)}
+.adm-btn{padding:6px 16px;border-radius:var(--rpill);font-size:.8rem;font-weight:600;border:none;cursor:pointer;transition:.2s}
+.adm-btn:disabled{opacity:.5;cursor:not-allowed}
+.adm-btn-success{background:rgba(0,212,170,.15);color:var(--teal)}
+.adm-btn-success:hover:not(:disabled){background:rgba(0,212,170,.25)}
+.adm-btn-danger{background:rgba(255,77,107,.12);color:var(--red)}
+.adm-btn-danger:hover:not(:disabled){background:rgba(255,77,107,.22)}
+.adm-loading{text-align:center;padding:60px 20px;color:var(--t2)}
+.adm-empty{text-align:center;padding:60px 20px;color:var(--t2)}
+.adm-empty h3{font-size:17px;font-weight:700;color:var(--t1);margin-bottom:8px}
+.adm-empty p{font-size:14px;color:var(--t2)}
+@media(max-width:768px){
+  .adm-stats{grid-template-columns:1fr}
+  .adm-controls{flex-direction:column;align-items:stretch}
+  .adm-search{min-width:unset}
+  .adm-tabs{overflow-x:auto}
+}
+
+/* Light mode - Admin Accounts */
+[data-theme="light"] .adm-page{color:#1C1D26}
+[data-theme="light"] .adm-title{color:#1C1D26}
+[data-theme="light"] .adm-stat-card{background:#fff;border-color:#E2E3E8}
+[data-theme="light"] .adm-stat-num{color:#1C1D26}
+[data-theme="light"] .adm-tab{background:#EDEEF2;color:#52546A;border-color:#E2E3E8}
+[data-theme="light"] .adm-tab:hover{background:#E2E3E8;color:#1C1D26}
+[data-theme="light"] .adm-tab.active{background:var(--p);color:#fff}
+[data-theme="light"] .adm-search{background:#EDEEF2;border-color:#E2E3E8}
+[data-theme="light"] .adm-search input{color:#1C1D26}
+[data-theme="light"] .adm-table-wrap{background:#fff;border-color:#E2E3E8}
+[data-theme="light"] .adm-table thead{background:#F4F5F7}
+[data-theme="light"] .adm-table th{color:#52546A}
+[data-theme="light"] .adm-table td{color:#1C1D26;border-color:#E2E3E8}
+[data-theme="light"] .adm-table tbody tr:hover{background:rgba(91,79,255,.04)}
+[data-theme="light"] .adm-chip{background:#EDEEF2;color:#52546A}
+[data-theme="light"] .adm-biz-meta{color:#9496AA}
+
