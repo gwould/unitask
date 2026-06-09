@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import type { Notification } from '../types/automation';
 import { STORAGE_KEYS } from '../constants';
@@ -27,6 +27,16 @@ const TYPE_COLOR: Record<Notification['type'], string> = {
   reminder: 'warning',
 };
 
+const TYPE_LABELS: Record<Notification['type'], string> = {
+  job_match: 'Gợi ý việc',
+  application_status: 'Ứng tuyển',
+  submission_request: 'Nộp bài',
+  approval: 'Phê duyệt',
+  payment: 'Thanh toán',
+  system: 'Hệ thống',
+  reminder: 'Nhắc nhở',
+};
+
 function timeAgo(date: string) {
   const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
   if (seconds < 60) return 'vừa xong';
@@ -35,28 +45,100 @@ function timeAgo(date: string) {
   return `${Math.floor(seconds / 86400)} ngày trước`;
 }
 
-function NotificationItem({ notification, onMarkRead, onDelete, apiMode }: {
+/**
+ * Resolve the best link for a notification based on its type, actionUrl, and related data.
+ */
+function resolveNotificationLink(n: Notification, userRole?: string): { url: string; label: string } | null {
+  // If actionUrl is set and is a valid path, use it
+  if (n.actionUrl && n.actionUrl.startsWith('/')) {
+    // Determine a more descriptive label based on the target
+    let label = 'Xem chi tiết';
+    if (n.actionUrl.startsWith('/jobs/')) label = 'Xem công việc';
+    else if (n.actionUrl === '/jobs') label = 'Tìm việc mới';
+    else if (n.actionUrl === '/manage-jobs') label = 'Quản lý job';
+    else if (n.actionUrl === '/my-applications') label = 'Xem đơn ứng tuyển';
+    else if (n.actionUrl === '/wallet') label = 'Xem ví';
+    else if (n.actionUrl === '/messages' || n.actionUrl.startsWith('/messages/')) label = 'Xem tin nhắn';
+    else if (n.actionUrl === '/dashboard') label = 'Về Dashboard';
+    else if (n.actionUrl === '/profile') label = 'Xem hồ sơ';
+    return { url: n.actionUrl, label };
+  }
+
+  // Fallback: derive link from notification type + relatedJobId
+  if (n.relatedJobId) {
+    return { url: `/jobs/${n.relatedJobId}`, label: 'Xem công việc' };
+  }
+
+  // Type-based fallbacks
+  switch (n.type) {
+    case 'job_match':
+      return { url: '/jobs', label: 'Tìm việc' };
+    case 'application_status':
+      return userRole === 'business'
+        ? { url: '/manage-jobs', label: 'Quản lý ứng viên' }
+        : { url: '/my-applications', label: 'Xem đơn ứng tuyển' };
+    case 'submission_request':
+      return { url: '/my-applications', label: 'Nộp bài' };
+    case 'payment':
+      return { url: '/wallet', label: 'Xem ví' };
+    case 'approval':
+      return userRole === 'admin'
+        ? { url: '/admin-accounts', label: 'Quản lý tài khoản' }
+        : { url: '/dashboard', label: 'Về Dashboard' };
+    case 'reminder':
+      return { url: '/dashboard', label: 'Về Dashboard' };
+    default:
+      return null;
+  }
+}
+
+function NotificationItem({ notification, onMarkRead, onDelete, apiMode, userRole }: {
   notification: Notification;
   onMarkRead: (id: string) => void;
   onDelete: (id: string) => void;
   apiMode: boolean;
+  userRole?: string;
 }) {
+  const navigate = useNavigate();
+  const link = resolveNotificationLink(notification, userRole);
+
+  const handleClick = () => {
+    if (!notification.isRead) {
+      onMarkRead(notification.id);
+    }
+    if (link) {
+      navigate(link.url);
+    }
+  };
+
   return (
-    <div className={`nh-item${!notification.isRead ? ' nh-unread' : ''} nh-${TYPE_COLOR[notification.type]}`}>
+    <div
+      className={`nh-item${!notification.isRead ? ' nh-unread' : ''} nh-${TYPE_COLOR[notification.type]}`}
+      onClick={handleClick}
+      style={{ cursor: link ? 'pointer' : undefined }}
+    >
       <div className="nh-item-icon">{TYPE_ICONS[notification.type]}</div>
       <div className="nh-item-body">
-        <div className="nh-item-title">{notification.title}</div>
+        <div className="nh-item-top-row">
+          <div className="nh-item-title">{notification.title}</div>
+          <span className={`nh-type-badge nh-type-${TYPE_COLOR[notification.type]}`}>
+            {TYPE_LABELS[notification.type]}
+          </span>
+        </div>
         <div className="nh-item-msg">{notification.message}</div>
         <div className="nh-item-meta">
           <span className="nh-item-time">{timeAgo(notification.createdAt)}</span>
-          {notification.actionUrl && (
-            <Link to={notification.actionUrl} className="nh-item-link">
-              Xem chi tiết →
-            </Link>
+          {link && (
+            <button
+              className="nh-item-link"
+              onClick={(e) => { e.stopPropagation(); handleClick(); }}
+            >
+              {link.label} →
+            </button>
           )}
         </div>
       </div>
-      <div className="nh-item-actions">
+      <div className="nh-item-actions" onClick={(e) => e.stopPropagation()}>
         {!notification.isRead && (
           <button
             className="nh-action-btn nh-action-read"
@@ -90,6 +172,7 @@ export default function NotificationHubPage() {
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [filterType, setFilterType] = useState<'all' | 'unread'>('all');
+  const [categoryFilter, setCategoryFilter] = useState<Notification['type'] | 'all'>('all');
   const [isLoading, setIsLoading] = useState(true);
   const apiMode = hasAuthToken();
 
@@ -111,12 +194,25 @@ export default function NotificationHubPage() {
     return () => { cancelled = true; clearInterval(timer); };
   }, [user, navigate, load]);
 
-  const filtered = useMemo(() =>
-    filterType === 'unread' ? notifications.filter((n) => !n.isRead) : notifications,
-    [notifications, filterType],
-  );
+  const filtered = useMemo(() => {
+    let list = filterType === 'unread' ? notifications.filter((n) => !n.isRead) : notifications;
+    if (categoryFilter !== 'all') {
+      list = list.filter((n) => n.type === categoryFilter);
+    }
+    return list;
+  }, [notifications, filterType, categoryFilter]);
 
   const unreadCount = useMemo(() => notifications.filter((n) => !n.isRead).length, [notifications]);
+
+  // Count by type for category filter badges
+  const typeCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    const base = filterType === 'unread' ? notifications.filter(n => !n.isRead) : notifications;
+    for (const n of base) {
+      counts[n.type] = (counts[n.type] || 0) + 1;
+    }
+    return counts;
+  }, [notifications, filterType]);
 
   const handleMarkRead = useCallback(async (id: string) => {
     await notificationService.markRead(id);
@@ -221,6 +317,27 @@ export default function NotificationHubPage() {
           </div>
         </div>
 
+        {/* Category filter chips */}
+        {Object.keys(typeCounts).length > 1 && (
+          <div className="nh-category-filters">
+            <button
+              className={`nh-cat-chip${categoryFilter === 'all' ? ' active' : ''}`}
+              onClick={() => setCategoryFilter('all')}
+            >
+              Tất cả
+            </button>
+            {(Object.entries(typeCounts) as [Notification['type'], number][]).map(([type, count]) => (
+              <button
+                key={type}
+                className={`nh-cat-chip${categoryFilter === type ? ' active' : ''}`}
+                onClick={() => setCategoryFilter(type)}
+              >
+                {TYPE_ICONS[type]} {TYPE_LABELS[type]} <span className="nh-cat-count">{count}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* List */}
         {filtered.length === 0 ? (
           <div className="nh-empty">
@@ -237,6 +354,7 @@ export default function NotificationHubPage() {
                 onMarkRead={handleMarkRead}
                 onDelete={handleDelete}
                 apiMode={apiMode}
+                userRole={user?.role}
               />
             ))}
           </div>

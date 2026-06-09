@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useState, useCallback, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { JOB_CATEGORIES, LOCATIONS } from '../constants';
@@ -8,6 +8,14 @@ import { siteService } from '../services/siteService';
 import type { Category } from '../types';
 
 const FALLBACK_CATEGORIES = JOB_CATEGORIES;
+
+const DURATION_OPTIONS = [
+  { value: 'micro', label: 'Micro (vài giờ)', desc: 'Task nhỏ hoàn thành trong 1-4 giờ' },
+  { value: 'short-term', label: 'Ngắn hạn (vài ngày)', desc: 'Công việc 1-7 ngày' },
+  { value: 'project', label: 'Dự án (vài tuần+)', desc: 'Dự án dài hạn từ 2 tuần trở lên' },
+];
+
+type FieldErrors = Record<string, string>;
 
 export default function PostJobPage() {
   const { user, isApiAuthenticated } = useAuth();
@@ -27,6 +35,8 @@ export default function PostJobPage() {
     deliverables: '',
     skills: '',
   });
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
@@ -48,6 +58,79 @@ export default function PostJobPage() {
     return () => clearTimeout(t);
   }, [toast]);
 
+  // ── Validation ──────────────────────────────────
+  const validate = useCallback((f: typeof form): FieldErrors => {
+    const e: FieldErrors = {};
+
+    // Title
+    if (!f.title.trim()) {
+      e.title = 'Vui lòng nhập tên công việc';
+    } else if (f.title.trim().length < 10) {
+      e.title = 'Tên công việc tối thiểu 10 ký tự';
+    } else if (f.title.trim().length > 150) {
+      e.title = 'Tên công việc tối đa 150 ký tự';
+    }
+
+    // Description
+    if (!f.description.trim()) {
+      e.description = 'Vui lòng nhập mô tả công việc';
+    } else if (f.description.trim().length < 30) {
+      e.description = 'Mô tả tối thiểu 30 ký tự để sinh viên hiểu rõ công việc';
+    }
+
+    // Pay min
+    if (!f.payMin) {
+      e.payMin = 'Vui lòng nhập mức lương tối thiểu';
+    } else if (Number(f.payMin) < 50000) {
+      e.payMin = 'Mức lương tối thiểu 50,000₫';
+    } else if (Number(f.payMin) > 100000000) {
+      e.payMin = 'Mức lương không hợp lệ (tối đa 100 triệu)';
+    }
+
+    // Pay max
+    if (f.payMax && Number(f.payMax) < Number(f.payMin)) {
+      e.payMax = 'Lương tối đa phải lớn hơn hoặc bằng lương tối thiểu';
+    }
+    if (f.payMax && Number(f.payMax) > 100000000) {
+      e.payMax = 'Mức lương không hợp lệ (tối đa 100 triệu)';
+    }
+
+    // Deadline
+    if (!f.deadline) {
+      e.deadline = 'Vui lòng chọn hạn nộp';
+    } else {
+      const deadlineDate = new Date(f.deadline);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (deadlineDate < today) {
+        e.deadline = 'Hạn nộp phải là ngày trong tương lai';
+      }
+      const maxDate = new Date();
+      maxDate.setFullYear(maxDate.getFullYear() + 1);
+      if (deadlineDate > maxDate) {
+        e.deadline = 'Hạn nộp tối đa 1 năm kể từ hôm nay';
+      }
+    }
+
+    // Skills
+    if (f.skills.trim()) {
+      const skills = f.skills.split(',').map(s => s.trim()).filter(Boolean);
+      if (skills.some(s => s.length > 50)) {
+        e.skills = 'Mỗi kỹ năng tối đa 50 ký tự';
+      }
+      if (skills.length > 20) {
+        e.skills = 'Tối đa 20 kỹ năng';
+      }
+    }
+
+    return e;
+  }, []);
+
+  // Re-validate on form change (only show errors for touched fields)
+  useEffect(() => {
+    setFieldErrors(validate(form));
+  }, [form, validate]);
+
   if (!user || user.role !== 'business') return null;
 
   const categoryOptions = apiCategories.length > 0
@@ -57,12 +140,35 @@ export default function PostJobPage() {
   const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm((p) => ({ ...p, [key]: e.target.value }));
 
+  const markTouched = (key: string) => () => setTouched((p) => ({ ...p, [key]: true }));
+
+  const showError = (key: string) => touched[key] && fieldErrors[key];
+
+  const hasErrors = Object.keys(fieldErrors).length > 0;
+
+  // Character counters
+  const titleLen = form.title.trim().length;
+  const descLen = form.description.trim().length;
+  const skillCount = form.skills ? form.skills.split(',').map(s => s.trim()).filter(Boolean).length : 0;
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (!form.title.trim() || !form.description.trim() || !form.payMin || !form.deadline) {
-      setError('Vui lòng điền đầy đủ các trường bắt buộc (*)');
+    // Touch all fields to show errors
+    const allTouched: Record<string, boolean> = {};
+    Object.keys(form).forEach(k => { allTouched[k] = true; });
+    setTouched(allTouched);
+
+    const errors = validate(form);
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      const firstErr = Object.values(errors)[0];
+      setError(firstErr);
+      // Scroll to first error
+      const firstKey = Object.keys(errors)[0];
+      const el = document.querySelector(`[data-field="${firstKey}"]`);
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
 
@@ -71,7 +177,6 @@ export default function PostJobPage() {
 
     setSubmitting(true);
     try {
-      // Bước 1: tạo job
       let created;
       try {
         created = await jobService.create({
@@ -91,7 +196,7 @@ export default function PostJobPage() {
           payMin: Number(form.payMin),
           payMax: Number(form.payMax) || Number(form.payMin),
           deadline: form.deadline,
-          duration: form.duration || 'Linh hoạt',
+          duration: form.duration,
           description: form.description.trim(),
           requirements: form.requirements.split('\n').map((r) => r.trim()).filter(Boolean),
           deliverables: form.deliverables.split('\n').map((d) => d.trim()).filter(Boolean),
@@ -105,12 +210,10 @@ export default function PostJobPage() {
         throw new Error(`Không thể tạo job: ${msg}`);
       }
 
-      // Bước 2: publish — không block nếu thất bại
       try {
         await jobService.publish(created.id);
       } catch (err) {
         console.warn('[PostJob] publish failed (non-fatal):', err);
-        // Job đã tạo nhưng publish thất bại → vẫn coi là thành công
       }
 
       createNotification({
@@ -120,7 +223,7 @@ export default function PostJobPage() {
         message: `Job "${created.title}" đã được đăng. Mức lương: ${created.pay} · Hạn: ${created.deadline}.`,
         type: 'system',
         relatedJobId: created.id,
-        actionUrl: '/manage-jobs',
+        actionUrl: `/jobs/${created.id}`,
       });
 
       setToast('Đã đăng job thành công!');
@@ -145,6 +248,8 @@ export default function PostJobPage() {
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 24 }}>
               <button className="btn btn-primary" onClick={() => {
                 setSuccess(false);
+                setTouched({});
+                setFieldErrors({});
                 setForm({
                   title: '',
                   categoryKey: categoryOptions[0]?.key || '',
@@ -186,7 +291,7 @@ export default function PostJobPage() {
           <p>Tạo job và kết nối với sinh viên tài năng chỉ trong vài phút</p>
         </div>
 
-        <form className="pj-form fade-up" onSubmit={handleSubmit}>
+        <form className="pj-form fade-up" onSubmit={handleSubmit} noValidate>
           {/* Cảnh báo tài khoản demo */}
           {!isApiAuthenticated && (
             <div className="demo-mode-warning">
@@ -200,16 +305,33 @@ export default function PostJobPage() {
               </div>
             </div>
           )}
-          {error && <div className="auth-error">{error}</div>}
+          {error && <div className="pj-error-banner">{error}</div>}
 
           <div className="pj-form-grid">
-            <div className="pj-field pj-full">
-              <label>Tên công việc *</label>
-              <input type="text" value={form.title} onChange={set('title')} placeholder="VD: Thiết kế banner quảng cáo cho chiến dịch mùa hè" />
+            {/* Title */}
+            <div className={`pj-field pj-full${showError('title') ? ' pj-field-error' : ''}`} data-field="title">
+              <label>Tên công việc <span className="pj-required">*</span></label>
+              <input
+                type="text"
+                value={form.title}
+                onChange={set('title')}
+                onBlur={markTouched('title')}
+                placeholder="VD: Thiết kế banner quảng cáo cho chiến dịch mùa hè"
+                maxLength={150}
+              />
+              <div className="pj-field-footer">
+                {showError('title') ? (
+                  <span className="pj-field-err-msg">{fieldErrors.title}</span>
+                ) : (
+                  <span className="pj-field-hint">Tiêu đề rõ ràng, cụ thể giúp thu hút sinh viên phù hợp</span>
+                )}
+                <span className={`pj-char-count${titleLen > 140 ? ' pj-char-warn' : ''}`}>{titleLen}/150</span>
+              </div>
             </div>
 
-            <div className="pj-field">
-              <label>Danh mục *</label>
+            {/* Category */}
+            <div className="pj-field" data-field="categoryKey">
+              <label>Danh mục <span className="pj-required">*</span></label>
               <select
                 value={form.categoryKey || categoryOptions[0]?.key || ''}
                 onChange={set('categoryKey')}
@@ -218,59 +340,195 @@ export default function PostJobPage() {
                   <option key={c.key} value={c.key}>{c.label}</option>
                 ))}
               </select>
+              <div className="pj-field-footer">
+                <span className="pj-field-hint">Chọn danh mục phù hợp nhất với công việc</span>
+              </div>
             </div>
-            <div className="pj-field">
-              <label>Địa điểm *</label>
+
+            {/* Location */}
+            <div className="pj-field" data-field="location">
+              <label>Địa điểm <span className="pj-required">*</span></label>
               <select value={form.location} onChange={set('location')}>
                 {LOCATIONS.map((l) => <option key={l}>{l}</option>)}
               </select>
+              <div className="pj-field-footer">
+                <span className="pj-field-hint">Chọn "Remote" nếu làm từ xa</span>
+              </div>
             </div>
 
-            <div className="pj-field">
-              <label>Mức lương tối thiểu (₫) *</label>
-              <input type="number" value={form.payMin} onChange={set('payMin')} placeholder="500000" min={0} />
+            {/* Pay Min */}
+            <div className={`pj-field${showError('payMin') ? ' pj-field-error' : ''}`} data-field="payMin">
+              <label>Mức lương tối thiểu (₫) <span className="pj-required">*</span></label>
+              <input
+                type="number"
+                value={form.payMin}
+                onChange={set('payMin')}
+                onBlur={markTouched('payMin')}
+                placeholder="500000"
+                min={50000}
+                max={100000000}
+              />
+              <div className="pj-field-footer">
+                {showError('payMin') ? (
+                  <span className="pj-field-err-msg">{fieldErrors.payMin}</span>
+                ) : form.payMin ? (
+                  <span className="pj-field-hint">{Number(form.payMin).toLocaleString('vi-VN')}₫</span>
+                ) : (
+                  <span className="pj-field-hint">Tối thiểu 50,000₫</span>
+                )}
+              </div>
             </div>
-            <div className="pj-field">
+
+            {/* Pay Max */}
+            <div className={`pj-field${showError('payMax') ? ' pj-field-error' : ''}`} data-field="payMax">
               <label>Mức lương tối đa (₫)</label>
-              <input type="number" value={form.payMax} onChange={set('payMax')} placeholder="1500000" min={0} />
+              <input
+                type="number"
+                value={form.payMax}
+                onChange={set('payMax')}
+                onBlur={markTouched('payMax')}
+                placeholder="1500000"
+                min={0}
+                max={100000000}
+              />
+              <div className="pj-field-footer">
+                {showError('payMax') ? (
+                  <span className="pj-field-err-msg">{fieldErrors.payMax}</span>
+                ) : form.payMax ? (
+                  <span className="pj-field-hint">{Number(form.payMax).toLocaleString('vi-VN')}₫ — Để trống nếu lương cố định</span>
+                ) : (
+                  <span className="pj-field-hint">Để trống nếu lương cố định</span>
+                )}
+              </div>
             </div>
 
-            <div className="pj-field">
-              <label>Hạn nộp *</label>
-              <input type="date" value={form.deadline} onChange={set('deadline')} />
+            {/* Deadline */}
+            <div className={`pj-field${showError('deadline') ? ' pj-field-error' : ''}`} data-field="deadline">
+              <label>Hạn nộp <span className="pj-required">*</span></label>
+              <input
+                type="date"
+                value={form.deadline}
+                onChange={set('deadline')}
+                onBlur={markTouched('deadline')}
+                min={new Date().toISOString().slice(0, 10)}
+              />
+              <div className="pj-field-footer">
+                {showError('deadline') ? (
+                  <span className="pj-field-err-msg">{fieldErrors.deadline}</span>
+                ) : (
+                  <span className="pj-field-hint">Ngày cuối sinh viên có thể nộp đơn</span>
+                )}
+              </div>
             </div>
-            <div className="pj-field">
+
+            {/* Duration */}
+            <div className="pj-field" data-field="duration">
               <label>Thời lượng công việc</label>
               <select value={form.duration} onChange={set('duration')}>
-                <option value="micro">Micro (vài giờ)</option>
-                <option value="short-term">Ngắn hạn (vài ngày)</option>
-                <option value="project">Dự án (vài tuần+)</option>
+                {DURATION_OPTIONS.map((d) => (
+                  <option key={d.value} value={d.value}>{d.label}</option>
+                ))}
               </select>
+              <div className="pj-field-footer">
+                <span className="pj-field-hint">
+                  {DURATION_OPTIONS.find(d => d.value === form.duration)?.desc}
+                </span>
+              </div>
             </div>
 
-            <div className="pj-field pj-full">
-              <label>Mô tả chi tiết *</label>
-              <textarea value={form.description} onChange={set('description')} rows={5} placeholder="Mô tả cụ thể công việc, mục tiêu, yêu cầu..." />
+            {/* Description */}
+            <div className={`pj-field pj-full${showError('description') ? ' pj-field-error' : ''}`} data-field="description">
+              <label>Mô tả chi tiết <span className="pj-required">*</span></label>
+              <textarea
+                value={form.description}
+                onChange={set('description')}
+                onBlur={markTouched('description')}
+                rows={5}
+                placeholder={'Mô tả cụ thể:\n• Mục tiêu công việc\n• Phạm vi & nhiệm vụ chính\n• Đối tượng mong muốn\n• Quy trình làm việc'}
+              />
+              <div className="pj-field-footer">
+                {showError('description') ? (
+                  <span className="pj-field-err-msg">{fieldErrors.description}</span>
+                ) : (
+                  <span className="pj-field-hint">Mô tả càng chi tiết, sinh viên ứng tuyển càng phù hợp</span>
+                )}
+                <span className={`pj-char-count${descLen > 0 && descLen < 30 ? ' pj-char-warn' : ''}`}>{descLen} ký tự</span>
+              </div>
             </div>
 
-            <div className="pj-field pj-full">
-              <label>Yêu cầu (mỗi dòng 1 yêu cầu)</label>
-              <textarea value={form.requirements} onChange={set('requirements')} rows={3} placeholder="Thành thạo Photoshop&#10;Có từ 1 năm kinh nghiệm..." />
+            {/* Requirements */}
+            <div className="pj-field pj-full" data-field="requirements">
+              <label>Yêu cầu ứng viên</label>
+              <textarea
+                value={form.requirements}
+                onChange={set('requirements')}
+                rows={3}
+                placeholder={'Mỗi dòng 1 yêu cầu, VD:\nThành thạo Photoshop/Illustrator\nCó portfolio thiết kế\nSinh viên năm 3 trở lên'}
+              />
+              <div className="pj-field-footer">
+                <span className="pj-field-hint">Mỗi dòng 1 yêu cầu — không bắt buộc nhưng giúp lọc ứng viên tốt hơn</span>
+              </div>
             </div>
 
-            <div className="pj-field pj-full">
-              <label>Sản phẩm giao (mỗi dòng 1 mục)</label>
-              <textarea value={form.deliverables} onChange={set('deliverables')} rows={3} placeholder="5 banner kích thước 1200x628&#10;File PSD nguồn..." />
+            {/* Deliverables */}
+            <div className="pj-field pj-full" data-field="deliverables">
+              <label>Sản phẩm cần giao</label>
+              <textarea
+                value={form.deliverables}
+                onChange={set('deliverables')}
+                rows={3}
+                placeholder={'Mỗi dòng 1 sản phẩm, VD:\n5 banner kích thước 1200x628\nFile PSD/AI nguồn\nBáo cáo tiến độ hàng tuần'}
+              />
+              <div className="pj-field-footer">
+                <span className="pj-field-hint">Liệt kê rõ sản phẩm giúp sinh viên biết kỳ vọng</span>
+              </div>
             </div>
 
-            <div className="pj-field pj-full">
-              <label>Kỹ năng cần thiết (phân tách bằng dấu phẩy)</label>
-              <input type="text" value={form.skills} onChange={set('skills')} placeholder="Photoshop, Illustrator, Figma" />
+            {/* Skills */}
+            <div className={`pj-field pj-full${showError('skills') ? ' pj-field-error' : ''}`} data-field="skills">
+              <label>Kỹ năng cần thiết</label>
+              <input
+                type="text"
+                value={form.skills}
+                onChange={set('skills')}
+                onBlur={markTouched('skills')}
+                placeholder="Photoshop, Illustrator, Figma, React, Node.js"
+              />
+              <div className="pj-field-footer">
+                {showError('skills') ? (
+                  <span className="pj-field-err-msg">{fieldErrors.skills}</span>
+                ) : (
+                  <span className="pj-field-hint">Phân tách bằng dấu phẩy — hiển thị dưới dạng tag trên job</span>
+                )}
+                {skillCount > 0 && <span className={`pj-char-count${skillCount > 15 ? ' pj-char-warn' : ''}`}>{skillCount} kỹ năng</span>}
+              </div>
+            </div>
+          </div>
+
+          {/* Summary bar */}
+          <div className="pj-summary">
+            <div className="pj-summary-item">
+              <span className="pj-summary-label">Lương:</span>
+              <span className="pj-summary-value">
+                {form.payMin
+                  ? form.payMax
+                    ? `${Number(form.payMin).toLocaleString('vi-VN')} – ${Number(form.payMax).toLocaleString('vi-VN')}₫`
+                    : `${Number(form.payMin).toLocaleString('vi-VN')}₫`
+                  : '—'}
+              </span>
+            </div>
+            <div className="pj-summary-item">
+              <span className="pj-summary-label">Hạn:</span>
+              <span className="pj-summary-value">{form.deadline || '—'}</span>
+            </div>
+            <div className="pj-summary-item">
+              <span className="pj-summary-label">Loại:</span>
+              <span className="pj-summary-value">{DURATION_OPTIONS.find(d => d.value === form.duration)?.label || '—'}</span>
             </div>
           </div>
 
           <div className="pj-actions">
-            <button type="submit" className="btn btn-primary" disabled={submitting}>
+            <button type="submit" className="btn btn-primary" disabled={submitting || (hasErrors && Object.keys(touched).length > 3)}>
               {submitting ? 'Đang đăng...' : '🚀 Đăng việc ngay'}
             </button>
             <button type="button" className="btn btn-ghost" onClick={() => navigate('/dashboard')}>Hủy</button>
