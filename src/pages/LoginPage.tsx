@@ -7,6 +7,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -14,7 +15,7 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
     if (!email || !password) {
-      setError('Vui lòng nhập đầy đủ email và mật khẩu.');
+      setError('Vui long nhap day du email va mat khau.');
       return;
     }
     setLoading(true);
@@ -23,46 +24,90 @@ export default function LoginPage() {
     if (ok) {
       navigate('/dashboard');
     } else {
-      setError('Email hoặc mật khẩu không đúng.');
+      setError('Email hoac mat khau khong dung.');
     }
   };
 
   return (
     <section className="auth-page">
-      <div className="auth-bg-gradient" aria-hidden />
       <div className="auth-container">
         <div className="auth-card">
           <div className="auth-header">
-            <h1>Đăng nhập</h1>
-            <p>Chào mừng bạn quay lại UniTask</p>
+            <span className="auth-logo-icon">🎓</span>
+            <h1>Chào mừng trở lại</h1>
+            <p>Đăng nhập vào UniTask để tiếp tục</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="auth-form">
-            {error && <div className="auth-error">{error}</div>}
+          <form onSubmit={handleSubmit} className="auth-form" noValidate>
+            {error && <div className="auth-error">⚠️ {error}</div>}
+
             <div className="form-group">
               <label>Email</label>
-              <input
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-              />
+              <div className="input-icon-wrap">
+                <span className="input-icon">📧</span>
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  className="input-with-icon"
+                />
+              </div>
             </div>
+
             <div className="form-group">
               <label>Mật khẩu</label>
-              <input
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
-              />
+              <div className="input-icon-wrap">
+                <span className="input-icon">🔒</span>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
+                  className="input-with-icon"
+                />
+                <button
+                  type="button"
+                  className="input-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                >
+                  {showPassword ? '🙈' : '👁️'}
+                </button>
+              </div>
             </div>
+
             <button type="submit" className="btn btn-primary auth-submit" disabled={loading}>
-              {loading ? 'Đang đăng nhập...' : 'Đăng nhập →'}
+              {loading ? (
+                <>
+                  <span className="btn-spinner" />
+                  Đang đăng nhập...
+                </>
+              ) : (
+                'Đăng nhập →'
+              )}
             </button>
           </form>
+
+          <div className="auth-divider">hoặc</div>
+
+          <div className="auth-features">
+            <div className="auth-feature-item">
+              <span>🚀</span>
+              <span>Tìm việc micro-job phù hợp</span>
+            </div>
+            <div className="auth-feature-item">
+              <span>💰</span>
+              <span>Nhận thanh toán an toàn qua escrow</span>
+            </div>
+            <div className="auth-feature-item">
+              <span>📊</span>
+              <span>Xây CV thực tế từ dự án thật</span>
+            </div>
+          </div>
+
           <p className="auth-switch">
             Chưa có tài khoản? <Link to="/register">Đăng ký miễn phí</Link>
           </p>

@@ -123,7 +123,27 @@ export default function JobsSection() {
           </div>
         </div>
         {loading ? (
-          <div style={{ textAlign: 'center', color: 'var(--text-2)' }}>Đang tải job...</div>
+          <div className="jobs-grid">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="job-card-skeleton" style={{ animationDelay: `${i * 0.1}s` }}>
+                <div className="jc-skel-header">
+                  <div className="jc-skel-logo skeleton" />
+                  <div className="jc-skel-save skeleton" />
+                </div>
+                <div className="jc-skel-title skeleton" />
+                <div className="jc-skel-company skeleton" />
+                <div className="jc-skel-tags">
+                  <div className="jc-skel-tag skeleton" />
+                  <div className="jc-skel-tag skeleton" />
+                </div>
+                <div className="jc-skel-pay skeleton" />
+                <div className="jc-skel-footer">
+                  <div className="jc-skel-date skeleton" />
+                  <div className="jc-skel-btn skeleton" />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : (
           <>
             <div className="jobs-grid">

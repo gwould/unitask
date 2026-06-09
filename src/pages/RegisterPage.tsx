@@ -9,6 +9,7 @@ export default function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [university, setUniversity] = useState('');
   const [major, setMajor] = useState('');
   const [companyName, setCompanyName] = useState('');
@@ -46,10 +47,10 @@ export default function RegisterPage() {
 
   return (
     <section className="auth-page">
-      <div className="auth-bg-gradient" aria-hidden />
       <div className="auth-container">
         <div className="auth-card">
           <div className="auth-header">
+            <span className="auth-logo-icon">🚀</span>
             <h1>Tạo tài khoản</h1>
             <p>Tham gia cộng đồng UniTask — hoàn toàn miễn phí</p>
           </div>
@@ -72,57 +73,94 @@ export default function RegisterPage() {
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="auth-form">
-            {error && <div className="auth-error">{error}</div>}
+          <form onSubmit={handleSubmit} className="auth-form" noValidate>
+            {error && <div className="auth-error">⚠️ {error}</div>}
+
             <div className="form-group">
               <label>Họ và tên *</label>
-              <input
-                type="text"
-                placeholder={role === 'student' ? 'Nguyễn Văn A' : 'Trần Quản lý'}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
+              <div className="input-icon-wrap">
+                <span className="input-icon">👤</span>
+                <input
+                  type="text"
+                  placeholder={role === 'student' ? 'Nguyễn Văn A' : 'Trần Quản lý'}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="input-with-icon"
+                />
+              </div>
             </div>
+
             <div className="form-group">
               <label>Email *</label>
-              <input
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-              />
+              <div className="input-icon-wrap">
+                <span className="input-icon">📧</span>
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  className="input-with-icon"
+                />
+              </div>
             </div>
+
             <div className="form-group">
               <label>Mật khẩu *</label>
-              <input
-                type="password"
-                placeholder="Tối thiểu 6 ký tự"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="new-password"
-              />
+              <div className="input-icon-wrap">
+                <span className="input-icon">🔒</span>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Tối thiểu 6 ký tự"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="new-password"
+                  className="input-with-icon"
+                />
+                <button
+                  type="button"
+                  className="input-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                >
+                  {showPassword ? '🙈' : '👁️'}
+                </button>
+              </div>
+              {password.length > 0 && password.length < 6 && (
+                <span className="field-hint field-hint-warn">Cần ít nhất 6 ký tự ({6 - password.length} nữa)</span>
+              )}
+              {password.length >= 6 && (
+                <span className="field-hint field-hint-ok">✓ Đủ độ dài</span>
+              )}
             </div>
 
             {role === 'student' && (
               <>
                 <div className="form-group">
                   <label>Trường đại học</label>
-                  <input
-                    type="text"
-                    placeholder="VD: Đại học Bách Khoa TP.HCM"
-                    value={university}
-                    onChange={(e) => setUniversity(e.target.value)}
-                  />
+                  <div className="input-icon-wrap">
+                    <span className="input-icon">🏫</span>
+                    <input
+                      type="text"
+                      placeholder="VD: Đại học Bách Khoa TP.HCM"
+                      value={university}
+                      onChange={(e) => setUniversity(e.target.value)}
+                      className="input-with-icon"
+                    />
+                  </div>
                 </div>
                 <div className="form-group">
                   <label>Chuyên ngành</label>
-                  <input
-                    type="text"
-                    placeholder="VD: Công nghệ Thông tin"
-                    value={major}
-                    onChange={(e) => setMajor(e.target.value)}
-                  />
+                  <div className="input-icon-wrap">
+                    <span className="input-icon">📚</span>
+                    <input
+                      type="text"
+                      placeholder="VD: Công nghệ Thông tin"
+                      value={major}
+                      onChange={(e) => setMajor(e.target.value)}
+                      className="input-with-icon"
+                    />
+                  </div>
                 </div>
               </>
             )}
@@ -130,19 +168,31 @@ export default function RegisterPage() {
             {role === 'business' && (
               <div className="form-group">
                 <label>Tên công ty / tổ chức</label>
-                <input
-                  type="text"
-                  placeholder="VD: TechNova VN"
-                  value={companyName}
-                  onChange={(e) => setCompanyName(e.target.value)}
-                />
+                <div className="input-icon-wrap">
+                  <span className="input-icon">🏢</span>
+                  <input
+                    type="text"
+                    placeholder="VD: TechNova VN"
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    className="input-with-icon"
+                  />
+                </div>
               </div>
             )}
 
             <button type="submit" className="btn btn-primary auth-submit" disabled={loading}>
-              {loading ? 'Đang tạo tài khoản...' : 'Đăng ký miễn phí →'}
+              {loading ? (
+                <>
+                  <span className="btn-spinner" />
+                  Đang tạo tài khoản...
+                </>
+              ) : (
+                'Đăng ký miễn phí →'
+              )}
             </button>
           </form>
+
           <p className="auth-switch">
             Đã có tài khoản? <Link to="/login">Đăng nhập</Link>
           </p>
