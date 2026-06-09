@@ -255,7 +255,8 @@ export const jobService = {
       payload.categoryId = job.categoryId;
     }
 
-    if (job.duration) {
+    const VALID_DURATION_TYPES = ['micro', 'short-term', 'project'];
+    if (job.duration && VALID_DURATION_TYPES.includes(job.duration)) {
       payload.durationType = job.duration;
     }
 

@@ -21,7 +21,7 @@ export default function PostJobPage() {
     payMin: '',
     payMax: '',
     deadline: '',
-    duration: '',
+    duration: 'micro',
     description: '',
     requirements: '',
     deliverables: '',
@@ -152,7 +152,7 @@ export default function PostJobPage() {
                   payMin: '',
                   payMax: '',
                   deadline: '',
-                  duration: '',
+                  duration: 'micro',
                   description: '',
                   requirements: '',
                   deliverables: '',
@@ -241,7 +241,11 @@ export default function PostJobPage() {
             </div>
             <div className="pj-field">
               <label>Thời lượng công việc</label>
-              <input type="text" value={form.duration} onChange={set('duration')} placeholder="VD: 3 ngày / 1 tuần" />
+              <select value={form.duration} onChange={set('duration')}>
+                <option value="micro">Micro (vài giờ)</option>
+                <option value="short-term">Ngắn hạn (vài ngày)</option>
+                <option value="project">Dự án (vài tuần+)</option>
+              </select>
             </div>
 
             <div className="pj-field pj-full">
