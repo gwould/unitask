@@ -286,6 +286,7 @@ export default function DashboardPage() {
                 <>
                   <Link to="/jobs" className="dash-nav-item">🔍 Tìm việc</Link>
                   <Link to="/my-applications" className="dash-nav-item">📋 Đơn ứng tuyển</Link>
+                  <Link to="/my-tasks" className="dash-nav-item">🔨 Công việc của tôi</Link>
                   <Link to="/wallet" className="dash-nav-item">💰 Ví & Giao dịch</Link>
                   <Link to="/messages" className="dash-nav-item">💬 Tin nhắn</Link>
                   <Link to="/notifications" className="dash-nav-item">🔔 Thông báo</Link>
@@ -364,14 +365,14 @@ export default function DashboardPage() {
                 <div className="dash-onboard fade-up">
                   <div className="dash-onboard-header">
                     <h2>🚀 Bắt đầu hành trình của bạn</h2>
-                    <p>Hoàn thành các bước sau để tăng cơ hội được nhận job</p>
+                    <p>Hoàn thành 7 bước để kiếm tiền từ kỹ năng của bạn</p>
                   </div>
                   <div className="dash-onboard-steps">
                     <Link to="/profile" className={`dash-onboard-step${user.bio ? ' done' : ''}`}>
                       <span className="dash-ob-num">{user.bio ? '✓' : '1'}</span>
                       <div className="dash-ob-info">
                         <strong>Hoàn thiện hồ sơ</strong>
-                        <span>Thêm kỹ năng, trường, bio để nổi bật</span>
+                        <span>Thêm kỹ năng, trường, bio để nổi bật với doanh nghiệp</span>
                       </div>
                       <span className="dash-ob-arrow">→</span>
                     </Link>
@@ -379,24 +380,87 @@ export default function DashboardPage() {
                       <span className="dash-ob-num">2</span>
                       <div className="dash-ob-info">
                         <strong>Tìm job phù hợp</strong>
-                        <span>Duyệt job theo kỹ năng, AI gợi ý thông minh</span>
+                        <span>Duyệt job theo kỹ năng, AI gợi ý thông minh, lọc theo ngành</span>
                       </div>
                       <span className="dash-ob-arrow">→</span>
                     </Link>
                     <div className="dash-onboard-step disabled">
                       <span className="dash-ob-num">3</span>
                       <div className="dash-ob-info">
-                        <strong>Ứng tuyển & nhận việc</strong>
-                        <span>Viết cover letter và chờ phản hồi</span>
+                        <strong>Ứng tuyển bằng cover letter</strong>
+                        <span>Viết thư giới thiệu bản thân, giải thích vì sao bạn phù hợp</span>
                       </div>
                     </div>
                     <div className="dash-onboard-step disabled">
                       <span className="dash-ob-num">4</span>
                       <div className="dash-ob-info">
-                        <strong>Hoàn thành & nhận tiền</strong>
-                        <span>Nộp bài, được duyệt và nhận thanh toán qua Escrow</span>
+                        <strong>Chờ doanh nghiệp duyệt</strong>
+                        <span>Doanh nghiệp xem hồ sơ → chấp nhận hoặc từ chối</span>
                       </div>
                     </div>
+                    <div className="dash-onboard-step disabled">
+                      <span className="dash-ob-num">5</span>
+                      <div className="dash-ob-info">
+                        <strong>Nhận task & bắt đầu làm</strong>
+                        <span>Xem yêu cầu, deliverables, deadline → bắt tay vào việc</span>
+                      </div>
+                    </div>
+                    <div className="dash-onboard-step disabled">
+                      <span className="dash-ob-num">6</span>
+                      <div className="dash-ob-info">
+                        <strong>Nộp sản phẩm & chờ duyệt</strong>
+                        <span>Upload link sản phẩm → doanh nghiệp review → duyệt hoặc yêu cầu sửa</span>
+                      </div>
+                    </div>
+                    <div className="dash-onboard-step disabled">
+                      <span className="dash-ob-num">7</span>
+                      <div className="dash-ob-info">
+                        <strong>Nhận tiền qua Escrow</strong>
+                        <span>Tiền từ Escrow giải phóng vào ví → rút về ngân hàng/ví điện tử</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Student journey flow map */}
+              {user.role === 'student' && (
+                <div className="dash-student-flow fade-up">
+                  <div className="dash-sf-header">
+                    <h3>🗺️ Hành trình của bạn</h3>
+                  </div>
+                  <div className="dash-sf-steps">
+                    <Link to="/jobs" className={`dash-sf-step${stats.total === 0 ? ' current' : ' done'}`}>
+                      <div className="dash-sf-num">{stats.total > 0 ? '✓' : '1'}</div>
+                      <div className="dash-sf-info">
+                        <strong>Tìm việc</strong>
+                        <span>Duyệt & ứng tuyển job</span>
+                      </div>
+                    </Link>
+                    <div className="dash-sf-connector" />
+                    <Link to="/my-applications" className={`dash-sf-step${stats.total > 0 && stats.accepted === 0 ? ' current' : stats.accepted > 0 ? ' done' : ''}`}>
+                      <div className="dash-sf-num">{stats.accepted > 0 ? '✓' : '2'}</div>
+                      <div className="dash-sf-info">
+                        <strong>Chờ duyệt</strong>
+                        <span>{stats.pending > 0 ? `${stats.pending} đơn đang chờ` : 'Doanh nghiệp xét duyệt'}</span>
+                      </div>
+                    </Link>
+                    <div className="dash-sf-connector" />
+                    <Link to="/my-tasks" className={`dash-sf-step${stats.accepted > 0 && stats.completed === 0 ? ' current' : stats.completed > 0 ? ' done' : ''}`}>
+                      <div className="dash-sf-num">{stats.completed > 0 ? '✓' : '3'}</div>
+                      <div className="dash-sf-info">
+                        <strong>Làm & nộp bài</strong>
+                        <span>{stats.accepted > 0 ? `${stats.accepted} việc đang làm` : 'Nhận task & nộp sản phẩm'}</span>
+                      </div>
+                    </Link>
+                    <div className="dash-sf-connector" />
+                    <Link to="/wallet" className={`dash-sf-step${stats.completed > 0 ? ' done' : ''}`}>
+                      <div className="dash-sf-num">{stats.completed > 0 ? '✓' : '4'}</div>
+                      <div className="dash-sf-info">
+                        <strong>Nhận tiền</strong>
+                        <span>{stats.completed > 0 ? `${stats.completed} job đã hoàn thành` : 'Escrow trả tiền khi duyệt'}</span>
+                      </div>
+                    </Link>
                   </div>
                 </div>
               )}
@@ -412,21 +476,21 @@ export default function DashboardPage() {
                     <span className="dash-qa-icon">📋</span>
                     <span className="dash-qa-label">Đơn ứng tuyển</span>
                   </Link>
+                  <Link to="/my-tasks" className="dash-qa-card dash-qa-highlight">
+                    <span className="dash-qa-icon">🔨</span>
+                    <span className="dash-qa-label">Công việc</span>
+                  </Link>
                   <Link to="/wallet" className="dash-qa-card">
                     <span className="dash-qa-icon">💰</span>
                     <span className="dash-qa-label">Ví tiền</span>
-                  </Link>
-                  <Link to="/profile" className="dash-qa-card">
-                    <span className="dash-qa-icon">👤</span>
-                    <span className="dash-qa-label">Hồ sơ</span>
                   </Link>
                   <Link to="/messages" className="dash-qa-card">
                     <span className="dash-qa-icon">💬</span>
                     <span className="dash-qa-label">Tin nhắn</span>
                   </Link>
-                  <Link to="/notifications" className="dash-qa-card">
-                    <span className="dash-qa-icon">🔔</span>
-                    <span className="dash-qa-label">Thông báo</span>
+                  <Link to="/profile" className="dash-qa-card">
+                    <span className="dash-qa-icon">👤</span>
+                    <span className="dash-qa-label">Hồ sơ</span>
                   </Link>
                 </div>
               )}

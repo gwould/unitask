@@ -323,12 +323,36 @@ export default function JobDetailPage() {
                   <div style={{ fontSize: 48, marginBottom: 12 }}>🎉</div>
                   <h3>Ứng tuyển thành công!</h3>
                   <p>Doanh nghiệp sẽ xem hồ sơ và phản hồi bạn qua hệ thống.</p>
+
+                  {/* Next steps guide */}
+                  <div className="pd-next-steps">
+                    <h4>Bước tiếp theo:</h4>
+                    <div className="pd-ns-list">
+                      <div className="pd-ns-item pd-ns-done">
+                        <span className="pd-ns-num">✓</span>
+                        <span>Gửi cover letter</span>
+                      </div>
+                      <div className="pd-ns-item pd-ns-current">
+                        <span className="pd-ns-num">2</span>
+                        <span>Chờ doanh nghiệp xét duyệt</span>
+                      </div>
+                      <div className="pd-ns-item">
+                        <span className="pd-ns-num">3</span>
+                        <span>Nhận task & bắt đầu làm</span>
+                      </div>
+                      <div className="pd-ns-item">
+                        <span className="pd-ns-num">4</span>
+                        <span>Nộp sản phẩm & nhận tiền</span>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="pd-applied-actions">
                     <Link to="/my-applications" className="btn btn-primary btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
                       📋 Theo dõi đơn
                     </Link>
-                    <Link to="/dashboard" className="btn btn-ghost btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
-                      Về Dashboard
+                    <Link to="/my-tasks" className="btn btn-ghost btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
+                      🔨 Công việc
                     </Link>
                   </div>
                 </div>

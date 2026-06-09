@@ -594,18 +594,43 @@ export default function MyApplicationsPage() {
           ))}
         </div>
 
-        <div className="apps-results-info fade-up" style={{ marginTop: -18 }}>
-          📌 Nộp nhiệm vụ chỉ xuất hiện ở tab <strong>Đã nhận</strong> (sau khi doanh nghiệp chấp nhận đơn).
-          {filter !== 'accepted' && (
-            <button
-              className="btn btn-ghost btn-sm"
-              style={{ marginLeft: 10 }}
-              onClick={() => setFilter('accepted')}
-              type="button"
-            >
-              Chuyển sang Đã nhận
-            </button>
+        {/* Flow connection banner */}
+        <div className="apps-flow-banner fade-up">
+          <div className="apps-fb-steps">
+            <div className="apps-fb-step done">
+              <span className="apps-fb-dot">✓</span>
+              <span>Ứng tuyển</span>
+            </div>
+            <div className="apps-fb-line done" />
+            <div className={`apps-fb-step${counts.pending > 0 ? ' current' : counts.accepted > 0 ? ' done' : ''}`}>
+              <span className="apps-fb-dot">{counts.accepted > 0 ? '✓' : '2'}</span>
+              <span>Chờ duyệt</span>
+            </div>
+            <div className={`apps-fb-line${counts.accepted > 0 ? ' done' : ''}`} />
+            <div className={`apps-fb-step${counts.accepted > 0 ? ' current' : ''}`}>
+              <span className="apps-fb-dot">3</span>
+              <span>Nhận việc</span>
+            </div>
+            <div className="apps-fb-line" />
+            <div className="apps-fb-step">
+              <span className="apps-fb-dot">4</span>
+              <span>Nộp bài</span>
+            </div>
+            <div className="apps-fb-line" />
+            <div className="apps-fb-step">
+              <span className="apps-fb-dot">5</span>
+              <span>Nhận tiền</span>
+            </div>
+          </div>
+          {counts.accepted > 0 && (
+            <Link to="/my-tasks" className="btn btn-primary btn-sm apps-fb-cta">
+              🔨 Vào trang Công việc để nộp bài →
+            </Link>
           )}
+        </div>
+
+        <div className="apps-results-info fade-up" style={{ marginTop: -18 }}>
+          📌 Khi đơn được chấp nhận → vào <Link to="/my-tasks"><strong>Công việc của tôi</strong></Link> để xem task, nộp sản phẩm, và theo dõi thanh toán.
         </div>
         {error && (
           <div className="apps-error fade-up">

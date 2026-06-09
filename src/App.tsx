@@ -24,6 +24,7 @@ const TermsPage = lazy(() => import('./pages/TermsPage'));
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const AdminMessagesPage = lazy(() => import('./pages/AdminMessagesPage'));
 const AdminAccountsPage = lazy(() => import('./pages/AdminAccountsPage'));
+const StudentTasksPage = lazy(() => import('./pages/StudentTasksPage'));
 
 function PageLoader() {
   return (
@@ -48,6 +49,7 @@ export default function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/wallet" element={<WalletPage />} />
           <Route path="/my-applications" element={<MyApplicationsPage />} />
+          <Route path="/my-tasks" element={<StudentTasksPage />} />
           <Route path="/manage-jobs" element={<ManageJobsPage />} />
           <Route path="/business-automation" element={<BusinessAutomationPage />} />
           <Route path="/automation-rules" element={<AutomationRulesPage />} />
