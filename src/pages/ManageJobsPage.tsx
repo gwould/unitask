@@ -82,19 +82,110 @@ function updateAccountBalance(userId: string, delta: number) {
 
 /* ─── SUB COMPONENTS ──────────────────────────────── */
 
-function ApplicantCard({ ap, onAccept, onReject, onApprove, onRequestRevision, onMessage, isActioning, isSelected, onSelectChange }: {
+/* ─── FLOW STEPS ─────────────────────────────────── */
+
+const BIZ_FLOW_STEPS = [
+  { key: 'post',    icon: '📝', label: 'Đăng job',      sub: 'Tạo mô tả & yêu cầu' },
+  { key: 'review',  icon: '👀', label: 'Xem ứng viên',   sub: 'Xem CV & hồ sơ số' },
+  { key: 'accept',  icon: '✅', label: 'Duyệt ứng viên', sub: 'Chấp nhận + gửi tin nhắn' },
+  { key: 'assign',  icon: '📋', label: 'Giao task',      sub: 'Giao việc theo mốc' },
+  { key: 'check',   icon: '🔍', label: 'Kiểm tra bài',   sub: 'Review sản phẩm' },
+  { key: 'pay',     icon: '💰', label: 'Thanh toán',     sub: 'Escrow giải phóng' },
+];
+
+function getApplicantFlowStep(ap: Applicant): number {
+  if (ap.status === 'pending') return 1;
+  if (ap.status === 'rejected') return -1;
+  if (ap.status === 'completed') return 5;
+  // accepted
+  if (!ap.submission) return 3;
+  if (ap.submission.reviewStatus === 'submitted') return 4;
+  if (ap.submission.reviewStatus === 'revision_requested') return 3;
+  if (ap.submission.reviewStatus === 'approved') return 5;
+  return 3;
+}
+
+/* ─── PROFILE MODAL ──────────────────────────────── */
+
+function ProfileModal({ ap, onClose }: { ap: Applicant; onClose: () => void }) {
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-box biz-profile-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="biz-pm-header">
+          <h3>📄 Hồ sơ ứng viên</h3>
+          <button className="stask-sm-close" onClick={onClose}>✕</button>
+        </div>
+
+        <div className="biz-pm-top">
+          <div className="biz-pm-avatar">{ap.name.charAt(0)}</div>
+          <div className="biz-pm-info">
+            <h2>{ap.name}</h2>
+            {ap.university && <div className="biz-pm-uni">🎓 {ap.university}</div>}
+            {ap.rating != null && ap.rating > 0 && (
+              <div className="biz-pm-rating">⭐ {ap.rating}/5.0</div>
+            )}
+          </div>
+        </div>
+
+        {ap.skills && ap.skills.length > 0 && (
+          <div className="biz-pm-section">
+            <h4>🎯 Kỹ năng</h4>
+            <div className="biz-pm-skills">
+              {ap.skills.map(s => <span key={s} className="pj-skill">{s}</span>)}
+            </div>
+          </div>
+        )}
+
+        {ap.coverLetter && (
+          <div className="biz-pm-section">
+            <h4>✍️ Cover Letter</h4>
+            <div className="biz-pm-letter">{ap.coverLetter}</div>
+          </div>
+        )}
+
+        <div className="biz-pm-section">
+          <h4>📊 Thống kê</h4>
+          <div className="biz-pm-stats">
+            <div className="biz-pm-stat">
+              <span className="biz-pm-stat-num">{ap.rating?.toFixed(1) || '—'}</span>
+              <span className="biz-pm-stat-label">Đánh giá</span>
+            </div>
+            <div className="biz-pm-stat">
+              <span className="biz-pm-stat-num">{ap.skills?.length || 0}</span>
+              <span className="biz-pm-stat-label">Kỹ năng</span>
+            </div>
+            <div className="biz-pm-stat">
+              <span className="biz-pm-stat-num">📅</span>
+              <span className="biz-pm-stat-label">{ap.appliedAt}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="biz-pm-actions">
+          <button className="btn btn-ghost" onClick={onClose}>Đóng</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── APPLICANT CARD ─────────────────────────────── */
+
+function ApplicantCard({ ap, onAccept, onReject, onApprove, onRequestRevision, onMessage, onViewProfile, isActioning, isSelected, onSelectChange }: {
   ap: Applicant;
   onAccept: (id: number | string) => void;
   onReject: (id: number | string) => void;
   onApprove: (id: number | string) => void;
   onRequestRevision: (id: number | string) => void;
   onMessage: (userId: string) => void;
+  onViewProfile: (ap: Applicant) => void;
   isActioning: boolean;
   isSelected?: boolean;
   onSelectChange?: (id: string, selected: boolean) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const st = STATUS_MAP[ap.status];
+  const flowStep = getApplicantFlowStep(ap);
 
   return (
     <div className={`manage-applicant-card${isActioning ? ' manage-ap-loading' : ''}${isSelected ? ' selected' : ''}`}>
@@ -109,7 +200,7 @@ function ApplicantCard({ ap, onAccept, onReject, onApprove, onRequestRevision, o
             />
           </div>
         )}
-        <div className="manage-ap-avatar">
+        <div className="manage-ap-avatar" onClick={() => onViewProfile(ap)} title="Xem hồ sơ" style={{ cursor: 'pointer' }}>
           {ap.name.charAt(0)}
         </div>
         <div className="manage-ap-info">
@@ -123,6 +214,15 @@ function ApplicantCard({ ap, onAccept, onReject, onApprove, onRequestRevision, o
           </div>
         </div>
         <span className={`dash-status ${st.cls}`}>{st.label}</span>
+      </div>
+
+      {/* Mini flow for this applicant */}
+      <div className="biz-ap-flow">
+        {BIZ_FLOW_STEPS.map((step, i) => (
+          <div key={step.key} className={`biz-af-dot${i <= flowStep ? ' done' : ''}${i === flowStep ? ' current' : ''}`} title={step.label}>
+            {i <= flowStep ? '✓' : ''}
+          </div>
+        ))}
       </div>
 
       {/* Skills */}
@@ -149,24 +249,35 @@ function ApplicantCard({ ap, onAccept, onReject, onApprove, onRequestRevision, o
         </div>
       )}
 
+      {/* Submission review section */}
       {ap.submission && (
-        <div className="apps-card-letter" style={{ marginTop: 10 }}>
-          <div className="apps-letter-header">
+        <div className="biz-submission-card">
+          <div className="biz-sub-header">
             <strong>📦 Bài nộp nhiệm vụ</strong>
+            <span className={`dash-status ${
+              ap.submission.reviewStatus === 'submitted' ? 'st-info' :
+              ap.submission.reviewStatus === 'revision_requested' ? 'st-warning' : 'st-completed'
+            }`}>
+              {ap.submission.reviewStatus === 'submitted' ? '⏳ Chờ duyệt' :
+               ap.submission.reviewStatus === 'revision_requested' ? '🔁 Đã yêu cầu sửa' : '✅ Đã duyệt'}
+            </span>
           </div>
-          <div className="apps-letter-body" style={{ whiteSpace: 'pre-wrap' }}>
-            {ap.submission.summary}
+          <div className="biz-sub-body">
+            <p>{ap.submission.summary}</p>
             {ap.submission.deliverableUrl && (
-              <div style={{ marginTop: 8 }}>
-                🔗 <a href={ap.submission.deliverableUrl} target="_blank" rel="noreferrer">{ap.submission.deliverableUrl}</a>
-              </div>
+              <a href={ap.submission.deliverableUrl} target="_blank" rel="noreferrer" className="biz-sub-link">
+                🔗 {ap.submission.deliverableUrl}
+              </a>
             )}
-            <div style={{ marginTop: 8, fontSize: 12, opacity: 0.8 }}>
+            {ap.submission.note && (
+              <p className="biz-sub-note">📝 {ap.submission.note}</p>
+            )}
+            <div className="biz-sub-meta">
               Nộp lúc: {ap.submission.submittedAt}
             </div>
-            {ap.submission.reviewStatus === 'revision_requested' && (
-              <div style={{ marginTop: 6, color: 'var(--a)' }}>
-                Đã yêu cầu sửa: {ap.submission.reviewNote || 'Cần cập nhật thêm trước khi duyệt.'}
+            {ap.submission.reviewStatus === 'revision_requested' && ap.submission.reviewNote && (
+              <div className="biz-sub-revision">
+                🔁 Phản hồi của bạn: "{ap.submission.reviewNote}"
               </div>
             )}
           </div>
@@ -174,6 +285,9 @@ function ApplicantCard({ ap, onAccept, onReject, onApprove, onRequestRevision, o
       )}
 
       <div className="manage-ap-actions">
+        <button className="btn btn-ghost btn-sm" onClick={() => onViewProfile(ap)} title="Xem hồ sơ số">
+          📄 Xem CV
+        </button>
         <button className="btn btn-ghost btn-sm" onClick={() => onMessage(String(ap.userId))}>
           💬 Nhắn tin
         </button>
@@ -200,10 +314,13 @@ function ApplicantCard({ ap, onAccept, onReject, onApprove, onRequestRevision, o
           ) : (
             <span className="manage-ap-hint">
               {ap.submission?.reviewStatus === 'revision_requested'
-                ? '🔁 Đã yêu cầu chỉnh sửa, chờ sinh viên nộp lại.'
-                : '💬 Ứng viên đã được chấp nhận, đang chờ nộp bài.'}
+                ? '🔁 Đã yêu cầu sửa, chờ sinh viên nộp lại.'
+                : '⏳ Đang chờ sinh viên nộp sản phẩm...'}
             </span>
           )
+        )}
+        {ap.status === 'completed' && (
+          <span className="manage-ap-hint" style={{ color: 'var(--t)' }}>✅ Đã hoàn thành & thanh toán</span>
         )}
         {ap.status === 'rejected' && (
           <span className="manage-ap-hint" style={{ opacity: 0.6 }}>Đã từ chối ứng viên này</span>
@@ -262,6 +379,7 @@ export default function ManageJobsPage() {
   const [confirmAction, setConfirmAction] = useState<{ id: number | string; name: string; action: 'accept' | 'reject' | 'approve' | 'revision' } | null>(null);
   const [selectedApplicantIds, setSelectedApplicantIds] = useState<Set<string>>(new Set());
   const [isBulkLoading, setIsBulkLoading] = useState(false);
+  const [profileModal, setProfileModal] = useState<Applicant | null>(null);
 
   // Redirect
   useEffect(() => {
@@ -462,8 +580,17 @@ export default function ManageJobsPage() {
     setActioningId(null);
 
     if (newStatus === 'accepted') {
-      showToast(`Đã chấp nhận ${targetApplicant.name || 'ứng viên'} 🎉`);
+      // Auto-send welcome message to chat
+      try {
+        const conv = await conversationService.start(String(targetApplicant.userId));
+        await conversationService.sendMessage(conv.id, buildAcceptMessage(targetJob));
+      } catch { /* messaging is best-effort */ }
+      showToast(`Đã chấp nhận ${targetApplicant.name || 'ứng viên'} 🎉 Tin nhắn tự động đã gửi!`);
     } else {
+      try {
+        const conv = await conversationService.start(String(targetApplicant.userId));
+        await conversationService.sendMessage(conv.id, buildRejectMessage(targetJob));
+      } catch { /* messaging is best-effort */ }
       showToast(`Đã từ chối ${targetApplicant.name || 'ứng viên'}`);
     }
   }, [applicants, buildAcceptMessage, buildJobActionUrl, buildRejectMessage, myJobs, selectedJob, showToast]);
@@ -645,11 +772,53 @@ export default function ManageJobsPage() {
     setConfirmAction({ id, name: ap?.name || 'ứng viên', action: 'revision' });
   }, [applicants]);
 
+  const handleViewProfile = useCallback((ap: Applicant) => {
+    setProfileModal(ap);
+  }, []);
+
+  // Stats for flow
+  const totalApplicants = applicants.length;
+  const pendingCount = applicants.filter(a => a.status === 'pending').length;
+  const acceptedCount = applicants.filter(a => a.status === 'accepted').length;
+  const completedCount = applicants.filter(a => a.status === 'completed').length;
+  const submittedCount = applicants.filter(a => a.submission?.reviewStatus === 'submitted').length;
+
+  // Determine current biz flow step
+  const bizFlowCurrent = completedCount > 0 ? 5
+    : submittedCount > 0 ? 4
+    : acceptedCount > 0 ? 3
+    : pendingCount > 0 ? 1
+    : myJobs.length > 0 ? 1
+    : 0;
+
   if (!user || user.role !== 'business') return null;
 
   return (
     <section className="page-manage">
       <div className="container">
+        {/* ─── BUSINESS FLOW VISUALIZATION ─── */}
+        <div className="biz-flow-banner fade-up">
+          <div className="biz-flow-title">📊 Quy trình tuyển dụng</div>
+          <div className="biz-flow-steps">
+            {BIZ_FLOW_STEPS.map((step, i) => (
+              <div key={step.key} className={`biz-fs-item${i <= bizFlowCurrent ? ' done' : ''}${i === bizFlowCurrent ? ' current' : ''}`}>
+                <div className="biz-fs-icon">{step.icon}</div>
+                <div className="biz-fs-label">{step.label}</div>
+                <div className="biz-fs-sub">{step.sub}</div>
+                {i < BIZ_FLOW_STEPS.length - 1 && <div className="biz-fs-connector" />}
+              </div>
+            ))}
+          </div>
+          <div className="biz-flow-stats">
+            <span>📋 {myJobs.length} job</span>
+            <span>👥 {totalApplicants} ứng viên</span>
+            <span>⏳ {pendingCount} chờ duyệt</span>
+            <span>✅ {acceptedCount} đã nhận</span>
+            <span>📦 {submittedCount} chờ review</span>
+            <span>💰 {completedCount} hoàn thành</span>
+          </div>
+        </div>
+
         <div className="manage-header fade-up">
           <div>
             <h1>📂 Quản lý Job đã đăng</h1>
@@ -792,6 +961,7 @@ export default function ManageJobsPage() {
                         onApprove={handleApprove}
                         onRequestRevision={handleRevision}
                         onMessage={handleMessage}
+                        onViewProfile={handleViewProfile}
                         isActioning={actioningId !== null && String(actioningId) === String(ap.id)}
                         isSelected={selectedApplicantIds.has(String(ap.id))}
                         onSelectChange={handleSelectApplicant}
@@ -854,6 +1024,9 @@ export default function ManageJobsPage() {
           </div>
         </div>
       )}
+
+      {/* Profile modal */}
+      {profileModal && <ProfileModal ap={profileModal} onClose={() => setProfileModal(null)} />}
 
       {/* Toast */}
       {toast && (

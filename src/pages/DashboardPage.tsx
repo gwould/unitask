@@ -465,6 +465,66 @@ export default function DashboardPage() {
                 </div>
               )}
 
+              {/* Business journey flow map */}
+              {user.role === 'business' && (
+                <div className="dash-student-flow fade-up">
+                  <div className="dash-sf-header">
+                    <h3>📊 Quy trình tuyển dụng</h3>
+                  </div>
+                  <div className="dash-sf-steps">
+                    <Link to="/post-job" className={`dash-sf-step${stats.total > 0 ? ' done' : ' current'}`}>
+                      <div className="dash-sf-num">{stats.total > 0 ? '✓' : '1'}</div>
+                      <div className="dash-sf-info">
+                        <strong>Đăng job</strong>
+                        <span>{stats.total > 0 ? `${stats.total} job đã đăng` : 'Tạo mô tả & yêu cầu'}</span>
+                      </div>
+                    </Link>
+                    <div className="dash-sf-connector" />
+                    <Link to="/manage-jobs" className={`dash-sf-step${stats.total > 0 && stats.accepted === 0 ? ' current' : stats.accepted > 0 ? ' done' : ''}`}>
+                      <div className="dash-sf-num">{stats.accepted > 0 ? '✓' : '2'}</div>
+                      <div className="dash-sf-info">
+                        <strong>Duyệt ứng viên</strong>
+                        <span>{stats.pending > 0 ? `${stats.pending} đang chờ duyệt` : 'Xem CV & chấp nhận'}</span>
+                      </div>
+                    </Link>
+                    <div className="dash-sf-connector" />
+                    <Link to="/manage-jobs" className={`dash-sf-step${stats.accepted > 0 && stats.completed === 0 ? ' current' : stats.completed > 0 ? ' done' : ''}`}>
+                      <div className="dash-sf-num">{stats.completed > 0 ? '✓' : '3'}</div>
+                      <div className="dash-sf-info">
+                        <strong>Review & thanh toán</strong>
+                        <span>{stats.completed > 0 ? `${stats.completed} đã hoàn thành` : 'Duyệt bài & escrow'}</span>
+                      </div>
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {/* Quick actions for business */}
+              {user.role === 'business' && (
+                <div className="dash-quick-actions fade-up">
+                  <Link to="/post-job" className="dash-qa-card dash-qa-highlight">
+                    <span className="dash-qa-icon">📝</span>
+                    <span className="dash-qa-label">Đăng việc</span>
+                  </Link>
+                  <Link to="/manage-jobs" className="dash-qa-card">
+                    <span className="dash-qa-icon">📂</span>
+                    <span className="dash-qa-label">Quản lý job</span>
+                  </Link>
+                  <Link to="/wallet" className="dash-qa-card">
+                    <span className="dash-qa-icon">💰</span>
+                    <span className="dash-qa-label">Escrow</span>
+                  </Link>
+                  <Link to="/messages" className="dash-qa-card">
+                    <span className="dash-qa-icon">💬</span>
+                    <span className="dash-qa-label">Tin nhắn</span>
+                  </Link>
+                  <Link to="/business-automation" className="dash-qa-card">
+                    <span className="dash-qa-icon">🎯</span>
+                    <span className="dash-qa-label">Tăng trưởng</span>
+                  </Link>
+                </div>
+              )}
+
               {/* Quick actions for students */}
               {user.role === 'student' && (
                 <div className="dash-quick-actions fade-up">

@@ -245,8 +245,31 @@ export default function PostJobPage() {
             <div className="pj-success-icon">🎉</div>
             <h2>Đăng việc thành công!</h2>
             <p>Job của bạn đã được gửi lên hệ thống và sẽ hiển thị cho sinh viên ngay.</p>
-            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 24 }}>
-              <button className="btn btn-primary" onClick={() => {
+
+            <div className="pd-next-steps" style={{ margin: '24px 0', textAlign: 'left' }}>
+              <div className="pd-ns-item pd-ns-done">
+                <span className="pd-ns-num">✓</span>
+                <div><strong>Đăng job</strong><br/><span style={{fontSize:'.85rem',opacity:.7}}>Mô tả & yêu cầu đã được đăng</span></div>
+              </div>
+              <div className="pd-ns-item pd-ns-current">
+                <span className="pd-ns-num">2</span>
+                <div><strong>Chờ ứng viên</strong><br/><span style={{fontSize:'.85rem',opacity:.7}}>Sinh viên sẽ bắt đầu ứng tuyển</span></div>
+              </div>
+              <div className="pd-ns-item">
+                <span className="pd-ns-num">3</span>
+                <div><strong>Duyệt & giao task</strong><br/><span style={{fontSize:'.85rem',opacity:.7}}>Xem CV, chấp nhận, tin nhắn tự động</span></div>
+              </div>
+              <div className="pd-ns-item">
+                <span className="pd-ns-num">4</span>
+                <div><strong>Review & thanh toán</strong><br/><span style={{fontSize:'.85rem',opacity:.7}}>Duyệt bài nộp, escrow trả tiền</span></div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button className="btn btn-primary" onClick={() => navigate('/manage-jobs')}>
+                📂 Quản lý job
+              </button>
+              <button className="btn btn-ghost" onClick={() => {
                 setSuccess(false);
                 setTouched({});
                 setFieldErrors({});
@@ -264,7 +287,7 @@ export default function PostJobPage() {
                   skills: '',
                 });
               }}>
-                Đăng thêm việc
+                📝 Đăng thêm việc
               </button>
               <button className="btn btn-ghost" onClick={() => navigate('/dashboard')}>
                 Về Dashboard
