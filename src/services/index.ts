@@ -1,4 +1,4 @@
-export { API_BASE, apiDelete, apiGet, apiPost, apiPut, request, requestWithFallback } from './apiService';
+export { API_BASE, apiDelete, apiGet, apiPost, apiPut, request, requestWithFallback, tryRefreshToken } from './apiService';
 export { apiRepository, type ApiUser, type ApiJobListPage } from './apiRepository';
 export { localRepository } from './localRepository';
 export { serviceRegistry } from './serviceRegistry';

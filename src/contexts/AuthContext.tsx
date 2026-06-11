@@ -2,8 +2,9 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from '
 import type { User, UserRole, RegisterData } from '../types';
 import type { BackendAuthUser, LoginResponse, RegisterResponse } from '../types/api';
 import { STORAGE_KEYS } from '../constants';
-import { apiPost, apiPut } from '../services';
+import { apiPost, apiPut, tryRefreshToken } from '../services';
 import { profileService } from '../services/profileService';
+import { getSessionStatus } from '../utils/auth';
 
 // Re-export types for consumers that import from AuthContext
 export type { User, UserRole };
@@ -117,13 +118,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isApiAuthenticated, setIsApiAuthenticated] = useState(() => hasRealToken());
 
-  // Restore session
+  // Restore session — kiểm tra token trước khi tin localStorage
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setUser(JSON.parse(saved));
-    } catch { /* ignore */ }
-    setIsLoading(false);
+    let cancelled = false;
+
+    const restore = async () => {
+      let savedUser: User | null = null;
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) savedUser = JSON.parse(saved) as User;
+      } catch { /* ignore */ }
+
+      const status = getSessionStatus();
+
+      if (status === 'expired') {
+        // Token hết hạn → thử refresh trước khi cho vào app
+        const refreshed = await tryRefreshToken();
+        if (cancelled) return;
+        if (refreshed) {
+          setIsApiAuthenticated(true);
+          setUser(savedUser);
+        } else {
+          // Refresh thất bại → xóa phiên cũ, yêu cầu đăng nhập lại
+          persistTokens(null, null);
+          try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
+          setIsApiAuthenticated(false);
+          setUser(null);
+        }
+      } else if (status === 'valid') {
+        setIsApiAuthenticated(true);
+        setUser(savedUser);
+      } else {
+        // Không có token — chỉ chấp nhận user demo local (không gọi API)
+        setIsApiAuthenticated(false);
+        setUser(savedUser);
+      }
+
+      if (!cancelled) setIsLoading(false);
+    };
+
+    void restore();
+    return () => { cancelled = true; };
   }, []);
 
   const persist = (u: User | null) => {

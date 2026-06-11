@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const HOME_PLANS = [
   {
@@ -51,6 +52,20 @@ const HOME_PLANS = [
 ] as const;
 
 export default function PricingSection() {
+  const { user } = useAuth();
+
+  // Đã đăng nhập → không bắt đăng ký lại; điều hướng theo ngữ cảnh
+  const ctaTarget = (planKey: string) => {
+    if (!user) return '/register';
+    if (planKey === 'free-starter') return '/dashboard';
+    return '/contact';
+  };
+  const ctaLabel = (plan: (typeof HOME_PLANS)[number]) => {
+    if (!user) return plan.cta;
+    if (plan.key === 'free-starter') return 'Gói hiện tại của bạn';
+    return `Liên hệ ${plan.name.split(' ')[0] === 'Starter' ? 'nâng cấp Starter' : 'nâng cấp Growth'}`;
+  };
+
   return (
     <section id="pricing" className="pricing-section">
       <div className="container">
@@ -101,11 +116,11 @@ export default function PricingSection() {
               </ul>
 
               <Link
-                to="/register"
+                to={ctaTarget(plan.key)}
                 className={`btn ${plan.highlight ? 'btn-primary' : 'btn-ghost'}`}
                 style={{ width: '100%', justifyContent: 'center' }}
               >
-                {plan.cta}
+                {ctaLabel(plan)}
               </Link>
             </article>
           ))}
