@@ -205,13 +205,9 @@ function ValueCard({ value, index }: { value: typeof VALUES[0]; index: number })
 function PlanCard({ plan }: { plan: (typeof SUBSCRIPTION_PLANS)[number] }) {
   const { user } = useAuth();
 
-  // Đã đăng nhập → không bắt đăng ký lại
-  const target = !user ? '/register' : plan.key === 'free-starter' ? '/dashboard' : '/contact';
-  const label = !user
-    ? plan.cta
-    : plan.key === 'free-starter'
-      ? 'Gói hiện tại của bạn'
-      : `Liên hệ ${plan.cta.toLowerCase()}`;
+  // Đã đăng nhập → đi thẳng tới trang thanh toán gói
+  const target = !user ? '/register' : plan.key === 'free-starter' ? '/dashboard' : `/upgrade/${plan.key}`;
+  const label = !user || plan.key !== 'free-starter' ? plan.cta : 'Gói hiện tại của bạn';
 
   return (
     <div className={`about-plan-card${plan.highlight ? ' featured' : ''}`}>

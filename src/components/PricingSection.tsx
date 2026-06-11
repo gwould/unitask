@@ -54,16 +54,16 @@ const HOME_PLANS = [
 export default function PricingSection() {
   const { user } = useAuth();
 
-  // Đã đăng nhập → không bắt đăng ký lại; điều hướng theo ngữ cảnh
+  // Đã đăng nhập → đi thẳng tới trang thanh toán gói
   const ctaTarget = (planKey: string) => {
     if (!user) return '/register';
     if (planKey === 'free-starter') return '/dashboard';
-    return '/contact';
+    return `/upgrade/${planKey}`;
   };
   const ctaLabel = (plan: (typeof HOME_PLANS)[number]) => {
     if (!user) return plan.cta;
     if (plan.key === 'free-starter') return 'Gói hiện tại của bạn';
-    return `Liên hệ ${plan.name.split(' ')[0] === 'Starter' ? 'nâng cấp Starter' : 'nâng cấp Growth'}`;
+    return plan.cta;
   };
 
   return (

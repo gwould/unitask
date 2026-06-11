@@ -2892,6 +2892,85 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
 [data-theme="light"] .biz-sub-header{border-color:#EEE}
 [data-theme="light"] .biz-sub-revision{background:rgba(255,179,64,.06);border-color:rgba(255,179,64,.2)}
 
+/* ═══════════════════════════════════════════════════
+   UPGRADE / CHECKOUT PAGE
+   ═══════════════════════════════════════════════════ */
+.page-upgrade{padding:48px 0 80px;min-height:70vh}
+.upg-header h1{font-size:1.6rem;margin-bottom:6px;background:linear-gradient(135deg,var(--pl),var(--a));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.upg-header p{color:var(--text-2);margin-bottom:24px}
+
+.upg-current-notice{padding:12px 18px;background:rgba(91,79,255,.08);border:1px solid rgba(91,79,255,.2);border-radius:12px;margin-bottom:20px;font-size:.9rem}
+
+.upg-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:start}
+.upg-card{background:rgba(17,14,36,.6);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border:1px solid rgba(91,79,255,.12);border-radius:var(--r16);padding:24px;margin-bottom:16px}
+.upg-card-title{font-weight:700;font-size:.95rem;margin-bottom:16px}
+
+.upg-plan-box{border:1px solid rgba(91,79,255,.2);border-radius:12px;padding:18px;background:rgba(91,79,255,.04)}
+.upg-plan-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+.upg-plan-top h3{font-size:1.1rem;margin:0 0 4px}
+.upg-plan-badge{font-size:.75rem;color:var(--pl);background:rgba(91,79,255,.1);padding:2px 10px;border-radius:12px}
+.upg-plan-price strong{font-size:1.2rem;color:var(--pl)}
+.upg-plan-price span{font-size:.8rem;color:var(--text-3);margin-left:4px}
+.upg-plan-features{list-style:none;margin:0;padding:0}
+.upg-plan-features li{font-size:.85rem;color:var(--text-2);padding:4px 0}
+.upg-change-plan{display:inline-block;margin-top:10px;font-size:.82rem;color:var(--pl)}
+.upg-change-plan:hover{text-decoration:underline}
+
+.upg-pay-option{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:10px;cursor:pointer;transition:all .25s}
+.upg-pay-option:hover{border-color:rgba(91,79,255,.3)}
+.upg-pay-option.active{border-color:var(--pl);background:rgba(91,79,255,.06)}
+.upg-pay-option input{accent-color:var(--pl)}
+.upg-pay-info{flex:1;display:flex;flex-direction:column;gap:2px}
+.upg-pay-info strong{font-size:.9rem}
+.upg-pay-info span{font-size:.8rem;color:var(--text-3)}
+.upg-insufficient{color:#FF6B6B;font-style:normal}
+.upg-pay-tag{font-size:.7rem;color:var(--t);background:rgba(0,212,170,.1);padding:3px 10px;border-radius:12px;white-space:nowrap}
+
+.upg-bank-detail{margin-top:6px;padding:14px 16px;background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.12);border-radius:12px;display:flex;flex-direction:column;gap:8px}
+.upg-bank-detail div{display:flex;justify-content:space-between;font-size:.83rem;gap:12px}
+.upg-bank-detail span{color:var(--text-3)}
+.upg-bank-detail strong{text-align:right}
+
+.upg-invoice{position:sticky;top:90px}
+.upg-inv-meta{display:flex;flex-direction:column;gap:8px;padding-bottom:14px;border-bottom:1px dashed rgba(255,255,255,.1);margin-bottom:14px}
+.upg-inv-meta div{display:flex;justify-content:space-between;font-size:.83rem;gap:12px}
+.upg-inv-meta span{color:var(--text-3)}
+.upg-inv-meta strong{text-align:right;word-break:break-all}
+.upg-inv-lines{display:flex;flex-direction:column;gap:10px}
+.upg-inv-line{display:flex;justify-content:space-between;font-size:.9rem}
+.upg-inv-total{padding-top:12px;border-top:1px solid rgba(255,255,255,.1);font-weight:700;font-size:1.05rem}
+.upg-inv-total span:last-child{color:var(--pl)}
+
+.upg-error{margin-top:14px;padding:12px 14px;background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.25);border-radius:10px;font-size:.83rem;color:#FF6B6B}
+.upg-pay-btn{width:100%;justify-content:center;margin-top:16px;padding:14px;font-size:1rem}
+.upg-secure-note{font-size:.75rem;color:var(--text-3);text-align:center;margin-top:12px}
+
+/* Success */
+.upg-success{text-align:center;padding:48px 32px;background:rgba(17,14,36,.6);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border:1px solid rgba(91,79,255,.12);border-radius:var(--r20);margin-top:40px}
+.upg-success-icon{font-size:3.5rem;margin-bottom:12px}
+.upg-success h2{margin-bottom:8px}
+.upg-success>p{color:var(--text-2)}
+.upg-receipt{margin:24px auto 0;max-width:380px;text-align:left;background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.15);border-radius:12px;padding:18px}
+.upg-receipt-row{display:flex;justify-content:space-between;font-size:.88rem;padding:6px 0;gap:12px}
+.upg-receipt-row span{color:var(--text-3)}
+.upg-receipt-total{border-top:1px solid rgba(255,255,255,.1);margin-top:8px;padding-top:12px;font-size:1rem}
+.upg-receipt-total strong{color:var(--t)}
+.upg-bank-note{margin-top:16px;font-size:.85rem;color:var(--a)}
+
+/* Light mode */
+[data-theme="light"] .upg-card,[data-theme="light"] .upg-success{background:rgba(255,255,255,.85);border-color:#E2E3E8}
+[data-theme="light"] .upg-pay-option{border-color:#E2E3E8}
+[data-theme="light"] .upg-bank-detail,[data-theme="light"] .upg-receipt{background:#F9F9FB;border-color:#D8D9DE}
+[data-theme="light"] .upg-inv-meta{border-color:#E2E3E8}
+[data-theme="light"] .upg-inv-total{border-color:#E2E3E8}
+[data-theme="light"] .upg-receipt-total{border-color:#E2E3E8}
+
+/* Responsive */
+@media(max-width:860px){
+  .upg-grid{grid-template-columns:1fr}
+  .upg-invoice{position:static}
+}
+
 /* ─── BUSINESS FLOW: RESPONSIVE ────────────────────── */
 @media(max-width:768px){
   .biz-flow-banner{padding:20px 16px}

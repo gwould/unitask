@@ -16,6 +16,10 @@ export interface User {
   completedJobs?: number;
   rating?: number;
   balance?: number;
+  /** Gói đăng ký hiện tại (business): free-starter | starter | growth */
+  plan?: string;
+  /** Ngày kích hoạt gói (ISO date) */
+  planSince?: string;
 }
 
 export interface RegisterData {

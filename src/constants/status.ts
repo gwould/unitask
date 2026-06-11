@@ -19,6 +19,7 @@ export const TX_TYPE_CONFIG: Record<TxType, { icon: string; color: string; label
   escrow_in:      { icon: '🔒', color: 'var(--pl)', label: 'Nạp Escrow' },
   withdraw:       { icon: '🏦', color: 'var(--a)',  label: 'Rút tiền' },
   escrow_release: { icon: '✅', color: 'var(--t)',  label: 'Giải phóng' },
+  subscription:   { icon: '📦', color: 'var(--pl)', label: 'Gói đăng ký' },
 };
 
 export const TX_STATUS_LABEL: Record<TxStatus, { text: string; cls: string }> = {

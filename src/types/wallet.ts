@@ -1,4 +1,4 @@
-export type TxType = 'income' | 'escrow_in' | 'withdraw' | 'escrow_release';
+export type TxType = 'income' | 'escrow_in' | 'withdraw' | 'escrow_release' | 'subscription';
 export type TxStatus = 'completed' | 'pending' | 'processing';
 export type TxFilter = TxType | 'all';
 

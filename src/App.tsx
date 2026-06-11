@@ -25,6 +25,7 @@ const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const AdminMessagesPage = lazy(() => import('./pages/AdminMessagesPage'));
 const AdminAccountsPage = lazy(() => import('./pages/AdminAccountsPage'));
 const StudentTasksPage = lazy(() => import('./pages/StudentTasksPage'));
+const UpgradePage = lazy(() => import('./pages/UpgradePage'));
 
 function PageLoader() {
   return (
@@ -50,6 +51,7 @@ export default function App() {
           <Route path="/wallet" element={<WalletPage />} />
           <Route path="/my-applications" element={<MyApplicationsPage />} />
           <Route path="/my-tasks" element={<StudentTasksPage />} />
+          <Route path="/upgrade/:planKey" element={<UpgradePage />} />
           <Route path="/manage-jobs" element={<ManageJobsPage />} />
           <Route path="/business-automation" element={<BusinessAutomationPage />} />
           <Route path="/automation-rules" element={<AutomationRulesPage />} />
