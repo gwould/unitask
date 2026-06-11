@@ -204,8 +204,8 @@ export default function UpgradePage() {
               </label>
               {payMethod === 'bank' && (
                 <div className="upg-bank-detail">
-                  <div><span>Ngân hàng</span><strong>Vietcombank — CN TP.HCM</strong></div>
-                  <div><span>Số tài khoản</span><strong>0071 0008 88888</strong></div>
+                  <div><span>Ngân hàng</span><strong>Sacombank</strong></div>
+                  <div><span>Số tài khoản</span><strong>040111849759</strong></div>
                   <div><span>Chủ tài khoản</span><strong>CONG TY TNHH UNITASK</strong></div>
                   <div><span>Nội dung CK</span><strong>{invoiceNo} {user.email}</strong></div>
                 </div>
