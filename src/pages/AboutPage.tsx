@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 /* ─── DATA ────────────────────────────────────────── */
 
@@ -202,6 +203,16 @@ function ValueCard({ value, index }: { value: typeof VALUES[0]; index: number })
 }
 
 function PlanCard({ plan }: { plan: (typeof SUBSCRIPTION_PLANS)[number] }) {
+  const { user } = useAuth();
+
+  // Đã đăng nhập → không bắt đăng ký lại
+  const target = !user ? '/register' : plan.key === 'free-starter' ? '/dashboard' : '/contact';
+  const label = !user
+    ? plan.cta
+    : plan.key === 'free-starter'
+      ? 'Gói hiện tại của bạn'
+      : `Liên hệ ${plan.cta.toLowerCase()}`;
+
   return (
     <div className={`about-plan-card${plan.highlight ? ' featured' : ''}`}>
       <div className="about-plan-top">
@@ -220,8 +231,8 @@ function PlanCard({ plan }: { plan: (typeof SUBSCRIPTION_PLANS)[number] }) {
           <li key={feature}>{feature}</li>
         ))}
       </ul>
-      <Link to="/register" className={`btn ${plan.highlight ? 'btn-primary' : 'btn-ghost'}`} style={{ width: '100%', justifyContent: 'center' }}>
-        {plan.cta}
+      <Link to={target} className={`btn ${plan.highlight ? 'btn-primary' : 'btn-ghost'}`} style={{ width: '100%', justifyContent: 'center' }}>
+        {label}
       </Link>
     </div>
   );
