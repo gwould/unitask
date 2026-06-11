@@ -28,6 +28,15 @@ export interface EnrichedApplication extends Application {
   job: Job | undefined;
 }
 
+export interface AssignedTask {
+  id: string;
+  title: string;
+  description: string;
+  deadline: string;
+  status: 'pending' | 'in_progress' | 'done';
+  assignedAt: string;
+}
+
 export interface Applicant {
   id: number | string;
   appId?: number | string;
@@ -41,4 +50,6 @@ export interface Applicant {
   skills?: string[];
   rating?: number;
   submission?: TaskSubmission;
+  /** Tasks giao cho sinh viên này */
+  assignedTasks?: AssignedTask[];
 }

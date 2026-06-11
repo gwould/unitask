@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import type { Job, Transaction, User } from '../types';
-import type { AppStatus, Applicant, TaskSubmission } from '../types/application';
+import type { AppStatus, Applicant, AssignedTask, TaskSubmission } from '../types/application';
 import { APPLICANT_STATUS_MAP, STORAGE_KEYS } from '../constants';
 import { formatMoney } from '../utils/format';
 import { BulkActions } from '../components/BulkActions';
@@ -169,9 +169,278 @@ function ProfileModal({ ap, onClose }: { ap: Applicant; onClose: () => void }) {
   );
 }
 
+/* ─── TASK ASSIGN MODAL ──────────────────────────── */
+
+function TaskAssignModal({ ap, job, existingTasks, onSave, onClose }: {
+  ap: Applicant;
+  job: Job | null;
+  existingTasks: AssignedTask[];
+  onSave: (tasks: AssignedTask[]) => void;
+  onClose: () => void;
+}) {
+  const [tasks, setTasks] = useState<AssignedTask[]>(existingTasks);
+  const [newTitle, setNewTitle] = useState('');
+  const [newDesc, setNewDesc] = useState('');
+  const [newDeadline, setNewDeadline] = useState('');
+
+  const addTask = () => {
+    if (!newTitle.trim()) return;
+    const task: AssignedTask = {
+      id: `task-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      title: newTitle.trim(),
+      description: newDesc.trim(),
+      deadline: newDeadline || 'Không giới hạn',
+      status: 'pending',
+      assignedAt: new Date().toISOString().slice(0, 10),
+    };
+    setTasks([...tasks, task]);
+    setNewTitle('');
+    setNewDesc('');
+    setNewDeadline('');
+  };
+
+  const removeTask = (id: string) => setTasks(tasks.filter(t => t.id !== id));
+
+  const toggleStatus = (id: string) => {
+    setTasks(tasks.map(t => {
+      if (t.id !== id) return t;
+      const next = t.status === 'pending' ? 'in_progress' : t.status === 'in_progress' ? 'done' : 'pending';
+      return { ...t, status: next };
+    }));
+  };
+
+  const addFromDeliverables = () => {
+    if (!job?.deliverables) return;
+    const existing = new Set(tasks.map(t => t.title));
+    const newTasks = job.deliverables
+      .filter(d => !existing.has(d))
+      .map((d, i) => ({
+        id: `task-del-${Date.now()}-${i}`,
+        title: d,
+        description: `Sản phẩm cần nộp: ${d}`,
+        deadline: job.deadline || 'Theo deadline job',
+        status: 'pending' as const,
+        assignedAt: new Date().toISOString().slice(0, 10),
+      }));
+    if (newTasks.length > 0) setTasks([...tasks, ...newTasks]);
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-box biz-task-modal" onClick={e => e.stopPropagation()}>
+        <div className="biz-tm-header">
+          <h3>📋 Giao task cho {ap.name}</h3>
+          <button className="stask-sm-close" onClick={onClose}>✕</button>
+        </div>
+
+        {job && job.deliverables && job.deliverables.length > 0 && (
+          <button className="btn btn-ghost btn-sm biz-tm-auto" onClick={addFromDeliverables} type="button">
+            ⚡ Tạo task từ deliverables của job ({job.deliverables.length} mục)
+          </button>
+        )}
+
+        {/* Existing tasks */}
+        {tasks.length > 0 && (
+          <div className="biz-tm-list">
+            {tasks.map((t, i) => (
+              <div key={t.id} className={`biz-tm-item biz-tm-${t.status}`}>
+                <div className="biz-tm-num">{i + 1}</div>
+                <div className="biz-tm-content">
+                  <strong>{t.title}</strong>
+                  {t.description && <p>{t.description}</p>}
+                  <span className="biz-tm-deadline">📅 {t.deadline}</span>
+                </div>
+                <div className="biz-tm-item-actions">
+                  <button className="btn btn-ghost btn-sm" onClick={() => toggleStatus(t.id)} title="Đổi trạng thái">
+                    {t.status === 'pending' ? '⏳' : t.status === 'in_progress' ? '🔄' : '✅'}
+                  </button>
+                  <button className="btn btn-ghost btn-sm" onClick={() => removeTask(t.id)} title="Xóa">🗑️</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Add new task form */}
+        <div className="biz-tm-form">
+          <div className="biz-tm-form-title">➕ Thêm task mới</div>
+          <input
+            type="text"
+            className="apps-search-input"
+            placeholder="Tên task (VD: Thiết kế logo v1)"
+            value={newTitle}
+            onChange={e => setNewTitle(e.target.value)}
+          />
+          <textarea
+            className="pj-textarea"
+            placeholder="Mô tả chi tiết (tùy chọn)"
+            rows={2}
+            value={newDesc}
+            onChange={e => setNewDesc(e.target.value)}
+            style={{ resize: 'vertical', minHeight: 48 }}
+          />
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <input
+              type="date"
+              className="apps-search-input"
+              value={newDeadline}
+              onChange={e => setNewDeadline(e.target.value)}
+              style={{ flex: 1 }}
+            />
+            <button className="btn btn-primary btn-sm" onClick={addTask} disabled={!newTitle.trim()}>
+              Thêm
+            </button>
+          </div>
+        </div>
+
+        <div className="biz-tm-footer">
+          <button className="btn btn-ghost" onClick={onClose}>Hủy</button>
+          <button className="btn btn-primary" onClick={() => { onSave(tasks); onClose(); }}>
+            💾 Lưu danh sách task ({tasks.length})
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── SUBMISSION VIEWER MODAL ────────────────────── */
+
+function SubmissionViewerModal({ ap, job, onApprove, onRequestRevision, onClose }: {
+  ap: Applicant;
+  job: Job | null;
+  onApprove: () => void;
+  onRequestRevision: () => void;
+  onClose: () => void;
+}) {
+  const sub = ap.submission;
+  if (!sub) return null;
+
+  const deliverables = job?.deliverables || [];
+  const isImage = (url: string) => /\.(png|jpg|jpeg|gif|webp|svg)(\?|$)/i.test(url);
+  const isPdf = (url: string) => /\.pdf(\?|$)/i.test(url);
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-box biz-sv-modal" onClick={e => e.stopPropagation()}>
+        <div className="biz-sv-header">
+          <h3>📦 Bài nộp của {ap.name}</h3>
+          <button className="stask-sm-close" onClick={onClose}>✕</button>
+        </div>
+
+        {/* Status bar */}
+        <div className={`biz-sv-status biz-sv-${sub.reviewStatus}`}>
+          {sub.reviewStatus === 'submitted' && '⏳ Đang chờ duyệt'}
+          {sub.reviewStatus === 'revision_requested' && '🔁 Đã yêu cầu chỉnh sửa'}
+          {sub.reviewStatus === 'approved' && '✅ Đã duyệt hoàn tất'}
+          <span className="biz-sv-date">Nộp lúc: {sub.submittedAt}</span>
+        </div>
+
+        {/* Summary */}
+        <div className="biz-sv-section">
+          <h4>📝 Tóm tắt công việc</h4>
+          <div className="biz-sv-text">{sub.summary}</div>
+        </div>
+
+        {/* Deliverable link with preview */}
+        {sub.deliverableUrl && (
+          <div className="biz-sv-section">
+            <h4>🔗 Sản phẩm đã nộp</h4>
+            <div className="biz-sv-deliverable">
+              {isImage(sub.deliverableUrl) && (
+                <div className="biz-sv-preview">
+                  <img src={sub.deliverableUrl} alt="Preview" />
+                </div>
+              )}
+              {isPdf(sub.deliverableUrl) && (
+                <div className="biz-sv-preview biz-sv-pdf">
+                  <iframe src={sub.deliverableUrl} title="PDF Preview" />
+                </div>
+              )}
+              <a href={sub.deliverableUrl} target="_blank" rel="noreferrer" className="biz-sv-link">
+                🔗 {sub.deliverableUrl}
+              </a>
+              <a href={sub.deliverableUrl} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm" style={{ marginTop: 6 }}>
+                📥 Mở / Tải về
+              </a>
+            </div>
+          </div>
+        )}
+
+        {/* Note from student */}
+        {sub.note && (
+          <div className="biz-sv-section">
+            <h4>💬 Ghi chú từ sinh viên</h4>
+            <div className="biz-sv-text biz-sv-note">{sub.note}</div>
+          </div>
+        )}
+
+        {/* Deliverable checklist */}
+        {deliverables.length > 0 && (
+          <div className="biz-sv-section">
+            <h4>✅ Checklist sản phẩm (từ Job)</h4>
+            <div className="biz-sv-checklist">
+              {deliverables.map((d, i) => (
+                <label key={i} className="biz-sv-check-item">
+                  <input type="checkbox" defaultChecked={false} />
+                  <span>{d}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Previous revision note */}
+        {sub.reviewStatus === 'revision_requested' && sub.reviewNote && (
+          <div className="biz-sv-section">
+            <h4>🔁 Phản hồi trước đó</h4>
+            <div className="biz-sv-text" style={{ borderLeft: '3px solid var(--a)', paddingLeft: 14 }}>
+              {sub.reviewNote}
+            </div>
+          </div>
+        )}
+
+        {/* Assigned tasks status */}
+        {ap.assignedTasks && ap.assignedTasks.length > 0 && (
+          <div className="biz-sv-section">
+            <h4>📋 Tiến độ task đã giao</h4>
+            <div className="biz-sv-tasks">
+              {ap.assignedTasks.map((t, i) => (
+                <div key={t.id} className={`biz-sv-task-row biz-sv-t-${t.status}`}>
+                  <span className="biz-sv-t-num">{i + 1}</span>
+                  <span className="biz-sv-t-title">{t.title}</span>
+                  <span className={`biz-sv-t-badge`}>
+                    {t.status === 'done' ? '✅' : t.status === 'in_progress' ? '🔄' : '⏳'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Actions */}
+        {sub.reviewStatus === 'submitted' && (
+          <div className="biz-sv-actions">
+            <button className="btn btn-primary" onClick={onApprove}>
+              ✅ Duyệt & Thanh toán
+            </button>
+            <button className="btn btn-ghost" onClick={onRequestRevision}>
+              🔁 Yêu cầu chỉnh sửa
+            </button>
+          </div>
+        )}
+
+        <div className="biz-sv-footer">
+          <button className="btn btn-ghost" onClick={onClose}>Đóng</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── APPLICANT CARD ─────────────────────────────── */
 
-function ApplicantCard({ ap, onAccept, onReject, onApprove, onRequestRevision, onMessage, onViewProfile, isActioning, isSelected, onSelectChange }: {
+function ApplicantCard({ ap, onAccept, onReject, onApprove, onRequestRevision, onMessage, onViewProfile, onAssignTask, onViewSubmission, isActioning, isSelected, onSelectChange }: {
   ap: Applicant;
   onAccept: (id: number | string) => void;
   onReject: (id: number | string) => void;
@@ -179,6 +448,8 @@ function ApplicantCard({ ap, onAccept, onReject, onApprove, onRequestRevision, o
   onRequestRevision: (id: number | string) => void;
   onMessage: (userId: string) => void;
   onViewProfile: (ap: Applicant) => void;
+  onAssignTask: (ap: Applicant) => void;
+  onViewSubmission: (ap: Applicant) => void;
   isActioning: boolean;
   isSelected?: boolean;
   onSelectChange?: (id: string, selected: boolean) => void;
@@ -249,9 +520,40 @@ function ApplicantCard({ ap, onAccept, onReject, onApprove, onRequestRevision, o
         </div>
       )}
 
+      {/* Assigned tasks summary */}
+      {ap.assignedTasks && ap.assignedTasks.length > 0 && (
+        <div className="biz-ap-tasks">
+          <div className="biz-ap-tasks-header">
+            <strong>📋 Task đã giao ({ap.assignedTasks.length})</strong>
+            <span className="biz-ap-tasks-progress">
+              {ap.assignedTasks.filter(t => t.status === 'done').length}/{ap.assignedTasks.length} hoàn thành
+            </span>
+          </div>
+          <div className="biz-ap-tasks-bar">
+            <div
+              className="biz-ap-tasks-fill"
+              style={{ width: `${(ap.assignedTasks.filter(t => t.status === 'done').length / ap.assignedTasks.length) * 100}%` }}
+            />
+          </div>
+          <div className="biz-ap-tasks-list">
+            {ap.assignedTasks.slice(0, 3).map((t) => (
+              <div key={t.id} className={`biz-ap-task-mini biz-tm-${t.status}`}>
+                <span>{t.status === 'done' ? '✅' : t.status === 'in_progress' ? '🔄' : '⏳'}</span>
+                <span>{t.title}</span>
+              </div>
+            ))}
+            {ap.assignedTasks.length > 3 && (
+              <div className="biz-ap-task-mini" style={{ opacity: 0.6 }}>
+                +{ap.assignedTasks.length - 3} task khác
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Submission review section */}
       {ap.submission && (
-        <div className="biz-submission-card">
+        <div className="biz-submission-card" onClick={() => onViewSubmission(ap)} style={{ cursor: 'pointer' }} title="Nhấn để xem chi tiết">
           <div className="biz-sub-header">
             <strong>📦 Bài nộp nhiệm vụ</strong>
             <span className={`dash-status ${
@@ -265,28 +567,21 @@ function ApplicantCard({ ap, onAccept, onReject, onApprove, onRequestRevision, o
           <div className="biz-sub-body">
             <p>{ap.submission.summary}</p>
             {ap.submission.deliverableUrl && (
-              <a href={ap.submission.deliverableUrl} target="_blank" rel="noreferrer" className="biz-sub-link">
+              <div className="biz-sub-link">
                 🔗 {ap.submission.deliverableUrl}
-              </a>
-            )}
-            {ap.submission.note && (
-              <p className="biz-sub-note">📝 {ap.submission.note}</p>
+              </div>
             )}
             <div className="biz-sub-meta">
               Nộp lúc: {ap.submission.submittedAt}
+              <span className="biz-sub-view-more">👁️ Nhấn để xem chi tiết →</span>
             </div>
-            {ap.submission.reviewStatus === 'revision_requested' && ap.submission.reviewNote && (
-              <div className="biz-sub-revision">
-                🔁 Phản hồi của bạn: "{ap.submission.reviewNote}"
-              </div>
-            )}
           </div>
         </div>
       )}
 
       <div className="manage-ap-actions">
         <button className="btn btn-ghost btn-sm" onClick={() => onViewProfile(ap)} title="Xem hồ sơ số">
-          📄 Xem CV
+          📄 CV
         </button>
         <button className="btn btn-ghost btn-sm" onClick={() => onMessage(String(ap.userId))}>
           💬 Nhắn tin
@@ -302,25 +597,43 @@ function ApplicantCard({ ap, onAccept, onReject, onApprove, onRequestRevision, o
           </>
         )}
         {ap.status === 'accepted' && (
-          ap.submission?.reviewStatus === 'submitted' ? (
-            <>
-              <button className="btn btn-primary btn-sm" onClick={() => onApprove(ap.id)}>
-                ✅ Duyệt & Thanh toán
-              </button>
-              <button className="btn btn-ghost btn-sm" onClick={() => onRequestRevision(ap.id)}>
-                🔁 Yêu cầu chỉnh sửa
-              </button>
-            </>
-          ) : (
-            <span className="manage-ap-hint">
-              {ap.submission?.reviewStatus === 'revision_requested'
-                ? '🔁 Đã yêu cầu sửa, chờ sinh viên nộp lại.'
-                : '⏳ Đang chờ sinh viên nộp sản phẩm...'}
-            </span>
-          )
+          <>
+            <button className="btn btn-ghost btn-sm" onClick={() => onAssignTask(ap)}>
+              📋 Giao task {ap.assignedTasks?.length ? `(${ap.assignedTasks.length})` : ''}
+            </button>
+            {ap.submission ? (
+              <>
+                <button className="btn btn-ghost btn-sm" onClick={() => onViewSubmission(ap)}>
+                  👁️ Xem bài nộp
+                </button>
+                {ap.submission.reviewStatus === 'submitted' && (
+                  <>
+                    <button className="btn btn-primary btn-sm" onClick={() => onApprove(ap.id)}>
+                      ✅ Duyệt & Thanh toán
+                    </button>
+                    <button className="btn btn-ghost btn-sm" onClick={() => onRequestRevision(ap.id)}>
+                      🔁 Yêu cầu sửa
+                    </button>
+                  </>
+                )}
+                {ap.submission.reviewStatus === 'revision_requested' && (
+                  <span className="manage-ap-hint">🔁 Chờ sinh viên nộp lại</span>
+                )}
+              </>
+            ) : (
+              <span className="manage-ap-hint">⏳ Chờ sinh viên nộp sản phẩm...</span>
+            )}
+          </>
         )}
         {ap.status === 'completed' && (
-          <span className="manage-ap-hint" style={{ color: 'var(--t)' }}>✅ Đã hoàn thành & thanh toán</span>
+          <>
+            {ap.submission && (
+              <button className="btn btn-ghost btn-sm" onClick={() => onViewSubmission(ap)}>
+                👁️ Xem bài nộp
+              </button>
+            )}
+            <span className="manage-ap-hint" style={{ color: 'var(--t)' }}>✅ Đã hoàn thành & thanh toán</span>
+          </>
         )}
         {ap.status === 'rejected' && (
           <span className="manage-ap-hint" style={{ opacity: 0.6 }}>Đã từ chối ứng viên này</span>
@@ -380,6 +693,8 @@ export default function ManageJobsPage() {
   const [selectedApplicantIds, setSelectedApplicantIds] = useState<Set<string>>(new Set());
   const [isBulkLoading, setIsBulkLoading] = useState(false);
   const [profileModal, setProfileModal] = useState<Applicant | null>(null);
+  const [taskAssignModal, setTaskAssignModal] = useState<Applicant | null>(null);
+  const [submissionViewer, setSubmissionViewer] = useState<Applicant | null>(null);
 
   // Redirect
   useEffect(() => {
@@ -400,9 +715,14 @@ export default function ManageJobsPage() {
         if (cancelled) return;
         setJobs(allJobs);
         const submissionMap = loadSubmissionMap();
+        let tasksMap: Record<string, AssignedTask[]> = {};
+        try {
+          tasksMap = JSON.parse(localStorage.getItem('unitask_assigned_tasks') || '{}');
+        } catch { /* ignore */ }
         const mappedApplicants: Applicant[] = allApplicants.map((app) => ({
           ...app,
           submission: submissionMap[String(app.id)],
+          assignedTasks: tasksMap[String(app.id)] || undefined,
         }));
         setApplicants(mappedApplicants);
         setIsLoading(false);
@@ -776,6 +1096,28 @@ export default function ManageJobsPage() {
     setProfileModal(ap);
   }, []);
 
+  const handleAssignTask = useCallback((ap: Applicant) => {
+    setTaskAssignModal(ap);
+  }, []);
+
+  const handleSaveTasks = useCallback((apId: number | string, tasks: AssignedTask[]) => {
+    setApplicants(prev => prev.map(a =>
+      String(a.id) === String(apId) ? { ...a, assignedTasks: tasks } : a
+    ));
+    // Persist to localStorage
+    try {
+      const key = `unitask_assigned_tasks`;
+      const map = JSON.parse(localStorage.getItem(key) || '{}') as Record<string, AssignedTask[]>;
+      map[String(apId)] = tasks;
+      localStorage.setItem(key, JSON.stringify(map));
+    } catch { /* ignore */ }
+    showToast(`Đã lưu ${tasks.length} task cho ứng viên ✅`);
+  }, [showToast]);
+
+  const handleViewSubmission = useCallback((ap: Applicant) => {
+    setSubmissionViewer(ap);
+  }, []);
+
   // Stats for flow
   const totalApplicants = applicants.length;
   const pendingCount = applicants.filter(a => a.status === 'pending').length;
@@ -962,6 +1304,8 @@ export default function ManageJobsPage() {
                         onRequestRevision={handleRevision}
                         onMessage={handleMessage}
                         onViewProfile={handleViewProfile}
+                        onAssignTask={handleAssignTask}
+                        onViewSubmission={handleViewSubmission}
                         isActioning={actioningId !== null && String(actioningId) === String(ap.id)}
                         isSelected={selectedApplicantIds.has(String(ap.id))}
                         onSelectChange={handleSelectApplicant}
@@ -1027,6 +1371,28 @@ export default function ManageJobsPage() {
 
       {/* Profile modal */}
       {profileModal && <ProfileModal ap={profileModal} onClose={() => setProfileModal(null)} />}
+
+      {/* Task assign modal */}
+      {taskAssignModal && (
+        <TaskAssignModal
+          ap={taskAssignModal}
+          job={selectedJob}
+          existingTasks={taskAssignModal.assignedTasks || []}
+          onSave={(tasks) => handleSaveTasks(taskAssignModal.id, tasks)}
+          onClose={() => setTaskAssignModal(null)}
+        />
+      )}
+
+      {/* Submission viewer modal */}
+      {submissionViewer && submissionViewer.submission && (
+        <SubmissionViewerModal
+          ap={submissionViewer}
+          job={selectedJob}
+          onApprove={() => { setSubmissionViewer(null); handleApprove(submissionViewer.id); }}
+          onRequestRevision={() => { setSubmissionViewer(null); handleRevision(submissionViewer.id); }}
+          onClose={() => setSubmissionViewer(null)}
+        />
+      )}
 
       {/* Toast */}
       {toast && (
