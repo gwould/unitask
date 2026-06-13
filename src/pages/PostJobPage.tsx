@@ -182,7 +182,7 @@ export default function PostJobPage() {
         created = await jobService.create({
           title: form.title.trim(),
           logoText: (user.companyName || user.name).substring(0, 2).toUpperCase(),
-          logoGradient: 'linear-gradient(135deg,#5B4FFF,#7C72FF)',
+          logoGradient: 'linear-gradient(135deg,#7C3AED,#A78BFA)',
           company: user.companyName || user.name,
           companyId: user.id,
           verified: false,

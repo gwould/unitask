@@ -21,9 +21,9 @@ const BUSINESS_BENEFITS = [
 ];
 
 const TESTIMONIALS = [
-  { text: 'Minh kiem duoc 3 trieu dau tien tu UniTask chi sau 2 tuan. Job thiet ke logo cho startup, lam 5 ngay la xong.', name: 'Minh Khoa', role: 'SV nam 3 · Thiet ke Do hoa', avatar: 'K', gradient: 'linear-gradient(135deg,#5B4FFF,#7C72FF)' },
-  { text: 'Tuyen 1 ban sinh vien viet 10 bai SEO, chi 1.6 trieu ma chat luong tot hon agency. Se quay lai UniTask.', name: 'Thanh Tung', role: 'Co-founder BrandSpace', avatar: 'T', gradient: 'linear-gradient(135deg,#00D4AA,#00A882)' },
-  { text: 'Escrow la tinh nang tot nhat. Minh biet tien da co san truoc khi bat dau lam, nen rat yen tam.', name: 'Thu Hang', role: 'SV nam 4 · Ngon ngu Anh', avatar: 'H', gradient: 'linear-gradient(135deg,#FF6B35,#FF4D6B)' },
+  { text: 'Minh kiem duoc 3 trieu dau tien tu UniTask chi sau 2 tuan. Job thiet ke logo cho startup, lam 5 ngay la xong.', name: 'Minh Khoa', role: 'SV nam 3 · Thiet ke Do hoa', avatar: 'K', gradient: 'linear-gradient(135deg,#7C3AED,#A78BFA)' },
+  { text: 'Tuyen 1 ban sinh vien viet 10 bai SEO, chi 1.6 trieu ma chat luong tot hon agency. Se quay lai UniTask.', name: 'Thanh Tung', role: 'Co-founder BrandSpace', avatar: 'T', gradient: 'linear-gradient(135deg,#10B981,#059669)' },
+  { text: 'Escrow la tinh nang tot nhat. Minh biet tien da co san truoc khi bat dau lam, nen rat yen tam.', name: 'Thu Hang', role: 'SV nam 4 · Ngon ngu Anh', avatar: 'H', gradient: 'linear-gradient(135deg,#F97316,#F43F5E)' },
 ];
 
 const STEPS = [

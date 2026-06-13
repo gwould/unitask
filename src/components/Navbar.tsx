@@ -114,28 +114,24 @@ export default function Navbar() {
       <header className={`navbar${scrolled ? ' scrolled' : ''}`}>
         <div className="nav-inner">
           <Link to="/" className="nav-logo">
+            <span className="nav-logo-icon">U</span>
             Uni<span>Task</span>
-            <div className="dot" />
           </Link>
           <nav className="nav-links">
             <Link to="/jobs" className={location.pathname.startsWith('/jobs') ? 'active' : ''}>
               Tìm việc
             </Link>
-            <Link to="/about#pricing" className={location.pathname === '/about' ? 'active' : ''}>
-              Bảng giá
-            </Link>
-            {isHome && (
-              <>
-                <a href="#how">Cách hoạt động</a>
-                <a href="#pricing">Bảng giá</a>
-                <a href="#features">Tính năng</a>
-              </>
-            )}
             {user?.role === 'business' && (
               <Link to="/post-job" className={location.pathname === '/post-job' ? 'active' : ''}>
-                Đăng việc
+                Doanh nghiệp
               </Link>
             )}
+            <Link to="/about#pricing" className={location.pathname === '/about' ? 'active' : ''}>
+              Giá cả
+            </Link>
+            <Link to="/contact" className={location.pathname === '/contact' ? 'active' : ''}>
+              Về chúng tôi
+            </Link>
             {user?.role === 'admin' && (
               <>
                 <Link to="/admin-finance" className={location.pathname === '/admin-finance' ? 'active' : ''}>
@@ -172,8 +168,8 @@ export default function Navbar() {
                   onClick={() => setDropdownOpen((p) => !p)}
                   style={{
                     background: user.role === 'student'
-                      ? 'linear-gradient(135deg,#5B4FFF,#7C72FF)'
-                      : 'linear-gradient(135deg,#00D4AA,#00A882)',
+                      ? 'linear-gradient(135deg,var(--p),var(--pl))'
+                      : 'linear-gradient(135deg,var(--teal),#059669)',
                   }}
                 >
                   {user.avatar}
@@ -216,7 +212,7 @@ export default function Navbar() {
             ) : (
               <>
                 <Link to="/login" className="nav-login">Đăng nhập</Link>
-                <Link to="/register" className="btn btn-primary btn-sm">Đăng ký miễn phí →</Link>
+                <Link to="/register" className="btn btn-cta btn-sm">Bắt đầu miễn phí</Link>
               </>
             )}
           </div>

@@ -122,8 +122,8 @@ export default function ProfilePage() {
           <div className="prof-header fade-up">
             <div className="prof-avatar" style={{
               background: user.role === 'student'
-                ? 'linear-gradient(135deg,#5B4FFF,#7C72FF)'
-                : 'linear-gradient(135deg,#00D4AA,#00A882)',
+                ? 'linear-gradient(135deg,#7C3AED,#A78BFA)'
+                : 'linear-gradient(135deg,#10B981,#059669)',
             }}>
               {user.avatar}
             </div>

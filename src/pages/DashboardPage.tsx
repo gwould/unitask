@@ -233,8 +233,8 @@ export default function DashboardPage() {
             <div className="dash-profile-card">
               <div className="dash-avatar" style={{
                 background: user.role === 'student'
-                  ? 'linear-gradient(135deg,#5B4FFF,#7C72FF)'
-                  : 'linear-gradient(135deg,#00D4AA,#00A882)',
+                  ? 'linear-gradient(135deg,#7C3AED,#A78BFA)'
+                  : 'linear-gradient(135deg,#10B981,#059669)',
               }}>
                 {user.avatar}
               </div>
@@ -590,7 +590,7 @@ export default function DashboardPage() {
                         <>
                           {businessDash.recentApplications.map((app) => (
                             <Link to="/manage-jobs" key={app.id} className="dash-app-row">
-                              <div className="jc-logo" style={{ background: 'linear-gradient(135deg,#00D4AA,#00A882)', width: 40, height: 40, fontSize: 14, flexShrink: 0 }}>
+                              <div className="jc-logo" style={{ background: 'linear-gradient(135deg,#10B981,#059669)', width: 40, height: 40, fontSize: 14, flexShrink: 0 }}>
                                 {app.studentName.charAt(0)}
                               </div>
                               <div className="dash-app-info">
