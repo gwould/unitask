@@ -26,6 +26,8 @@ const AdminMessagesPage = lazy(() => import('./pages/AdminMessagesPage'));
 const AdminAccountsPage = lazy(() => import('./pages/AdminAccountsPage'));
 const StudentTasksPage = lazy(() => import('./pages/StudentTasksPage'));
 const UpgradePage = lazy(() => import('./pages/UpgradePage'));
+const ContractPage = lazy(() => import('./pages/ContractPage'));
+const MyContractsPage = lazy(() => import('./pages/MyContractsPage'));
 
 function PageLoader() {
   return (
@@ -53,6 +55,8 @@ export default function App() {
           <Route path="/my-tasks" element={<StudentTasksPage />} />
           <Route path="/upgrade/:planKey" element={<UpgradePage />} />
           <Route path="/manage-jobs" element={<ManageJobsPage />} />
+          <Route path="/contracts" element={<MyContractsPage />} />
+          <Route path="/contracts/:id" element={<ContractPage />} />
           <Route path="/business-automation" element={<BusinessAutomationPage />} />
           <Route path="/automation-rules" element={<AutomationRulesPage />} />
           <Route path="/notifications" element={<NotificationHubPage />} />

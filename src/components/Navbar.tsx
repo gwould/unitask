@@ -66,12 +66,16 @@ export default function Navbar() {
             <Link to="/notifications" onClick={closeMobile}>🔔 Thông báo{unreadCount > 0 && ` (${unreadCount})`}</Link>
             <Link to="/messages" onClick={closeMobile}>💬 Tin nhắn</Link>
             {user.role === 'student' && (
-              <Link to="/my-applications" onClick={closeMobile}>📋 Đơn ứng tuyển</Link>
+              <>
+                <Link to="/my-applications" onClick={closeMobile}>📋 Đơn ứng tuyển</Link>
+                <Link to="/contracts" onClick={closeMobile}>🤝 Hợp đồng</Link>
+              </>
             )}
             {user.role === 'business' && (
               <>
                 <Link to="/post-job" onClick={closeMobile}>📝 Đăng việc</Link>
                 <Link to="/manage-jobs" onClick={closeMobile}>📂 Quản lý job</Link>
+                <Link to="/contracts" onClick={closeMobile}>🤝 Hợp đồng</Link>
                 <Link to="/business-automation" onClick={closeMobile}>🎯 Trung tâm tăng trưởng</Link>
                 <Link to="/automation-rules" onClick={closeMobile}>🤖 Tự động hóa</Link>
               </>
@@ -186,12 +190,16 @@ export default function Navbar() {
                     <Link to="/notifications" className="nav-dd-item">🔔 Thông báo{unreadCount > 0 && <span style={{ marginLeft: 6, background: '#ff4444', color: '#fff', borderRadius: 999, padding: '2px 7px', fontSize: 11, fontWeight: 700 }}>{unreadCount}</span>}</Link>
                     <Link to="/messages" className="nav-dd-item">💬 Tin nhắn</Link>
                     {user.role === 'student' && (
-                      <Link to="/my-applications" className="nav-dd-item">📋 Đơn ứng tuyển</Link>
+                      <>
+                        <Link to="/my-applications" className="nav-dd-item">📋 Đơn ứng tuyển</Link>
+                        <Link to="/contracts" className="nav-dd-item">🤝 Hợp đồng</Link>
+                      </>
                     )}
                     {user.role === 'business' && (
                       <>
                         <Link to="/post-job" className="nav-dd-item">📝 Đăng việc</Link>
                         <Link to="/manage-jobs" className="nav-dd-item">📂 Quản lý job</Link>
+                        <Link to="/contracts" className="nav-dd-item">🤝 Hợp đồng</Link>
                         <Link to="/business-automation" className="nav-dd-item">🎯 Trung tâm tăng trưởng</Link>
                         <Link to="/automation-rules" className="nav-dd-item">🤖 Tự động hóa</Link>
                       </>

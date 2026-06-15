@@ -8,3 +8,4 @@ export * from './api';
 export * from './wallet';
 export * from './messaging';
 export * from './payment';
+export * from './contract';
