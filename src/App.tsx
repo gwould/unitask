@@ -28,6 +28,7 @@ const StudentTasksPage = lazy(() => import('./pages/StudentTasksPage'));
 const UpgradePage = lazy(() => import('./pages/UpgradePage'));
 const ContractPage = lazy(() => import('./pages/ContractPage'));
 const MyContractsPage = lazy(() => import('./pages/MyContractsPage'));
+const EscrowPolicyPage = lazy(() => import('./pages/EscrowPolicyPage'));
 
 function PageLoader() {
   return (
@@ -68,6 +69,8 @@ export default function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/terms" element={<TermsPage />} />
+          <Route path="/escrow-policy" element={<EscrowPolicyPage />} />
+          <Route path="/policy" element={<EscrowPolicyPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="*" element={<NotFound />} />
         </Route>

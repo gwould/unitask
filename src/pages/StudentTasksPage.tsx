@@ -35,7 +35,7 @@ export default function StudentTasksPage() {
   // Tổng hợp số lượng milestone theo trạng thái (trên tất cả hợp đồng).
   const stats = useMemo(() => {
     const acc: Record<MilestoneStatus, number> = {
-      PENDING: 0, ESCROWED: 0, UNDER_REVIEW: 0, REVISION: 0, COMPLETED: 0,
+      PENDING: 0, ESCROWED: 0, UNDER_REVIEW: 0, REVISION: 0, COMPLETED: 0, CANCELED: 0,
     };
     contracts.forEach((c) => c.milestones.forEach((m) => { acc[m.status] += 1; }));
     return acc;

@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { conversationService } from '../services/conversationService';
 import { hasAuthToken } from '../utils/auth';
 import type { Conversation, ChatMessage } from '../types/messaging';
+import { ReportModal, Toast } from '../components/ui';
 
 export default function MessagesPage() {
   const { conversationId } = useParams();
@@ -19,6 +20,8 @@ export default function MessagesPage() {
   // Tìm kiếm & lọc hội thoại
   const [convSearch, setConvSearch] = useState('');
   const [unreadOnly, setUnreadOnly] = useState(false);
+  const [reportTarget, setReportTarget] = useState<{ id: string; name: string } | null>(null);
+  const [reportToast, setReportToast] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
   const activeId = conversationId ?? conversations[0]?.id;
@@ -210,8 +213,15 @@ export default function MessagesPage() {
             <div className="msg-panel">
               {activeConversation ? (
                 <>
-                  <div className="msg-panel-head">
+                  <div className="msg-panel-head" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <strong>{activeConversation.otherUser.name}</strong>
+                    <button
+                      className="btn btn-ghost btn-sm"
+                      style={{ color: 'var(--red)' }}
+                      onClick={() => setReportTarget({ id: activeConversation.otherUser.id, name: activeConversation.otherUser.name })}
+                    >
+                      🚩 Báo cáo
+                    </button>
                   </div>
                   <div className="msg-messages" ref={listRef}>
                     {messages.length === 0 ? (
@@ -259,6 +269,15 @@ export default function MessagesPage() {
           </div>
         )}
       </div>
+      {reportTarget && (
+        <ReportModal
+          targetLabel={`Người dùng: ${reportTarget.name}`}
+          reportedUserId={reportTarget.id}
+          onClose={() => setReportTarget(null)}
+          onDone={(msg) => setReportToast(msg)}
+        />
+      )}
+      <Toast message={reportToast} onDismiss={() => setReportToast(null)} />
     </section>
   );
 }

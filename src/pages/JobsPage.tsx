@@ -18,6 +18,8 @@ export default function JobsPage() {
   const [category, setCategory] = useState(initialCat);
   const [location, setLocation] = useState('');
   const [sort, setSort] = useState<'newest' | 'pay-high' | 'pay-low' | 'deadline'>('newest');
+  const [payRange, setPayRange] = useState<'all' | '0-1' | '1-3' | '3-5' | '5+'>('all');
+  const [availability, setAvailability] = useState<'all' | 'open' | 'full'>('all');
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -99,6 +101,20 @@ export default function JobsPage() {
       list = list.filter((j) => j.location.toLowerCase().includes(location.toLowerCase()));
     }
 
+    // Lọc theo khoảng thù lao (đơn vị: VND) — job khớp nếu [payMin, payMax] giao với [lo, hi].
+    if (payRange !== 'all') {
+      const M = 1_000_000;
+      const bounds: Record<string, [number, number]> = {
+        '0-1': [0, 1 * M], '1-3': [1 * M, 3 * M], '3-5': [3 * M, 5 * M], '5+': [5 * M, Number.MAX_SAFE_INTEGER],
+      };
+      const [lo, hi] = bounds[payRange];
+      list = list.filter((j) => j.payMax >= lo && j.payMin <= hi);
+    }
+
+    // Lọc theo tình trạng tuyển.
+    if (availability === 'open') list = list.filter((j) => j.spotsLeft > 0);
+    else if (availability === 'full') list = list.filter((j) => j.spotsLeft <= 0);
+
     switch (sort) {
       case 'pay-high':
         list.sort((a, b) => b.payMax - a.payMax);
@@ -114,7 +130,7 @@ export default function JobsPage() {
     }
 
     return list;
-  }, [jobs, query, category, location, sort]);
+  }, [jobs, query, category, location, sort, payRange, availability]);
 
   const displayed = useMemo(() => {
     const list = [...filtered];
@@ -127,7 +143,7 @@ export default function JobsPage() {
   }, [filtered, matchMap]);
 
   // Reset page khi filter/sort thay đổi
-  useEffect(() => { setCurrentPage(1); }, [query, category, location, sort]);
+  useEffect(() => { setCurrentPage(1); }, [query, category, location, sort, payRange, availability]);
 
   const totalPages = Math.ceil(displayed.length / JOBS_PER_PAGE);
   const paginatedJobs = displayed.slice(
@@ -197,6 +213,18 @@ export default function JobsPage() {
               <option value="Hồ Chí Minh">Hồ Chí Minh</option>
               <option value="Hà Nội">Hà Nội</option>
               <option value="Đà Nẵng">Đà Nẵng</option>
+            </select>
+            <select value={payRange} onChange={(e) => setPayRange(e.target.value as typeof payRange)}>
+              <option value="all">Mọi mức thù lao</option>
+              <option value="0-1">Dưới 1 triệu</option>
+              <option value="1-3">1 – 3 triệu</option>
+              <option value="3-5">3 – 5 triệu</option>
+              <option value="5+">Trên 5 triệu</option>
+            </select>
+            <select value={availability} onChange={(e) => setAvailability(e.target.value as typeof availability)}>
+              <option value="all">Mọi trạng thái</option>
+              <option value="open">Còn tuyển</option>
+              <option value="full">Đã đủ slot</option>
             </select>
             <button className="btn btn-primary" onClick={handleSearch}>
               Tìm kiếm

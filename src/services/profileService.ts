@@ -1,4 +1,4 @@
-import { apiGet, apiPut } from './apiService';
+import { apiGet, apiPost, apiPut } from './apiService';
 import type { User } from '../types';
 
 type StudentProfileDto = {
@@ -78,5 +78,20 @@ export const profileService = {
       companyName: data.companyName,
       description: data.bio,
     });
+  },
+
+  // ----- Xác thực định danh -----
+
+  getStudentVerification(userId: string) {
+    return apiGet<{ isVerified?: boolean | null; studentEmail?: string | null; studentCardUrl?: string | null; citizenId?: string | null }>(`/api/students/${userId}`).catch(() => null);
+  },
+  getBusinessVerification(userId: string) {
+    return apiGet<{ isVerified?: boolean | null; taxCode?: string | null; businessLicenseUrl?: string | null }>(`/api/businesses/${userId}`).catch(() => null);
+  },
+  verifyStudentIdentity(userId: string, body: { studentEmail?: string; studentCardUrl?: string; citizenId: string }) {
+    return apiPost<{ isVerified: boolean }>(`/api/students/${userId}/verify-identity`, body);
+  },
+  verifyBusinessIdentity(userId: string, body: { taxCode: string; businessLicenseUrl: string }) {
+    return apiPost<{ isVerified: boolean }>(`/api/businesses/${userId}/verify-identity`, body);
   },
 };

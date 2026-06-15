@@ -5,3 +5,6 @@ export { default as StatusBadge } from './StatusBadge';
 export { default as RequestChangesModal } from './RequestChangesModal';
 export { default as SubmitTaskModal } from './SubmitTaskModal';
 export { default as AddTaskModal } from './AddTaskModal';
+export { default as CancelTaskModal } from './CancelTaskModal';
+export { default as ReportModal } from './ReportModal';
+export { default as OpenDisputeModal } from './OpenDisputeModal';

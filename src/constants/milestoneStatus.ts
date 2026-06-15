@@ -13,4 +13,5 @@ export const MILESTONE_STATUS_MAP: Record<
   UNDER_REVIEW: { label: 'Chờ nghiệm thu', cls: 'ms-review' },
   REVISION:     { label: 'Yêu cầu sửa',   cls: 'ms-revision' },
   COMPLETED:    { label: 'Hoàn thành',    cls: 'ms-completed' },
+  CANCELED:     { label: 'Đã hủy',       cls: 'ms-canceled' },
 };
