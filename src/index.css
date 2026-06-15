@@ -1079,6 +1079,9 @@ a.nav-logo{text-decoration:none;color:inherit}
 .manage-header p{color:var(--text-2);font-size:15px}
 .manage-grid{display:grid;grid-template-columns:380px 1fr;gap:28px;align-items:start}
 .manage-section-title{font-size:12px;font-weight:800;color:var(--text-2);margin-bottom:14px;text-transform:uppercase;letter-spacing:.6px}
+.manage-job-filters{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.manage-job-filters .apps-search{min-width:0;width:100%}
+.manage-job-filters .apps-sort-select{width:100%}
 .manage-job-list{display:flex;flex-direction:column;gap:10px}
 .manage-job-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r10);padding:16px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
 .manage-job-card::after{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--p);transform:scaleY(0);transform-origin:top;transition:transform .3s}
@@ -1509,6 +1512,13 @@ input:checked + .slider:before{transform:translateX(20px)}
 .msg-layout{display:grid;grid-template-columns:280px 1fr;gap:16px;min-height:480px;border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden;background:rgba(255,255,255,.02)}
 .msg-sidebar{border-right:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column}
 .msg-sidebar-title{padding:14px 16px;font-weight:700;font-size:13px;color:var(--text-2);border-bottom:1px solid rgba(255,255,255,.06)}
+.msg-sidebar{min-width:0;overflow:hidden}
+.msg-search{display:flex;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.06);min-width:0}
+.msg-search .apps-search{flex:1 1 auto;min-width:0;width:auto}
+.msg-search .apps-search-input{width:100%;min-width:0}
+.msg-filter-chip{flex:0 0 auto;padding:8px 12px;border-radius:var(--rpill);border:1px solid var(--border);background:none;color:var(--text-2);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s}
+.msg-filter-chip:hover{border-color:var(--pl);color:var(--pl)}
+.msg-filter-chip.active{background:rgba(124,58,237,.15);border-color:var(--pl);color:var(--pl)}
 .msg-thread{display:flex;gap:12px;padding:12px 16px;text-decoration:none;color:inherit;border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s}
 .msg-thread:hover,.msg-thread.active{background:rgba(124,58,237,.12)}
 .msg-thread-avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#5B4FFF,#7C72FF);display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0}
@@ -3041,4 +3051,100 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
   .biz-sv-actions{flex-direction:column}
   .manage-ap-actions{flex-wrap:wrap;gap:6px}
 }
+
+/* ============================================================
+   MILESTONE MANAGER (module Hợp đồng & Nghiệm thu)
+   ============================================================ */
+.btn-success{background:linear-gradient(135deg,var(--teal),#34D399);color:#fff;border:none}
+.btn-success:hover{filter:brightness(1.08)}
+
+.ms-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r14);padding:20px}
+.ms-panel.ms-error{color:var(--red)}
+.ms-panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.ms-panel-head h3{font-family:var(--font-display);font-size:17px}
+.ms-total{font-size:13px;font-weight:700;color:var(--teal)}
+
+.ms-list{list-style:none;display:flex;flex-direction:column;gap:12px;padding:0;margin:0}
+.ms-item{border:1px solid var(--border);border-radius:var(--r10);padding:14px 16px;background:var(--bg)}
+.ms-item-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ms-item-info{display:flex;flex-direction:column;gap:3px}
+.ms-item-title{font-size:14.5px;color:var(--text)}
+.ms-item-amount{font-size:13px;font-weight:700;color:var(--teal)}
+
+/* Badge trạng thái — mỗi trạng thái một màu */
+.ms-badge{padding:5px 12px;border-radius:var(--rpill);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap}
+.ms-badge.ms-pending{background:rgba(148,163,184,.15);color:#94A3B8;border:1px solid rgba(148,163,184,.25)}
+.ms-badge.ms-escrowed{background:rgba(124,58,237,.12);color:var(--pl);border:1px solid rgba(124,58,237,.25)}
+.ms-badge.ms-review{background:rgba(245,158,11,.14);color:var(--gold);border:1px solid rgba(245,158,11,.28)}
+.ms-badge.ms-revision{background:rgba(249,115,22,.14);color:#FF9B72;border:1px solid rgba(249,115,22,.28)}
+.ms-badge.ms-completed{background:rgba(16,185,129,.14);color:#34D399;border:1px solid rgba(16,185,129,.28)}
+
+.ms-actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+
+/* Box thông báo có bài nộp mới */
+.ms-submission{margin-top:12px;padding:14px;border:1px dashed rgba(245,158,11,.4);border-radius:var(--r10);background:rgba(245,158,11,.05)}
+.ms-submission-head{font-size:13px;font-weight:700;color:var(--gold);margin-bottom:8px}
+.ms-submission-note{font-size:13px;color:var(--text-2);line-height:1.6;margin-bottom:8px}
+.ms-submission-link{display:inline-block;font-size:13px;font-weight:600;color:var(--pl);text-decoration:none;margin-bottom:4px}
+.ms-submission-link:hover{text-decoration:underline}
+
+.ms-feedback{margin-top:10px;font-size:12.5px;color:#FF9B72;font-style:italic}
+
+/* Form tạo hợp đồng (CreateContractModal) */
+.ms-form-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.ms-form-row{display:flex;gap:8px;align-items:center}
+.ms-form-input{padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r8);color:var(--text);font-size:13px;font-family:inherit}
+.ms-form-input:focus{outline:none;border-color:var(--p)}
+.ms-form-row .ms-form-input:first-child{flex:1 1 auto;min-width:0}
+.ms-form-amount{width:120px;flex:0 0 auto}
+.ms-form-date{width:140px;flex:0 0 auto}
+
+/* ===== KANBAN milestone ===== */
+.kb-sub-name{font-size:12.5px;color:var(--text-2)}
+.ms-progress{margin:14px 0 6px}
+.ms-progress-info{display:flex;justify-content:space-between;font-size:12.5px;color:var(--text-2);margin-bottom:6px}
+.ms-progress-info span:last-child{color:var(--teal);font-weight:600}
+.kanban{display:grid;grid-template-columns:repeat(5,minmax(180px,1fr));gap:12px;margin-top:8px;overflow-x:auto}
+.kb-col{background:var(--bg);border:1px solid var(--border);border-radius:var(--r10);display:flex;flex-direction:column;min-width:180px}
+.kb-col-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;border-bottom:1px solid var(--border);border-radius:var(--r10) var(--r10) 0 0}
+.kb-col-count{background:rgba(255,255,255,.1);border-radius:999px;padding:1px 8px;font-size:11px}
+.kb-col-body{display:flex;flex-direction:column;gap:10px;padding:10px;min-height:60px}
+.kb-empty{text-align:center;color:var(--text-2);opacity:.5;font-size:13px;padding:8px 0}
+
+.kb-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r8);padding:12px;display:flex;flex-direction:column;gap:8px;transition:opacity .2s,box-shadow .2s,transform .1s}
+.kb-card-busy{opacity:.55;pointer-events:none}
+.kb-draggable{cursor:grab}
+.kb-draggable:active{cursor:grabbing}
+.kb-dragging{opacity:.4;transform:scale(.98)}
+/* Cột hợp lệ để thả: viền đứt sáng lên; cột đang hover: nền nhấn mạnh */
+.kb-col-droppable{border-color:var(--pl);border-style:dashed}
+.kb-col-over{background:rgba(124,58,237,.12);box-shadow:0 0 0 2px var(--pl) inset}
+.kb-card-head{display:flex;flex-direction:column;gap:6px}
+.kb-card-title{font-size:13.5px;color:var(--text);line-height:1.3}
+.kb-card-meta{display:flex;flex-direction:column;gap:3px;font-size:12px}
+.kb-amount{font-weight:700;color:var(--teal)}
+.kb-deadline{color:var(--text-2)}
+.kb-deadline.kb-overdue{color:#FF6B6B;font-weight:600}
+.kb-sub-link{font-size:12.5px;font-weight:600;color:var(--pl);text-decoration:none}
+.kb-sub-link:hover{text-decoration:underline}
+.kb-sub-note{font-size:12px;color:var(--text-2);line-height:1.5}
+.kb-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.kb-actions .btn-sm{padding:7px 12px;font-size:12px}
+.kb-hint{font-size:11.5px;color:var(--text-2);font-style:italic}
+
+@media (max-width:900px){
+  .kanban{grid-template-columns:repeat(5,minmax(170px,1fr))}
+}
+
+/* ===== Danh sách hợp đồng ===== */
+.contract-list{display:flex;flex-direction:column;gap:12px}
+.contract-card{display:block;background:var(--card);border:1px solid var(--border);border-radius:var(--r10);padding:16px;text-decoration:none;color:inherit;transition:border-color .2s,transform .2s}
+.contract-card:hover{border-color:var(--pl);transform:translateY(-1px)}
+.contract-card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+.contract-card-top strong{font-size:15px}
+.contract-card-sub{font-size:13px;color:var(--text-2);margin-bottom:6px}
+.contract-card-meta{display:flex;justify-content:space-between;font-size:13px;color:var(--text-2);margin-bottom:8px}
+.contract-card-meta span:first-child{color:var(--teal);font-weight:700}
+.contract-progress{height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
+.contract-progress-fill{height:100%;background:linear-gradient(90deg,var(--p),var(--teal));border-radius:3px;transition:width .3s}
 

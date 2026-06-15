@@ -17,6 +17,7 @@ type BusinessProfileDto = {
   userId: string;
   companyName?: string | null;
   completedProjects?: number | null;
+  balance?: number | null;
   rating?: number | null;
   description?: string | null;
 };
@@ -53,6 +54,7 @@ export const profileService = {
           companyName: profile?.companyName ?? base.companyName,
           completedJobs: profile?.completedProjects ?? base.completedJobs,
           rating: profile?.rating != null ? Number(profile.rating) : base.rating,
+          balance: profile?.balance != null ? Number(profile.balance) : base.balance,
           bio: profile?.description ?? base.bio,
         };
       }

@@ -16,10 +16,24 @@ export default function MessagesPage() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
+  // Tìm kiếm & lọc hội thoại
+  const [convSearch, setConvSearch] = useState('');
+  const [unreadOnly, setUnreadOnly] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
   const activeId = conversationId ?? conversations[0]?.id;
   const activeConversation = conversations.find((c) => c.id === activeId);
+
+  // Hội thoại sau khi áp dụng tìm kiếm (tên/nội dung gần nhất) + lọc chưa đọc
+  const filteredConversations = conversations.filter((c) => {
+    const q = convSearch.trim().toLowerCase();
+    const matchSearch =
+      q === '' ||
+      (c.otherUser.name ?? '').toLowerCase().includes(q) ||
+      (c.lastMessage ?? '').toLowerCase().includes(q);
+    const matchUnread = !unreadOnly || c.unreadCount > 0;
+    return matchSearch && matchUnread;
+  });
 
   useEffect(() => {
     if (!user) {
@@ -139,10 +153,38 @@ export default function MessagesPage() {
           <div className="msg-layout fade-up">
             <aside className="msg-sidebar">
               <div className="msg-sidebar-title">Cuộc trò chuyện</div>
+
+              {/* Tìm kiếm & lọc hội thoại */}
+              {conversations.length > 0 && (
+                <div className="msg-search">
+                  <div className="apps-search">
+                    <input
+                      type="text"
+                      placeholder="Tìm theo tên / nội dung..."
+                      value={convSearch}
+                      onChange={(e) => setConvSearch(e.target.value)}
+                      className="apps-search-input"
+                    />
+                    {convSearch && (
+                      <button className="apps-search-clear" onClick={() => setConvSearch('')} type="button">✕</button>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    className={`msg-filter-chip${unreadOnly ? ' active' : ''}`}
+                    onClick={() => setUnreadOnly((v) => !v)}
+                  >
+                    Chưa đọc
+                  </button>
+                </div>
+              )}
+
               {conversations.length === 0 ? (
                 <p className="msg-empty">Chưa có hội thoại. Hệ thống sẽ tạo khi có tương tác job.</p>
+              ) : filteredConversations.length === 0 ? (
+                <p className="msg-empty">Không có hội thoại khớp bộ lọc.</p>
               ) : (
-                conversations.map((c) => (
+                filteredConversations.map((c) => (
                   <Link
                     key={c.id}
                     to={`/messages/${c.id}`}
