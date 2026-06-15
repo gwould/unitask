@@ -258,7 +258,7 @@ export default function WalletPage() {
     const amount = parseInt(params.get('amount') || '0', 10);
     const orderId = params.get('orderId') || '';
 
-    if (resultCode === '0' && amount > 0) {
+    if (resultCode === '0' && amount > 0 && orderId) {
       showToast(`Nạp tiền MoMo thành công: ${amount.toLocaleString('vi-VN')}đ`);
 
       const newTx: Transaction = {
@@ -279,6 +279,8 @@ export default function WalletPage() {
       if (user) {
         updateProfile({ balance: (user.balance || 0) + amount });
       }
+
+      apiPost('/api/payments/momo/confirm', { orderId }).catch(() => {});
     } else if (resultCode) {
       showToast('Giao dịch MoMo không thành công.', 'error');
     }
