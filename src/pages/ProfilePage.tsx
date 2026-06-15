@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, type FormEvent } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import VerificationCard from '../components/VerificationCard';
 
 function calcCompletion(user: { name?: string; bio?: string; phone?: string; university?: string; major?: string; skills?: string[]; companyName?: string; role?: string }) {
   const fields: boolean[] = [
@@ -199,6 +200,9 @@ export default function ProfilePage() {
               </div>
             </div>
           )}
+
+          {/* Xác thực định danh */}
+          <VerificationCard />
 
           {/* form */}
           <form className="prof-form fade-up" onSubmit={handleSubmit}>

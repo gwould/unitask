@@ -39,6 +39,7 @@ export default function Footer() {
             <Link to="/about">Về chúng tôi</Link>
             <Link to="/contact">Liên hệ</Link>
             <Link to="/terms">Điều khoản</Link>
+            <Link to="/policy">Chính sách UniTask</Link>
             <Link to="/privacy">Bảo mật</Link>
           </div>
         </div>

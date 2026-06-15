@@ -65,8 +65,13 @@ export const milestoneService = {
     return apiPost<Milestone>(`/api/milestones/${milestoneId}/approve`, {});
   },
 
-  /** [Business] Yêu cầu sửa: UNDER_REVIEW → REVISION (kèm lý do bắt buộc). */
-  requestChanges(milestoneId: string, feedback: string): Promise<Milestone> {
-    return apiPost<Milestone>(`/api/milestones/${milestoneId}/request-changes`, { feedback });
+  /** [Business] Yêu cầu sửa: UNDER_REVIEW → REVISION (bắt buộc lý do + bằng chứng — chính sách 1.4). */
+  requestChanges(milestoneId: string, feedback: string, evidenceUrl: string): Promise<Milestone> {
+    return apiPost<Milestone>(`/api/milestones/${milestoneId}/request-changes`, { feedback, evidenceUrl });
+  },
+
+  /** [Business] Hủy task: hoàn tiền theo % tiến độ (chính sách 1.3). */
+  cancel(milestoneId: string, progressPercent: number, reason?: string): Promise<Milestone> {
+    return apiPost<Milestone>(`/api/milestones/${milestoneId}/cancel`, { progressPercent, reason });
   },
 };

@@ -6,6 +6,7 @@ import { serviceRegistry } from '../services';
 import { conversationService } from '../services/conversationService';
 import { useNotifications } from '../contexts/NotificationContext';
 import type { Job } from '../types';
+import { ReportModal } from '../components/ui';
 
 const { applications: applicationService, jobs: jobService } = serviceRegistry;
 
@@ -34,6 +35,7 @@ export default function JobDetailPage() {
   const [applied, setApplied] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [showReport, setShowReport] = useState(false);
 
   useEffect(() => {
     if (!toast) return;
@@ -439,6 +441,15 @@ export default function JobDetailPage() {
                   <div className="pd-escrow-note">
                     🛡️ Job này được bảo vệ bởi <strong>Escrow UniTask</strong>. Tiền đã được giữ — bạn sẽ nhận đủ khi hoàn thành.
                   </div>
+                  {user && (
+                    <button
+                      className="btn btn-ghost btn-sm"
+                      style={{ width: '100%', justifyContent: 'center', marginTop: 8, color: 'var(--red)' }}
+                      onClick={() => setShowReport(true)}
+                    >
+                      🚩 Báo cáo job này
+                    </button>
+                  )}
                 </div>
               )}
 
@@ -463,6 +474,15 @@ export default function JobDetailPage() {
           {toast}
           <button className="apps-toast-close" onClick={() => setToast(null)}>✕</button>
         </div>
+      )}
+      {showReport && job && (
+        <ReportModal
+          targetLabel={`Job: ${job.title}`}
+          reportedJobId={String(job.id)}
+          reportedUserId={job.companyUserId ? String(job.companyUserId) : undefined}
+          onClose={() => setShowReport(false)}
+          onDone={(msg) => setToast(msg)}
+        />
       )}
     </section>
   );

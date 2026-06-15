@@ -1,10 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { Contract, Milestone, MilestoneStatus } from '../types';
+import type { Contract, Dispute, Milestone, MilestoneStatus } from '../types';
 import { MILESTONE_STATUS_MAP } from '../constants';
 import { useAuth } from '../contexts/AuthContext';
 import { milestoneService } from '../services/milestoneService';
+import { disputeService } from '../services/disputeService';
 import { formatMoney } from '../utils/format';
-import { AddTaskModal, ConfirmModal, RequestChangesModal, SubmitTaskModal, Toast } from './ui';
+import { AddTaskModal, CancelTaskModal, ConfirmModal, OpenDisputeModal, RequestChangesModal, SubmitTaskModal, Toast } from './ui';
+
+const DISPUTE_LABEL: Record<string, string> = {
+  NEGOTIATION: 'Đang thương lượng', MEDIATION: 'Đang hòa giải',
+  RESOLVED: 'Đã có quyết định', APPEAL: 'Đang kháng cáo', CLOSED: 'Đã đóng',
+};
 
 // ============================================================
 // MilestoneManager — Bảng KANBAN quản lý milestone, dùng chung cho cả
@@ -26,12 +32,14 @@ interface MilestoneManagerProps {
 }
 
 /** Thứ tự cột hiển thị trên bảng Kanban. */
-const COLUMN_ORDER: MilestoneStatus[] = ['PENDING', 'ESCROWED', 'UNDER_REVIEW', 'REVISION', 'COMPLETED'];
+const COLUMN_ORDER: MilestoneStatus[] = ['PENDING', 'ESCROWED', 'UNDER_REVIEW', 'REVISION', 'COMPLETED', 'CANCELED'];
 
 type ActiveModal =
   | { type: 'approve'; milestone: Milestone }
   | { type: 'request-changes'; milestone: Milestone }
   | { type: 'submit'; milestone: Milestone }
+  | { type: 'cancel'; milestone: Milestone }
+  | { type: 'open-dispute'; milestone: Milestone }
   | { type: 'add-task' }
   | null;
 
@@ -55,6 +63,8 @@ export default function MilestoneManager({ contractId }: MilestoneManagerProps) 
   const [busyId, setBusyId] = useState<string | null>(null);
   const [modal, setModal] = useState<ActiveModal>(null);
   const [toast, setToast] = useState<string | null>(null);
+  // Tranh chấp đang mở theo milestone (status != CLOSED).
+  const [disputes, setDisputes] = useState<Record<string, Dispute>>({});
 
   useEffect(() => {
     let alive = true;
@@ -66,6 +76,19 @@ export default function MilestoneManager({ contractId }: MilestoneManagerProps) 
       .finally(() => alive && setLoading(false));
     return () => { alive = false; };
   }, [contractId]);
+
+  const loadDisputes = useCallback(() => {
+    disputeService.byContract(contractId)
+      .then((list) => {
+        const map: Record<string, Dispute> = {};
+        // Giữ tranh chấp mới nhất chưa đóng cho mỗi milestone.
+        list.forEach((d) => { if (d.status !== 'CLOSED' && !map[d.milestoneId]) map[d.milestoneId] = d; });
+        setDisputes(map);
+      })
+      .catch(() => { /* không chặn UI nếu lỗi */ });
+  }, [contractId]);
+
+  useEffect(() => { loadDisputes(); }, [loadDisputes]);
 
   const patchMilestone = useCallback((updated: Milestone) => {
     setContract((prev) =>
@@ -94,10 +117,36 @@ export default function MilestoneManager({ contractId }: MilestoneManagerProps) 
     runAction(m.id, () => milestoneService.escrow(m.id), `Đã ký quỹ "${m.title}".`);
   const handleApprove = (m: Milestone) =>
     runAction(m.id, () => milestoneService.approve(m.id), `Đã nghiệm thu & giải ngân "${m.title}".`);
-  const handleRequestChanges = (m: Milestone, feedback: string) =>
-    runAction(m.id, () => milestoneService.requestChanges(m.id, feedback), `Đã gửi yêu cầu sửa "${m.title}".`);
+  const handleRequestChanges = (m: Milestone, feedback: string, evidenceUrl: string) =>
+    runAction(m.id, () => milestoneService.requestChanges(m.id, feedback, evidenceUrl), `Đã gửi yêu cầu sửa "${m.title}".`);
   const handleSubmit = (m: Milestone, data: { fileUrl: string; coverLetter: string }) =>
     runAction(m.id, () => milestoneService.submit(m.id, data), `Đã nộp bài "${m.title}".`);
+  const handleCancel = (m: Milestone, percent: number, reason: string) =>
+    runAction(m.id, () => milestoneService.cancel(m.id, percent, reason), `Đã hủy task "${m.title}".`);
+
+  // ----- Tranh chấp (B1/B2/B4) -----
+  const [disputeBusy, setDisputeBusy] = useState<string | null>(null);
+  const runDispute = async (key: string, fn: () => Promise<unknown>, msg: string) => {
+    setDisputeBusy(key);
+    try {
+      await fn();
+      setToast(msg);
+      setModal(null);
+      loadDisputes();
+      // Quyết định hòa giải có thể đổi trạng thái milestone -> tải lại hợp đồng.
+      milestoneService.getContract(contractId).then(setContract).catch(() => {});
+    } catch (e: unknown) {
+      setToast(e instanceof Error ? e.message : 'Thao tác tranh chấp thất bại.');
+    } finally {
+      setDisputeBusy(null);
+    }
+  };
+  const handleOpenDispute = (m: Milestone, reason: string) =>
+    runDispute(m.id, () => disputeService.open(m.id, reason), `Đã mở tranh chấp "${m.title}".`);
+  const handleRequestMediation = (d: Dispute) =>
+    runDispute(d.id, () => disputeService.requestMediation(d.id), 'Đã yêu cầu hòa giải.');
+  const handleAppeal = (d: Dispute) =>
+    runDispute(d.id, () => disputeService.appeal(d.id), 'Đã gửi kháng cáo.');
 
   // Giao task = thêm milestone mới vào hợp đồng (chỉ Business).
   const [addBusy, setAddBusy] = useState(false);
@@ -149,7 +198,7 @@ export default function MilestoneManager({ contractId }: MilestoneManagerProps) 
   // Gom milestone theo cột.
   const columns = useMemo(() => {
     const map: Record<MilestoneStatus, Milestone[]> = {
-      PENDING: [], ESCROWED: [], UNDER_REVIEW: [], REVISION: [], COMPLETED: [],
+      PENDING: [], ESCROWED: [], UNDER_REVIEW: [], REVISION: [], COMPLETED: [], CANCELED: [],
     };
     contract?.milestones.forEach((m) => map[m.status]?.push(m));
     return map;
@@ -165,6 +214,10 @@ export default function MilestoneManager({ contractId }: MilestoneManagerProps) 
     const deadline = formatDeadline(m.dueDate, m.status);
     const sub = m.latestSubmission;
     const canDrag = validTargets(m).length > 0 && !isBusy;
+    const dispute = disputes[m.id];
+    const dBusy = dispute ? disputeBusy === dispute.id || disputeBusy === m.id : disputeBusy === m.id;
+    const canOpenDispute = !dispute && (m.status === 'ESCROWED' || m.status === 'UNDER_REVIEW' || m.status === 'REVISION');
+    const appealOpen = dispute?.status === 'RESOLVED' && (!dispute.appealDeadline || new Date(dispute.appealDeadline) > new Date());
 
     return (
       <div
@@ -195,6 +248,9 @@ export default function MilestoneManager({ contractId }: MilestoneManagerProps) 
         {m.status === 'REVISION' && sub?.clientFeedback && (
           <p className="ms-feedback" style={{ marginTop: 6 }}>Cần sửa: “{sub.clientFeedback}”</p>
         )}
+        {m.status === 'REVISION' && sub?.clientEvidenceUrl && (
+          <a className="kb-sub-link" href={sub.clientEvidenceUrl} target="_blank" rel="noopener noreferrer">📎 Bằng chứng từ chối</a>
+        )}
 
         {/* Hành động theo vai trò */}
         <div className="kb-actions">
@@ -214,12 +270,37 @@ export default function MilestoneManager({ contractId }: MilestoneManagerProps) 
               📤 {m.status === 'REVISION' ? 'Nộp lại' : 'Nộp bài'}
             </button>
           )}
+          {isBusiness && m.status !== 'COMPLETED' && m.status !== 'CANCELED' && (
+            <button className="btn btn-danger-ghost btn-sm" disabled={isBusy} onClick={() => setModal({ type: 'cancel', milestone: m })}>🚫 Hủy</button>
+          )}
           {/* Gợi ý trạng thái cho phía còn lại */}
           {isStudent && m.status === 'PENDING' && <span className="kb-hint">⏳ Chờ doanh nghiệp ký quỹ</span>}
           {isStudent && m.status === 'UNDER_REVIEW' && <span className="kb-hint">👀 Chờ nghiệm thu</span>}
           {isBusiness && m.status === 'ESCROWED' && <span className="kb-hint">⏳ Chờ sinh viên nộp</span>}
           {isBusiness && m.status === 'REVISION' && <span className="kb-hint">🔁 Chờ nộp lại</span>}
         </div>
+
+        {/* Tranh chấp (B1–B4) */}
+        {dispute ? (
+          <div className="kb-dispute">
+            <span className="kb-dispute-tag">⚠️ Tranh chấp: {DISPUTE_LABEL[dispute.status] ?? dispute.status}</span>
+            {dispute.status === 'RESOLVED' && dispute.decision && (
+              <span className="kb-hint">Quyết định: {dispute.decision}{dispute.decision === 'SPLIT' ? ` (${dispute.studentPercent ?? 0}%)` : ''}</span>
+            )}
+            <div className="kb-actions">
+              {dispute.status === 'NEGOTIATION' && (
+                <button className="btn btn-ghost btn-sm" disabled={dBusy} onClick={() => handleRequestMediation(dispute)}>🧑‍⚖️ Yêu cầu hòa giải</button>
+              )}
+              {appealOpen && (
+                <button className="btn btn-ghost btn-sm" disabled={dBusy} onClick={() => handleAppeal(dispute)}>📨 Kháng cáo</button>
+              )}
+            </div>
+          </div>
+        ) : canOpenDispute && (
+          <div className="kb-actions">
+            <button className="btn btn-danger-ghost btn-sm" disabled={dBusy} onClick={() => setModal({ type: 'open-dispute', milestone: m })}>⚠️ Tranh chấp</button>
+          </div>
+        )}
       </div>
     );
   };
@@ -299,7 +380,7 @@ export default function MilestoneManager({ contractId }: MilestoneManagerProps) 
         <RequestChangesModal
           milestoneTitle={modal.milestone.title}
           loading={busyId === modal.milestone.id}
-          onSubmit={(feedback) => handleRequestChanges(modal.milestone, feedback)}
+          onSubmit={(feedback, evidenceUrl) => handleRequestChanges(modal.milestone, feedback, evidenceUrl)}
           onCancel={() => setModal(null)}
         />
       )}
@@ -312,10 +393,28 @@ export default function MilestoneManager({ contractId }: MilestoneManagerProps) 
           onCancel={() => setModal(null)}
         />
       )}
+      {modal?.type === 'cancel' && (
+        <CancelTaskModal
+          milestoneTitle={modal.milestone.title}
+          amount={modal.milestone.amount}
+          escrowed={modal.milestone.status !== 'PENDING'}
+          loading={busyId === modal.milestone.id}
+          onSubmit={(percent, reason) => handleCancel(modal.milestone, percent, reason)}
+          onCancel={() => setModal(null)}
+        />
+      )}
       {modal?.type === 'add-task' && (
         <AddTaskModal
           loading={addBusy}
           onSubmit={handleAddTask}
+          onCancel={() => setModal(null)}
+        />
+      )}
+      {modal?.type === 'open-dispute' && (
+        <OpenDisputeModal
+          milestoneTitle={modal.milestone.title}
+          loading={disputeBusy === modal.milestone.id}
+          onSubmit={(reason) => handleOpenDispute(modal.milestone, reason)}
           onCancel={() => setModal(null)}
         />
       )}

@@ -9,7 +9,8 @@ export type MilestoneStatus =
   | 'ESCROWED'
   | 'UNDER_REVIEW'
   | 'REVISION'
-  | 'COMPLETED';
+  | 'COMPLETED'
+  | 'CANCELED';
 
 export type ContractStatus = 'ACTIVE' | 'COMPLETED' | 'CANCELED';
 
@@ -20,6 +21,7 @@ export interface Submission {
   fileUrl?: string | null;
   coverLetter?: string | null;
   clientFeedback?: string | null;
+  clientEvidenceUrl?: string | null;
   createdAt?: string | null;
 }
 
@@ -33,6 +35,25 @@ export interface Milestone {
   dueDate?: string | null;
   createdAt?: string | null;
   latestSubmission?: Submission | null;
+}
+
+export type DisputeStatus = 'NEGOTIATION' | 'MEDIATION' | 'RESOLVED' | 'APPEAL' | 'CLOSED';
+
+/** Tranh chấp trên một milestone (quy trình B1–B4). */
+export interface Dispute {
+  id: string;
+  milestoneId: string;
+  milestoneTitle?: string | null;
+  contractId: string;
+  raisedByUserId: string;
+  reason: string;
+  status: DisputeStatus;
+  decision?: 'RELEASE' | 'REFUND' | 'SPLIT' | null;
+  studentPercent?: number | null;
+  decisionNote?: string | null;
+  createdAt?: string | null;
+  resolvedAt?: string | null;
+  appealDeadline?: string | null;
 }
 
 /** Hợp đồng kèm danh sách milestone. */
