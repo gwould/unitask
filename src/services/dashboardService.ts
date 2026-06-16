@@ -35,6 +35,7 @@ export type StudentDashboardData = {
 };
 
 export type BusinessDashboardData = {
+  balance: number;
   stats: {
     openJobs: number;
     totalApplications: number;
@@ -73,6 +74,7 @@ type ApiStudentDashboard = {
 };
 
 type ApiBusinessDashboard = {
+  business?: { balance?: number | null } | null;
   stats: BusinessDashboardData['stats'];
   openJobs: BusinessDashboardData['openJobs'];
   recentApplications: BusinessDashboardData['recentApplications'];
@@ -121,6 +123,7 @@ export const dashboardService = {
     try {
       const data = await apiGet<ApiBusinessDashboard>(`/api/businesses/${userId}/dashboard`);
       return {
+        balance: Number(data.business?.balance ?? 0),
         stats: data.stats,
         openJobs: data.openJobs ?? [],
         recentApplications: data.recentApplications ?? [],

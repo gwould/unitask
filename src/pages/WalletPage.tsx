@@ -7,6 +7,7 @@ import { formatMoney as formatBalance, formatSignedMoney as formatMoney } from '
 import { simulateDelay } from '../utils/async';
 import { walletService } from '../services/walletService';
 import { paymentService } from '../services/paymentService';
+import { profileService } from '../services/profileService';
 import { apiPost } from '../services/apiService';
 import { hasAuthToken } from '../utils/auth';
 
@@ -185,8 +186,13 @@ export default function WalletPage() {
           paymentService.listAsTransactions(String(user.id), role),
         ]);
         if (cancelled) return;
-        if (summary?.balance != null) {
+        if (role === 'student' && summary?.balance != null) {
           updateProfile({ balance: Number(summary.balance) });
+        }
+        if (role === 'business') {
+          profileService.enrichUser(user).then((enriched) => {
+            if (!cancelled) updateProfile({ balance: enriched.balance });
+          }).catch(() => {});
         }
         const merged = [...paymentTxs, ...walletTxs];
         const byId = new Map(merged.map((t) => [t.id, t]));
@@ -258,7 +264,7 @@ export default function WalletPage() {
     const amount = parseInt(params.get('amount') || '0', 10);
     const orderId = params.get('orderId') || '';
 
-    if (resultCode === '0' && amount > 0) {
+    if (resultCode === '0' && amount > 0 && orderId) {
       showToast(`Nạp tiền MoMo thành công: ${amount.toLocaleString('vi-VN')}đ`);
 
       const newTx: Transaction = {
@@ -279,6 +285,8 @@ export default function WalletPage() {
       if (user) {
         updateProfile({ balance: (user.balance || 0) + amount });
       }
+
+      apiPost('/api/payments/momo/confirm', { orderId }).catch(() => {});
     } else if (resultCode) {
       showToast('Giao dịch MoMo không thành công.', 'error');
     }

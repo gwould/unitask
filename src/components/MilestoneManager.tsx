@@ -4,6 +4,7 @@ import { MILESTONE_STATUS_MAP } from '../constants';
 import { useAuth } from '../contexts/AuthContext';
 import { milestoneService } from '../services/milestoneService';
 import { disputeService } from '../services/disputeService';
+import { profileService } from '../services/profileService';
 import { formatMoney } from '../utils/format';
 import { AddTaskModal, CancelTaskModal, ConfirmModal, OpenDisputeModal, RequestChangesModal, SubmitTaskModal, Toast } from './ui';
 
@@ -53,7 +54,7 @@ function formatDeadline(dueDate?: string | null, status?: MilestoneStatus) {
 }
 
 export default function MilestoneManager({ contractId }: MilestoneManagerProps) {
-  const { user } = useAuth();
+  const { user, updateProfile } = useAuth();
   const isBusiness = user?.role === 'business';
   const isStudent = user?.role === 'student';
 
@@ -96,13 +97,21 @@ export default function MilestoneManager({ contractId }: MilestoneManagerProps) 
     );
   }, []);
 
+  const refreshBalance = useCallback(() => {
+    if (!user) return;
+    profileService.enrichUser(user).then((enriched) => {
+      updateProfile({ balance: enriched.balance });
+    }).catch(() => {});
+  }, [user, updateProfile]);
+
   const runAction = useCallback(
-    async (milestoneId: string, fn: () => Promise<Milestone>, successMsg: string) => {
+    async (milestoneId: string, fn: () => Promise<Milestone>, successMsg: string, affectsBalance = false) => {
       setBusyId(milestoneId);
       try {
         const updated = await fn();
         patchMilestone(updated);
         setToast(successMsg);
+        if (affectsBalance) refreshBalance();
       } catch (e: unknown) {
         setToast(e instanceof Error ? e.message : 'Thao tác thất bại.');
       } finally {
@@ -110,19 +119,19 @@ export default function MilestoneManager({ contractId }: MilestoneManagerProps) 
         setModal(null);
       }
     },
-    [patchMilestone],
+    [patchMilestone, refreshBalance],
   );
 
   const handleEscrow = (m: Milestone) =>
-    runAction(m.id, () => milestoneService.escrow(m.id), `Đã ký quỹ "${m.title}".`);
+    runAction(m.id, () => milestoneService.escrow(m.id), `Đã ký quỹ "${m.title}".`, true);
   const handleApprove = (m: Milestone) =>
-    runAction(m.id, () => milestoneService.approve(m.id), `Đã nghiệm thu & giải ngân "${m.title}".`);
+    runAction(m.id, () => milestoneService.approve(m.id), `Đã nghiệm thu & giải ngân "${m.title}".`, true);
   const handleRequestChanges = (m: Milestone, feedback: string, evidenceUrl: string) =>
     runAction(m.id, () => milestoneService.requestChanges(m.id, feedback, evidenceUrl), `Đã gửi yêu cầu sửa "${m.title}".`);
   const handleSubmit = (m: Milestone, data: { fileUrl: string; coverLetter: string }) =>
     runAction(m.id, () => milestoneService.submit(m.id, data), `Đã nộp bài "${m.title}".`);
   const handleCancel = (m: Milestone, percent: number, reason: string) =>
-    runAction(m.id, () => milestoneService.cancel(m.id, percent, reason), `Đã hủy task "${m.title}".`);
+    runAction(m.id, () => milestoneService.cancel(m.id, percent, reason), `Đã hủy task "${m.title}".`, true);
 
   // ----- Tranh chấp (B1/B2/B4) -----
   const [disputeBusy, setDisputeBusy] = useState<string | null>(null);

@@ -181,7 +181,9 @@ export default function DashboardPage() {
   const postedJobIds = new Set(postedJobs.map((j) => j.id));
   const applicationsOnMyJobs = allApplications.filter((a) => postedJobIds.has(a.jobId));
 
-  const walletBalance = studentDash?.wallet.balance ?? user?.balance ?? 0;
+  const walletBalance = user?.role === 'business'
+    ? (businessDash?.balance ?? user?.balance ?? 0)
+    : (studentDash?.wallet.balance ?? user?.balance ?? 0);
 
   const stats = user?.role === 'business' && businessDash
     ? {
