@@ -17,19 +17,19 @@ export default function ContractPage() {
 
   if (!id) {
     return (
-      <section className="container" style={{ padding: '100px 20px 60px' }}>
+      <div className="container" style={{ padding: '100px 48px 60px' }}>
         <p>Không tìm thấy mã hợp đồng.</p>
         <Link to={backTo} className="btn btn-ghost btn-sm">{backLabel}</Link>
-      </section>
+      </div>
     );
   }
 
   return (
-    <section className="container" style={{ padding: '100px 20px 60px', maxWidth: 1100 }}>
-      <div style={{ marginBottom: 16 }}>
+    <div className="page-contract">
+      <div className="kb-back-bar">
         <Link to={backTo} className="btn btn-ghost btn-sm">{backLabel}</Link>
       </div>
       <MilestoneManager contractId={id} />
-    </section>
+    </div>
   );
 }

@@ -321,58 +321,63 @@ export default function MilestoneManager({ contractId }: MilestoneManagerProps) 
   const pct = totalCount ? Math.round((doneCount / totalCount) * 100) : 0;
 
   return (
-    <section className="ms-panel">
-      <header className="ms-panel-head">
-        <div>
-          <h3>Tiến độ dự án {contract.jobTitle ? `· ${contract.jobTitle}` : ''}</h3>
-          {contract.studentName && <span className="kb-sub-name">👨‍🎓 {contract.studentName}</span>}
+    <div className="kb-page-wrap">
+      {/* Header: project info + progress bar */}
+      <div className="kb-top-bar">
+        <div className="kb-top-bar-inner">
+          <div>
+            <h3 className="kb-project-title">
+              Tiến độ dự án{contract.jobTitle ? ` · ${contract.jobTitle}` : ''}
+            </h3>
+            {contract.studentName && <span className="kb-sub-name">👨‍🎓 {contract.studentName}</span>}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+            <span className="ms-total">Giá trị HĐ: {formatMoney(contract.finalPrice)}</span>
+            {isBusiness && contract.status !== 'CANCELED' && (
+              <button className="btn btn-primary btn-sm" onClick={() => setModal({ type: 'add-task' })}>＋ Giao task</button>
+            )}
+          </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span className="ms-total">Giá trị HĐ: {formatMoney(contract.finalPrice)}</span>
-          {isBusiness && contract.status !== 'CANCELED' && (
-            <button className="btn btn-primary btn-sm" onClick={() => setModal({ type: 'add-task' })}>＋ Giao task</button>
-          )}
+        <div className="ms-progress">
+          <div className="ms-progress-info">
+            <span>{doneCount}/{totalCount} task hoàn thành · <span style={{ opacity: 0.7 }}>💡 kéo thẻ sang cột hợp lệ để chuyển nhanh</span></span>
+            <span>Đã giải ngân: {formatMoney(paidAmount)}</span>
+          </div>
+          <div className="contract-progress"><div className="contract-progress-fill" style={{ width: `${pct}%` }} /></div>
         </div>
-      </header>
-
-      {/* Tiến trình milestone toàn dự án */}
-      <div className="ms-progress">
-        <div className="ms-progress-info">
-          <span>{doneCount}/{totalCount} task hoàn thành · <span style={{ opacity: 0.7 }}>💡 kéo thẻ sang cột hợp lệ để chuyển nhanh</span></span>
-          <span>Đã giải ngân: {formatMoney(paidAmount)}</span>
-        </div>
-        <div className="contract-progress"><div className="contract-progress-fill" style={{ width: `${pct}%` }} /></div>
       </div>
 
-      {/* BẢNG KANBAN */}
-      <div className="kanban">
-        {COLUMN_ORDER.map((status) => {
-          const col = columns[status];
-          const meta = MILESTONE_STATUS_MAP[status];
-          const draggedM = dragId ? contract.milestones.find((x) => x.id === dragId) ?? null : null;
-          const isValidDrop = draggedM ? validTargets(draggedM).includes(status) : false;
-          return (
-            <div
-              key={status}
-              className={`kb-col${isValidDrop ? ' kb-col-droppable' : ''}${dragOverCol === status && isValidDrop ? ' kb-col-over' : ''}`}
-              onDragOver={(e) => { if (isValidDrop) { e.preventDefault(); setDragOverCol(status); } }}
-              onDragLeave={() => setDragOverCol((c) => (c === status ? null : c))}
-              onDrop={(e) => {
-                if (isValidDrop && draggedM) { e.preventDefault(); performDrop(draggedM, status); }
-                setDragId(null);
-                setDragOverCol(null);
-              }}
-            >
-              <div className={`kb-col-head ${meta.cls}`}>
-                <span>{meta.label}</span>
-                <span className="kb-col-count">{col.length}</span>
+      {/* BẢNG KANBAN — full-width, horizontal scroll, mỗi cột fixed 264px */}
+      <div className="kb-board-scroll">
+        <div className="kb-board">
+          {COLUMN_ORDER.map((status) => {
+            const col = columns[status];
+            const meta = MILESTONE_STATUS_MAP[status];
+            const draggedM = dragId ? contract.milestones.find((x) => x.id === dragId) ?? null : null;
+            const isValidDrop = draggedM ? validTargets(draggedM).includes(status) : false;
+            return (
+              <div
+                key={status}
+                className={`kb-col${isValidDrop ? ' kb-col-droppable' : ''}${dragOverCol === status && isValidDrop ? ' kb-col-over' : ''}`}
+                onDragOver={(e) => { if (isValidDrop) { e.preventDefault(); setDragOverCol(status); } }}
+                onDragLeave={() => setDragOverCol((c) => (c === status ? null : c))}
+                onDrop={(e) => {
+                  if (isValidDrop && draggedM) { e.preventDefault(); performDrop(draggedM, status); }
+                  setDragId(null);
+                  setDragOverCol(null);
+                }}
+              >
+                <div className={`kb-col-head ${meta.cls}`}>
+                  <span>{meta.label}</span>
+                  <span className="kb-col-count">{col.length}</span>
+                </div>
+                <div className="kb-col-body">
+                  {col.length === 0 ? <div className="kb-empty">—</div> : col.map(renderCard)}
+                </div>
               </div>
-              <div className="kb-col-body">
-                {col.length === 0 ? <div className="kb-empty">—</div> : col.map(renderCard)}
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       {/* Modals */}
@@ -429,6 +434,6 @@ export default function MilestoneManager({ contractId }: MilestoneManagerProps) 
       )}
 
       <Toast message={toast} onDismiss={() => setToast(null)} />
-    </section>
+    </div>
   );
 }
