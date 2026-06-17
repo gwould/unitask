@@ -98,8 +98,19 @@ export default function MessagesPage() {
     return () => clearInterval(timer);
   }, [user]);
 
+  const msgUserScrolledUp = useRef(false);
+
+  const handleMsgScroll = useCallback(() => {
+    const el = listRef.current;
+    if (!el) return;
+    const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+    msgUserScrolledUp.current = !atBottom;
+  }, []);
+
   useEffect(() => {
-    listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
+    if (!msgUserScrolledUp.current) {
+      listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
+    }
   }, [messages]);
 
   const handleSend = useCallback(async () => {
@@ -223,7 +234,7 @@ export default function MessagesPage() {
                       🚩 Báo cáo
                     </button>
                   </div>
-                  <div className="msg-messages" ref={listRef}>
+                  <div className="msg-messages" ref={listRef} onScroll={handleMsgScroll}>
                     {messages.length === 0 ? (
                       <p className="msg-empty">Bắt đầu cuộc trò chuyện...</p>
                     ) : (

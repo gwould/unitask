@@ -2,18 +2,13 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { profileService } from '../services/profileService';
 
-// ============================================================
-// VerificationCard — Xác thực định danh trong trang Hồ sơ.
-//   Sinh viên/Freelancer: email .edu HOẶC ảnh thẻ SV + CCCD.
-//   Doanh nghiệp: Mã số thuế (MST) + Giấy phép kinh doanh.
-// ============================================================
-
 export default function VerificationCard() {
   const { user } = useAuth();
   const [verified, setVerified] = useState(false);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
+  const [toast, setToast] = useState<{ text: string; ok: boolean } | null>(null);
 
   // student fields
   const [studentEmail, setStudentEmail] = useState('');
@@ -25,6 +20,12 @@ export default function VerificationCard() {
 
   const isStudent = user?.role === 'student';
   const isBusiness = user?.role === 'business';
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 4000);
+    return () => clearTimeout(t);
+  }, [toast]);
 
   useEffect(() => {
     if (!user) return;
@@ -65,8 +66,11 @@ export default function VerificationCard() {
       }
       setVerified(true);
       setMsg({ text: 'Xác thực thành công! Tài khoản của bạn đã được xác minh.', ok: true });
+      setToast({ text: '✅ Xác thực thành công! Tài khoản đã được xác minh.', ok: true });
     } catch (e: unknown) {
-      setMsg({ text: e instanceof Error ? e.message : 'Xác thực thất bại.', ok: false });
+      const errMsg = e instanceof Error ? e.message : 'Xác thực thất bại.';
+      setMsg({ text: errMsg, ok: false });
+      setToast({ text: `❌ ${errMsg}`, ok: false });
     } finally {
       setBusy(false);
     }
@@ -115,6 +119,16 @@ export default function VerificationCard() {
       <button className="btn btn-primary btn-sm" style={{ marginTop: 12 }} disabled={busy} onClick={submit}>
         {busy ? 'Đang gửi…' : verified ? 'Cập nhật xác thực' : 'Gửi xác thực'}
       </button>
+
+      {toast && (
+        <div
+          className={`apps-toast ${toast.ok ? 'apps-toast-success' : 'apps-toast-error'}`}
+          style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 10000 }}
+        >
+          <span>{toast.text}</span>
+          <button className="apps-toast-close" onClick={() => setToast(null)}>✕</button>
+        </div>
+      )}
     </div>
   );
 }

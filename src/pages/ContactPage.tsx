@@ -204,29 +204,29 @@ export default function ContactPage() {
             <div className="contact-info-card">
               <div className="ci-icon">📧</div>
               <div>
-                <h4>Email</h4>
-                <p>support@unitask.vn</p>
+                <h4>Email hỗ trợ</h4>
+                <p>support@unitask.io.vn</p>
               </div>
             </div>
             <div className="contact-info-card">
               <div className="ci-icon">📱</div>
               <div>
-                <h4>Hotline</h4>
-                <p>1900-UNITASK (Thứ 2–6, 8h–18h)</p>
+                <h4>Zalo / Hotline</h4>
+                <p>0382-xxx-xxx (Thứ 2–6, 8h–18h)</p>
               </div>
             </div>
             <div className="contact-info-card">
               <div className="ci-icon">📍</div>
               <div>
-                <h4>Văn phòng</h4>
-                <p>Tầng 12, Tòa Innovation Hub, Quận 1, TP.HCM</p>
+                <h4>Trụ sở</h4>
+                <p>TP. Hồ Chí Minh, Việt Nam</p>
               </div>
             </div>
             <div className="contact-info-card">
               <div className="ci-icon">💬</div>
               <div>
                 <h4>Mạng xã hội</h4>
-                <p>Facebook · LinkedIn · TikTok · YouTube</p>
+                <p>Facebook · LinkedIn · TikTok</p>
               </div>
             </div>
 

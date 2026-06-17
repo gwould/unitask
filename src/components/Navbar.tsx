@@ -60,8 +60,8 @@ export default function Navbar() {
         )}
         {user ? (
           <>
-            <Link to="/dashboard" onClick={closeMobile}>📊 Dashboard</Link>
             <Link to="/profile" onClick={closeMobile}>👤 Hồ sơ</Link>
+            <Link to="/dashboard" onClick={closeMobile}>📊 Dashboard</Link>
             <Link to="/wallet" onClick={closeMobile}>💰 Ví</Link>
             <Link to="/notifications" onClick={closeMobile}>🔔 Thông báo{unreadCount > 0 && ` (${unreadCount})`}</Link>
             <Link to="/messages" onClick={closeMobile}>💬 Tin nhắn</Link>
@@ -184,8 +184,8 @@ export default function Navbar() {
                       <strong>{user.name}</strong>
                       <span>{user.role === 'student' ? '👨‍🎓 Sinh viên' : user.role === 'business' ? '🏢 Doanh nghiệp' : '🛡️ Admin'}</span>
                     </div>
-                    <Link to="/dashboard" className="nav-dd-item">📊 Dashboard</Link>
                     <Link to="/profile" className="nav-dd-item">👤 Hồ sơ</Link>
+                    <Link to="/dashboard" className="nav-dd-item">📊 Dashboard</Link>
                     <Link to="/wallet" className="nav-dd-item">💰 Ví</Link>
                     <Link to="/notifications" className="nav-dd-item">🔔 Thông báo{unreadCount > 0 && <span style={{ marginLeft: 6, background: '#ff4444', color: '#fff', borderRadius: 999, padding: '2px 7px', fontSize: 11, fontWeight: 700 }}>{unreadCount}</span>}</Link>
                     <Link to="/messages" className="nav-dd-item">💬 Tin nhắn</Link>

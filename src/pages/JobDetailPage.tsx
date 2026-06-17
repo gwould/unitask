@@ -32,10 +32,28 @@ export default function JobDetailPage() {
 
   const [showApply, setShowApply] = useState(false);
   const [coverLetter, setCoverLetter] = useState('');
+  const [cvFile, setCvFile] = useState<File | null>(null);
+  const [cvError, setCvError] = useState('');
   const [applied, setApplied] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [showReport, setShowReport] = useState(false);
+
+  const handleCvSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCvError('');
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const validTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (!validTypes.includes(file.type)) {
+      setCvError('Chỉ hỗ trợ file PDF hoặc DOCX');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setCvError('File không được lớn hơn 5MB');
+      return;
+    }
+    setCvFile(file);
+  };
 
   useEffect(() => {
     if (!toast) return;
@@ -360,7 +378,7 @@ export default function JobDetailPage() {
                 </div>
               ) : showApply ? (
                 <div className="pd-apply-form">
-                  <h3>✍️ Viết thư ứng tuyển</h3>
+                  <h3>✍️ Ứng tuyển vị trí này</h3>
                   <p style={{ fontSize: 13, color: 'var(--t3)', marginBottom: 12 }}>
                     Giới thiệu ngắn gọn vì sao bạn phù hợp với job này.
                   </p>
@@ -379,6 +397,36 @@ export default function JobDetailPage() {
                       <span className="pd-hint-text">Nên viết ít nhất 30 ký tự</span>
                     )}
                   </div>
+
+                  {/* CV Upload */}
+                  <div className="pd-cv-upload">
+                    <label className="pd-cv-label">
+                      📎 Đính kèm CV (PDF, DOCX — tối đa 5MB)
+                    </label>
+                    <div className="pd-cv-dropzone">
+                      <input
+                        type="file"
+                        accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                        onChange={handleCvSelect}
+                        id="cv-upload-input"
+                        style={{ display: 'none' }}
+                      />
+                      <label htmlFor="cv-upload-input" className="pd-cv-btn">
+                        {cvFile ? `📄 ${cvFile.name}` : '📤 Chọn file CV từ máy tính'}
+                      </label>
+                      {cvFile && (
+                        <button
+                          type="button"
+                          className="pd-cv-remove"
+                          onClick={() => setCvFile(null)}
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+                    {cvError && <span className="pd-cv-error">{cvError}</span>}
+                  </div>
+
                   <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
                     <button
                       className="btn btn-primary"
@@ -392,7 +440,7 @@ export default function JobDetailPage() {
                           Đang gửi...
                         </>
                       ) : (
-                        '🚀 Gửi ứng tuyển'
+                        '📨 Nộp CV & Ứng tuyển'
                       )}
                     </button>
                     <button className="btn btn-ghost" onClick={() => setShowApply(false)}>

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { serviceRegistry } from '../services';
 import type { CareerChatMessage, CareerJobCard } from '../types/careerAssistant';
 
@@ -41,17 +42,26 @@ function JobCards({ jobs }: { jobs: CareerJobCard[] }) {
 
 export default function CareerAssistantChat() {
   const { user } = useAuth();
+  const { theme } = useTheme();
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<CareerChatMessage[]>([WELCOME]);
   const [loading, setLoading] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
+  const userScrolledUp = useRef(false);
 
   useEffect(() => {
-    if (open && listRef.current) {
-      listRef.current.scrollTop = listRef.current.scrollHeight;
+    if (open && listRef.current && !userScrolledUp.current) {
+      listRef.current.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
     }
   }, [messages, open, loading]);
+
+  const handleScroll = useCallback(() => {
+    const el = listRef.current;
+    if (!el) return;
+    const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+    userScrolledUp.current = !atBottom;
+  }, []);
 
   const sendMessage = useCallback(
     async (text: string) => {
@@ -69,13 +79,17 @@ export default function CareerAssistantChat() {
 
       try {
         const res = await careerAssistantService.chat(trimmed, user, history, 5);
+        const noResults = !res.jobs || res.jobs.length === 0;
+        const reply = noResults && !res.refused && !res.reply.includes('không tìm thấy')
+          ? (res.reply || 'Không tìm thấy kết quả phù hợp với yêu cầu của bạn. Hãy thử mô tả kỹ năng hoặc lĩnh vực bạn quan tâm cụ thể hơn.')
+          : res.reply;
         setMessages((prev) => [
           ...prev,
           {
             role: 'assistant',
-            content: res.reply,
+            content: reply,
             jobs: res.jobs,
-            followUpQuestions: res.followUpQuestions,
+            followUpQuestions: res.followUpQuestions?.length ? res.followUpQuestions : (noResults ? ['Xem tất cả job', 'Job IT part-time', 'Thiết kế UI/UX'] : res.followUpQuestions),
             careerPaths: res.careerPaths,
             refused: res.refused,
           },
@@ -110,11 +124,16 @@ export default function CareerAssistantChat() {
         onClick={() => setOpen((v) => !v)}
         aria-label="Mở trợ lý nghề nghiệp"
       >
-        {open ? '✕' : '🤖'}
+        {open ? '✕' : (
+          <>
+            <span className="ca-fab-icon">🤖</span>
+            <span className="ca-fab-label">AI Trợ lý</span>
+          </>
+        )}
       </button>
 
       {open && (
-        <div className="ca-panel" role="dialog" aria-label="Trợ lý nghề nghiệp">
+        <div className={`ca-panel ca-panel-${theme}`} role="dialog" aria-label="Trợ lý nghề nghiệp">
           <div className="ca-header">
             <div>
               <div className="ca-title">Trợ lý nghề nghiệp</div>
@@ -125,7 +144,7 @@ export default function CareerAssistantChat() {
             </button>
           </div>
 
-          <div className="ca-messages" ref={listRef}>
+          <div className="ca-messages" ref={listRef} onScroll={handleScroll}>
             {messages.map((msg, idx) => (
               <div key={idx} className={`ca-bubble ca-bubble-${msg.role}`}>
                 <p className="ca-text">{msg.content}</p>

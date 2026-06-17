@@ -333,7 +333,7 @@ export default function AboutPage() {
         <div className="about-section fade-up" style={{ textAlign: 'center' }}>
           <h3>📬 Liên hệ nhanh</h3>
           <p style={{ color: 'var(--text-2)', marginBottom: 16 }}>
-            Email: <button className="btn-link" onClick={() => handleCopy('contact@unitask.vn')} type="button" title="Copy email">contact@unitask.vn 📋</button>
+            Email: <button className="btn-link" onClick={() => handleCopy('contact@unitask.io.vn')} type="button" title="Copy email">contact@unitask.io.vn 📋</button>
           </p>
         </div>
 

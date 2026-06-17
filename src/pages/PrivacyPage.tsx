@@ -66,7 +66,7 @@ const SECTIONS = [
     title: 'Liên hệ bảo mật',
     desc: 'Kênh liên hệ khi cần hỗ trợ về bảo mật dữ liệu.',
     items: [
-      'Email: privacy@unitask.vn (dự kiến).',
+      'Email: privacy@unitask.io.vn',
       'Thời gian xử lý: 1-3 ngày làm việc.',
       'Nếu khẩn cấp, vui lòng cung cấp thông tin chi tiết để được ưu tiên xử lý.',
     ],

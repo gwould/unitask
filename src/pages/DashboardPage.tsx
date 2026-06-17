@@ -467,6 +467,49 @@ export default function DashboardPage() {
                 </div>
               )}
 
+              {/* Business onboarding checklist */}
+              {user.role === 'business' && stats.total === 0 && (
+                <div className="dash-onboard fade-up">
+                  <div className="dash-onboard-header">
+                    <h2>🏢 Bắt đầu tuyển dụng trên UniTask</h2>
+                    <p>4 bước đơn giản để tìm sinh viên tài năng</p>
+                  </div>
+                  <div className="dash-onboard-steps">
+                    <Link to="/profile" className={`dash-onboard-step${user.companyName ? ' done' : ''}`}>
+                      <span className="dash-ob-num">{user.companyName ? '✓' : '1'}</span>
+                      <div className="dash-ob-info">
+                        <strong>Hoàn thiện hồ sơ doanh nghiệp</strong>
+                        <span>Thêm tên công ty, mô tả, logo để tạo uy tín</span>
+                      </div>
+                      <span className="dash-ob-arrow">→</span>
+                    </Link>
+                    <Link to="/wallet" className="dash-onboard-step">
+                      <span className="dash-ob-num">2</span>
+                      <div className="dash-ob-info">
+                        <strong>Nạp tiền vào ví Escrow</strong>
+                        <span>Nạp tiền qua MoMo để ký quỹ cho sinh viên khi đăng task</span>
+                      </div>
+                      <span className="dash-ob-arrow">→</span>
+                    </Link>
+                    <Link to="/post-job" className="dash-onboard-step">
+                      <span className="dash-ob-num">3</span>
+                      <div className="dash-ob-info">
+                        <strong>Đăng job đầu tiên</strong>
+                        <span>Mô tả công việc, yêu cầu kỹ năng, budget & deadline</span>
+                      </div>
+                      <span className="dash-ob-arrow">→</span>
+                    </Link>
+                    <div className="dash-onboard-step disabled">
+                      <span className="dash-ob-num">4</span>
+                      <div className="dash-ob-info">
+                        <strong>Duyệt ứng viên & quản lý task</strong>
+                        <span>Xem hồ sơ sinh viên, chấp nhận, giao task & thanh toán qua Escrow</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Business journey flow map */}
               {user.role === 'business' && (
                 <div className="dash-student-flow fade-up">
