@@ -513,7 +513,7 @@ a.nav-logo{text-decoration:none;color:inherit}
 .sl-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 
 /* Mobile toggle link */
-.sl-mob-link{display:none;margin-top:14px;font-size:13px;color:var(--t2)}
+.sl-mob-link{display:block;margin-top:14px;font-size:13px;color:var(--t2)}
 .sl-mob-link button{background:none;border:none;color:var(--pl);font-weight:700;cursor:pointer;text-decoration:underline;font-size:13px}
 
 /* ─ Login: right half, visible by default ─ */
