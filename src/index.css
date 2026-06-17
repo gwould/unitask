@@ -477,95 +477,101 @@ a.nav-logo{text-decoration:none;color:inherit}
 
 /* ─── SLIDING AUTH ────────────────────────────────── */
 .sl-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:100px 20px 60px;background:var(--bg)}
-.sl-container{position:relative;width:850px;max-width:100%;min-height:520px;border-radius:30px;box-shadow:0 5px 15px rgba(0,0,0,.35);overflow:hidden}
 
-/* Form panels */
-.sl-form-box{position:absolute;top:0;height:100%;display:flex;align-items:center;justify-content:center;padding:24px 36px;transition:all .6s ease-in-out;overflow-y:auto}
-.sl-form-box form{display:flex;flex-direction:column;align-items:center;width:100%;max-width:320px;gap:0}
-.sl-form-box h1{font-family:var(--font-display);font-size:22px;font-weight:800;margin-bottom:10px}
-.sl-form-box input{width:100%;padding:10px 14px;margin:4px 0;border:none;border-radius:8px;font-size:13px;outline:none;transition:background .2s}
-.sl-pw-wrap{position:relative;width:100%}
-.sl-pw-wrap input{padding-right:40px}
-.sl-pw-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:15px;padding:2px;line-height:1}
-.sl-submit{width:100%;padding:10px 36px;margin-top:10px;border:none;border-radius:8px;background:linear-gradient(135deg,#00ced1,#1e90ff);color:#fff;font-size:12.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .3s}
-.sl-submit:hover{opacity:.9;transform:translateY(-1px)}
-.sl-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
-.sl-error{width:100%;padding:8px 12px;margin:4px 0;background:rgba(255,77,107,.1);border:1px solid rgba(255,77,107,.25);border-radius:8px;color:#e74c3c;font-size:12px;text-align:center}
+/* Container */
+.sl-box{position:relative;width:850px;max-width:100%;height:550px;background:var(--s1);border:1px solid var(--bd);border-radius:30px;box-shadow:0 5px 15px rgba(0,0,0,.35);overflow:hidden}
+
+/* ─ Form panels ─ */
+.sl-form-box{position:absolute;top:0;width:50%;height:100%;display:flex;align-items:center;justify-content:center;padding:10px 40px;overflow-y:auto}
+.sl-form-box form{display:flex;flex-direction:column;align-items:center;width:100%;gap:0}
+.sl-form-box h1{font-family:var(--font-display);font-size:24px;font-weight:800;color:var(--t0);margin-bottom:8px}
+.sl-or{font-size:11.5px;color:var(--t3);margin-bottom:8px}
+.sl-error{width:100%;padding:8px 12px;margin-bottom:6px;background:rgba(255,77,107,.1);border:1px solid rgba(255,77,107,.25);border-radius:8px;color:#e74c3c;font-size:12px;text-align:center}
+
+/* Input fields */
+.sl-field{position:relative;width:100%;margin:5px 0}
+.sl-field i{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;font-style:normal;opacity:.6;pointer-events:none}
+.sl-field input{width:100%;padding:10px 14px 10px 38px;background:rgba(255,255,255,.08);border:1px solid var(--bd);border-radius:8px;font-size:13px;color:var(--t1);outline:none;transition:all .2s}
+.sl-field input:focus{border-color:var(--pl);background:rgba(255,255,255,.12)}
+.sl-field input::placeholder{color:var(--t3)}
+.sl-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:15px;line-height:1;padding:2px}
+
+/* Social icons */
 .sl-social{display:flex;gap:10px;margin-bottom:8px}
-.sl-social-btn{width:36px;height:36px;border-radius:50%;border:1px solid #ccc;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
-.sl-social-btn:hover{border-color:#1e90ff;color:#1e90ff}
-.sl-social-btn svg{width:14px;height:14px}
-.sl-divider-text{font-size:11px;margin-bottom:6px}
-.sl-role-toggle{display:flex;width:100%;border-radius:8px;overflow:hidden;margin:4px 0 6px;padding:3px;gap:3px}
-.sl-role-toggle button{flex:1;padding:7px 0;font-size:12px;font-weight:700;border:none;background:transparent;cursor:pointer;border-radius:6px;transition:all .3s}
-.sl-role-toggle button.active{background:linear-gradient(135deg,#00ced1,#1e90ff);color:#fff}
-.sl-mobile-switch{display:none;margin-top:14px;font-size:13px}
-.sl-mobile-switch button{background:none;border:none;color:#1e90ff;font-weight:700;cursor:pointer;text-decoration:underline}
+.sl-icon{width:36px;height:36px;border-radius:50%;border:1px solid var(--bd);background:var(--s2);display:inline-flex;align-items:center;justify-content:center;color:var(--t1);transition:all .25s;text-decoration:none}
+.sl-icon:hover{border-color:var(--pl);color:var(--pl);transform:translateY(-2px)}
+.sl-icon svg{fill:currentColor}
 
-/* Sign In: left half, visible by default */
-.sl-signin{left:0;width:50%;z-index:2}
-/* Sign Up: right half, hidden behind overlay by default */
-.sl-signup{left:0;width:50%;opacity:0;z-index:1}
+/* Role toggle */
+.sl-role-bar{display:flex;width:100%;background:rgba(255,255,255,.06);border-radius:8px;overflow:hidden;margin:4px 0 6px;padding:3px;gap:3px}
+.sl-role-bar button{flex:1;padding:7px 0;font-size:12px;font-weight:700;border:none;background:transparent;color:var(--t2);cursor:pointer;border-radius:6px;transition:all .3s}
+.sl-role-bar button.on{background:linear-gradient(135deg,#00ced1,#1e90ff);color:#fff}
 
-/* Active state: show sign-up, slide sign-in away */
-.sl-container.sl-active .sl-signup{transform:translateX(100%);opacity:1;z-index:5;animation:slMove .6s}
-.sl-container.sl-active .sl-signin{transform:translateX(100%)}
+/* Submit button */
+.sl-btn{width:100%;padding:11px 36px;margin-top:10px;border:none;border-radius:8px;background:linear-gradient(135deg,#00ced1,#1e90ff);color:#fff;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .3s}
+.sl-btn:hover{opacity:.92;transform:translateY(-1px)}
+.sl-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 
-/* Overlay toggle box */
-.sl-toggle-box{position:absolute;top:0;left:50%;width:50%;height:100%;overflow:hidden;z-index:100;transition:all .6s ease-in-out}
-.sl-container.sl-active .sl-toggle-box{transform:translateX(-100%)}
-.sl-toggle{position:relative;width:200%;height:100%;background:linear-gradient(135deg,#00ced1,#1e90ff);color:#fff;transform:translateX(0);transition:transform .6s ease-in-out}
-.sl-container.sl-active .sl-toggle{transform:translateX(-50%)}
-.sl-toggle-panel{position:absolute;top:0;width:50%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 36px;text-align:center}
-.sl-toggle-panel h2{font-family:var(--font-display);font-size:24px;font-weight:800;margin-bottom:10px;color:#fff}
-.sl-toggle-panel p{font-size:13.5px;line-height:1.6;margin-bottom:20px;color:rgba(255,255,255,.85);max-width:260px}
+/* Mobile toggle link */
+.sl-mob-link{display:none;margin-top:14px;font-size:13px;color:var(--t2)}
+.sl-mob-link button{background:none;border:none;color:var(--pl);font-weight:700;cursor:pointer;text-decoration:underline;font-size:13px}
+
+/* ─ Login: right half, visible by default ─ */
+.sl-login{right:0;z-index:1;transition:all .6s ease-in-out}
+
+/* ─ Register: right half, hidden behind overlay ─ */
+.sl-register{right:0;z-index:1;opacity:0;visibility:hidden;transition:all .6s ease-in-out .7s}
+
+/* ─ Active: swap forms ─ */
+.sl-box.active .sl-login{right:50%;opacity:0;visibility:hidden;transition:all .6s ease-in-out .7s}
+.sl-box.active .sl-register{right:0;opacity:1;visibility:visible;z-index:2}
+
+/* ─ Toggle overlay ─ */
+.sl-toggle-box{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:100}
+.sl-toggle-box::before{content:'';position:absolute;left:-250%;width:300%;height:100%;background:linear-gradient(135deg,#00ced1,#1e90ff);border-radius:150px;z-index:2;transition:1.8s ease-in-out}
+.sl-box.active .sl-toggle-box::before{left:50%}
+
+.sl-toggle-panel{position:absolute;top:0;width:50%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 40px;text-align:center;z-index:3;pointer-events:auto;transition:all .6s ease-in-out .6s}
+.sl-toggle-panel h2{font-family:var(--font-display);font-size:26px;font-weight:800;margin-bottom:12px;color:#fff}
+.sl-toggle-panel p{font-size:14px;line-height:1.7;margin-bottom:24px;color:rgba(255,255,255,.85);max-width:280px}
+
+/* Left panel: "Welcome Back" — visible by default */
 .sl-toggle-left{left:0}
-.sl-toggle-right{right:0}
-.sl-ghost-btn{padding:10px 36px;border:2px solid #fff;border-radius:8px;background:transparent;color:#fff;font-size:11.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .3s}
-.sl-ghost-btn:hover{background:rgba(255,255,255,.15)}
+.sl-box.active .sl-toggle-left{left:-50%;opacity:0;visibility:hidden}
 
-@keyframes slMove{0%,49.99%{opacity:0;z-index:1}50%,100%{opacity:1;z-index:5}}
+/* Right panel: "Hello!" — visible when active */
+.sl-toggle-right{right:-50%;opacity:0;visibility:hidden}
+.sl-box.active .sl-toggle-right{right:0;opacity:1;visibility:visible}
 
-/* ─ Mobile ─ */
+/* Ghost button */
+.sl-ghost{padding:10px 40px;border:2px solid #fff;border-radius:8px;background:transparent;color:#fff;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .3s}
+.sl-ghost:hover{background:rgba(255,255,255,.15)}
+
+/* ─ Mobile: no overlay ─ */
 @media(max-width:768px){
-  .sl-container{min-height:auto;border-radius:20px}
-  .sl-form-box{position:relative;width:100%;padding:28px 24px}
+  .sl-box{height:auto;min-height:0;border-radius:20px}
+  .sl-form-box{position:relative;width:100%;right:auto!important;padding:32px 24px;opacity:1!important;visibility:visible!important}
   .sl-toggle-box{display:none}
-  .sl-signin,.sl-signup{transform:none!important;opacity:1!important;z-index:1!important}
-  .sl-signup{display:none}
-  .sl-signin{display:flex}
-  .sl-container.sl-active .sl-signup{display:flex;animation:none}
-  .sl-container.sl-active .sl-signin{display:none}
-  .sl-mobile-switch{display:block}
+  .sl-login{display:flex}
+  .sl-register{display:none}
+  .sl-box.active .sl-login{display:none}
+  .sl-box.active .sl-register{display:flex}
+  .sl-mob-link{display:block}
 }
 
-/* ─ Dark mode (default) ─ */
-.sl-container{background:var(--s1);border:1px solid var(--bd)}
-.sl-form-box h1{color:var(--t0)}
-.sl-form-box input{background:rgba(255,255,255,.08);color:var(--t1);border:1px solid var(--bd)}
-.sl-form-box input:focus{background:rgba(255,255,255,.12);border-color:var(--pl)}
-.sl-form-box input::placeholder{color:var(--t3)}
-.sl-social-btn{background:var(--s2);border-color:var(--bd);color:var(--t1)}
-.sl-social-btn:hover{border-color:var(--pl);color:var(--pl)}
-.sl-social-btn svg{fill:var(--t1)}
-.sl-social-btn:hover svg{fill:var(--pl)}
-.sl-divider-text{color:var(--t3)}
-.sl-role-toggle{background:rgba(255,255,255,.06)}
-.sl-role-toggle button{color:var(--t2)}
-.sl-mobile-switch{color:var(--t2)}
-
-/* ─ Light mode ─ */
-[data-theme="light"] .sl-container{background:#fff;border-color:rgba(0,0,0,.06);box-shadow:0 5px 15px rgba(0,0,0,.12)}
+/* ─ Light mode overrides ─ */
+[data-theme="light"] .sl-box{background:#fff;border-color:rgba(0,0,0,.06);box-shadow:0 5px 15px rgba(0,0,0,.1)}
 [data-theme="light"] .sl-form-box h1{color:#1C1D26}
-[data-theme="light"] .sl-form-box input{background:#eee;border:none;color:#333}
-[data-theme="light"] .sl-form-box input:focus{background:#e0e0e0}
-[data-theme="light"] .sl-form-box input::placeholder{color:#888}
-[data-theme="light"] .sl-social-btn{background:#fff;border-color:#ccc;color:#333}
-[data-theme="light"] .sl-social-btn svg{fill:#333}
-[data-theme="light"] .sl-divider-text{color:#888}
-[data-theme="light"] .sl-role-toggle{background:#eee}
-[data-theme="light"] .sl-role-toggle button{color:#666}
-[data-theme="light"] .sl-mobile-switch{color:#666}
+[data-theme="light"] .sl-or{color:#888}
+[data-theme="light"] .sl-field input{background:#eee;border:none;color:#333}
+[data-theme="light"] .sl-field input:focus{background:#ddd;border:none}
+[data-theme="light"] .sl-field input::placeholder{color:#999}
+[data-theme="light"] .sl-field i{opacity:.45}
+[data-theme="light"] .sl-icon{background:#fff;border-color:#ddd;color:#333}
+[data-theme="light"] .sl-icon:hover{border-color:#1e90ff;color:#1e90ff}
+[data-theme="light"] .sl-role-bar{background:#eee}
+[data-theme="light"] .sl-role-bar button{color:#666}
+[data-theme="light"] .sl-mob-link{color:#666}
 
 /* ─── AUTH PAGES (legacy) ────────────────────────────── */
 .page-auth{padding:100px 0 60px;min-height:100vh;display:flex;align-items:center}
