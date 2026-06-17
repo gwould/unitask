@@ -131,10 +131,9 @@ function ApplicationCard({ app, onWithdraw, onRate, onSubmitTask, expanding, onT
       </div>
 
       <div className="apps-card-meta">
-        <span>🧾 Mã đơn: {app.id}</span>
-        <span>📅 Ứng tuyển: {app.appliedAt}</span>
-        <span>⏰ {job?.deadline || 'Không rõ hạn'}</span>
-        <span>🕐 {daysSinceApplied} ngày trước</span>
+        <span>📅 {new Date(app.appliedAt).toLocaleDateString('vi-VN')}</span>
+        {job?.deadline && <span>⏰ Hạn: {new Date(job.deadline).toLocaleDateString('vi-VN')}</span>}
+        <span>🕐 {daysSinceApplied === 0 ? 'Hôm nay' : `${daysSinceApplied} ngày trước`}</span>
         <span>📂 {job?.category || 'Khác'}</span>
       </div>
 

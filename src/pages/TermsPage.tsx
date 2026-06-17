@@ -127,9 +127,6 @@ export default function TermsPage() {
                 </li>
               ))}
             </ul>
-            <div className="policy-note">
-              Nội dung chỉ mang tính tham khảo, không thay thế tư vấn pháp lý chuyên sâu.
-            </div>
           </aside>
 
           <div className="policy-content">

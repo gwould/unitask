@@ -173,14 +173,12 @@ export default function JobsPage() {
             <div className="pj-header-text">
               <span className="pj-eyebrow">🌐 Việc làm</span>
               <h1 className="section-title">Tìm việc làm</h1>
-              <p className="section-sub">
-                {filtered.length} job phù hợp
-                {query && <> với "<strong>{query}</strong>"</>}
-              </p>
-            </div>
-            <div className="pj-globe-hint" aria-hidden>
-              <span className="pj-globe-ring" />
-              <span>Live network</span>
+              {(filtered.length > 0 || query) && (
+                <p className="section-sub">
+                  Tìm thấy <strong>{filtered.length}</strong> việc làm
+                  {query && <> cho "<strong>{query}</strong>"</>}
+                </p>
+              )}
             </div>
           </div>
         </div>
