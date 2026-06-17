@@ -3,8 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import Layout from './layouts/Layout';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
-const LoginPage = lazy(() => import('./pages/LoginPage'));
-const RegisterPage = lazy(() => import('./pages/RegisterPage'));
+const AuthPage = lazy(() => import('./pages/AuthPage'));
 const JobsPage = lazy(() => import('./pages/JobsPage'));
 const JobDetailPage = lazy(() => import('./pages/JobDetailPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
@@ -44,8 +43,8 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/login" element={<AuthPage />} />
+          <Route path="/register" element={<AuthPage />} />
           <Route path="/jobs" element={<JobsPage />} />
           <Route path="/jobs/:id" element={<JobDetailPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
