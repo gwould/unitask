@@ -479,7 +479,7 @@ a.nav-logo{text-decoration:none;color:inherit}
 .sl-page{min-height:100vh;display:flex;justify-content:center;align-items:center;padding:100px 20px 60px;background:var(--bg)}
 
 /* Container — exact replica */
-.sl-container{position:relative;width:850px;max-width:calc(100vw - 40px);height:580px;background:#fff;margin:20px;border-radius:30px;box-shadow:0 0 30px rgba(0,0,0,.2);overflow:hidden}
+.sl-container{position:relative;width:1000px;max-width:calc(100vw - 40px);height:650px;background:#fff;margin:20px;border-radius:30px;box-shadow:0 0 30px rgba(0,0,0,.2);overflow:hidden}
 .sl-container h1{font-size:32px;margin:-10px 0;font-family:var(--font-display);font-weight:800}
 .sl-container p{font-size:13.5px;margin:8px 0}
 
