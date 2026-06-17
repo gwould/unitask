@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useLocation } from 'react-router-dom';
 import { useScrolled } from '../hooks/useScroll';
 import { useAuth } from '../contexts/AuthContext';
@@ -9,10 +10,12 @@ export default function Navbar() {
   const scrolled = useScrolled(60);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [ddPos, setDdPos] = useState<{ top: number; right: number }>({ top: 0, right: 0 });
   const { user, logout } = useAuth();
   const { unreadCount } = useNotifications();
   const { theme, toggle: toggleTheme } = useTheme();
   const location = useLocation();
+  const avatarBtnRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const isHome = location.pathname === '/';
@@ -29,13 +32,28 @@ export default function Navbar() {
 
   // close dropdown on outside click
   useEffect(() => {
+    if (!dropdownOpen) return;
     const handler = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (
+        dropdownRef.current && !dropdownRef.current.contains(target) &&
+        avatarBtnRef.current && !avatarBtnRef.current.contains(target)
+      ) {
         setDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
+  }, [dropdownOpen]);
+
+  const toggleDropdown = useCallback(() => {
+    setDropdownOpen(prev => {
+      if (!prev && avatarBtnRef.current) {
+        const rect = avatarBtnRef.current.getBoundingClientRect();
+        setDdPos({ top: rect.bottom + 8, right: window.innerWidth - rect.right });
+      }
+      return !prev;
+    });
   }, []);
 
   return (
@@ -171,10 +189,11 @@ export default function Navbar() {
                   🔔
                   {unreadCount > 0 && <span className="nav-notif-badge">{unreadCount}</span>}
                 </Link>
-                <div className="nav-user" ref={dropdownRef}>
+                <div className="nav-user">
                   <button
+                    ref={avatarBtnRef}
                     className="nav-avatar-btn"
-                    onClick={() => setDropdownOpen((p) => !p)}
+                    onClick={toggleDropdown}
                     style={{
                       background: user.role === 'student'
                         ? 'linear-gradient(135deg,var(--p),var(--pl))'
@@ -183,44 +202,50 @@ export default function Navbar() {
                   >
                     {user.avatar}
                   </button>
-                  {dropdownOpen && (
-                    <div className="nav-dropdown" onClick={() => setDropdownOpen(false)}>
-                      <div className="nav-dd-header">
-                        <strong>{user.name}</strong>
-                        <span>{user.role === 'student' ? '👨‍🎓 Sinh viên' : user.role === 'business' ? '🏢 Doanh nghiệp' : '🛡️ Admin'}</span>
-                      </div>
-                      <Link to="/profile" className="nav-dd-item">👤 Hồ sơ</Link>
-                      <Link to="/dashboard" className="nav-dd-item">📊 Dashboard</Link>
-                      <Link to="/wallet" className="nav-dd-item">💰 Ví</Link>
-                      <Link to="/messages" className="nav-dd-item">💬 Tin nhắn</Link>
-                      {user.role === 'student' && (
-                        <>
-                          <Link to="/my-applications" className="nav-dd-item">📋 Đơn ứng tuyển</Link>
-                          <Link to="/contracts" className="nav-dd-item">🤝 Hợp đồng</Link>
-                        </>
-                      )}
-                      {user.role === 'business' && (
-                        <>
-                          <Link to="/post-job" className="nav-dd-item">📝 Đăng việc</Link>
-                          <Link to="/manage-jobs" className="nav-dd-item">📂 Quản lý job</Link>
-                          <Link to="/contracts" className="nav-dd-item">🤝 Hợp đồng</Link>
-                          <Link to="/business-automation" className="nav-dd-item">🎯 Trung tâm tăng trưởng</Link>
-                          <Link to="/automation-rules" className="nav-dd-item">🤖 Tự động hóa</Link>
-                        </>
-                      )}
-                      {user.role === 'admin' && (
-                        <>
-                          <Link to="/admin-finance" className="nav-dd-item">📈 Admin Finance</Link>
-                          <Link to="/admin-accounts" className="nav-dd-item">👥 Quản lý tài khoản</Link>
-                          <Link to="/admin-messages" className="nav-dd-item">🛡️ Giám sát tin nhắn</Link>
-                        </>
-                      )}
-                      <button className="nav-dd-item nav-dd-logout" onClick={logout}>
-                        🚪 Đăng xuất
-                      </button>
-                    </div>
-                  )}
                 </div>
+                {dropdownOpen && createPortal(
+                  <div
+                    ref={dropdownRef}
+                    className="nav-dropdown"
+                    style={{ top: ddPos.top, right: ddPos.right }}
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    <div className="nav-dd-header">
+                      <strong>{user.name}</strong>
+                      <span>{user.role === 'student' ? '👨‍🎓 Sinh viên' : user.role === 'business' ? '🏢 Doanh nghiệp' : '🛡️ Admin'}</span>
+                    </div>
+                    <Link to="/profile" className="nav-dd-item">👤 Hồ sơ</Link>
+                    <Link to="/dashboard" className="nav-dd-item">📊 Dashboard</Link>
+                    <Link to="/wallet" className="nav-dd-item">💰 Ví</Link>
+                    <Link to="/messages" className="nav-dd-item">💬 Tin nhắn</Link>
+                    {user.role === 'student' && (
+                      <>
+                        <Link to="/my-applications" className="nav-dd-item">📋 Đơn ứng tuyển</Link>
+                        <Link to="/contracts" className="nav-dd-item">🤝 Hợp đồng</Link>
+                      </>
+                    )}
+                    {user.role === 'business' && (
+                      <>
+                        <Link to="/post-job" className="nav-dd-item">📝 Đăng việc</Link>
+                        <Link to="/manage-jobs" className="nav-dd-item">📂 Quản lý job</Link>
+                        <Link to="/contracts" className="nav-dd-item">🤝 Hợp đồng</Link>
+                        <Link to="/business-automation" className="nav-dd-item">🎯 Trung tâm tăng trưởng</Link>
+                        <Link to="/automation-rules" className="nav-dd-item">🤖 Tự động hóa</Link>
+                      </>
+                    )}
+                    {user.role === 'admin' && (
+                      <>
+                        <Link to="/admin-finance" className="nav-dd-item">📈 Admin Finance</Link>
+                        <Link to="/admin-accounts" className="nav-dd-item">👥 Quản lý tài khoản</Link>
+                        <Link to="/admin-messages" className="nav-dd-item">🛡️ Giám sát tin nhắn</Link>
+                      </>
+                    )}
+                    <button className="nav-dd-item nav-dd-logout" onClick={logout}>
+                      🚪 Đăng xuất
+                    </button>
+                  </div>,
+                  document.body
+                )}
               </>
             ) : (
               <>
