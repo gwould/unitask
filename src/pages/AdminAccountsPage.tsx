@@ -209,7 +209,7 @@ export default function AdminAccountsPage() {
         {/* Header */}
         <div className="adm-header">
           <div>
-            <h1 className="adm-title">👥 Quản lý tài khoản</h1>
+            <h1 className="adm-title"><i className="bx bx-group" /> Quản lý tài khoản</h1>
             <p className="adm-subtitle">Quản lý doanh nghiệp và xác nhận tài khoản</p>
           </div>
         </div>
@@ -222,11 +222,11 @@ export default function AdminAccountsPage() {
           </div>
           <div className="adm-stat-card adm-stat-success">
             <div className="adm-stat-num">{stats.verified}</div>
-            <div className="adm-stat-label">Đã xác nhận ✅</div>
+            <div className="adm-stat-label"><i className="bx bx-check-circle" /> Đã xác nhận</div>
           </div>
           <div className="adm-stat-card adm-stat-warning">
             <div className="adm-stat-num">{stats.pending}</div>
-            <div className="adm-stat-label">Chờ xác nhận ⏳</div>
+            <div className="adm-stat-label"><i className="bx bx-loader-circle" /> Chờ xác nhận</div>
           </div>
         </div>
 
@@ -246,7 +246,7 @@ export default function AdminAccountsPage() {
             ))}
           </div>
           <div className="adm-search">
-            <span>🔍</span>
+            <span><i className="bx bx-search" /></span>
             <input
               type="text"
               placeholder="Tìm theo tên công ty, email, ID..."
@@ -264,7 +264,7 @@ export default function AdminAccountsPage() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="adm-empty">
-            <div style={{ fontSize: 48, marginBottom: 12 }}>📭</div>
+            <div style={{ fontSize: 48, marginBottom: 12 }}><i className="bx bx-inbox" /></div>
             <h3>Không tìm thấy doanh nghiệp</h3>
             <p>Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
           </div>
@@ -303,16 +303,16 @@ export default function AdminAccountsPage() {
                     <td>{biz.completedProjects}</td>
                     <td>
                       {biz.rating > 0 ? (
-                        <span className="adm-rating">⭐ {biz.rating.toFixed(1)}</span>
+                        <span className="adm-rating"><i className="bx bxs-star" /> {biz.rating.toFixed(1)}</span>
                       ) : (
                         <span className="adm-no-data">—</span>
                       )}
                     </td>
                     <td>
                       {biz.isVerified ? (
-                        <span className="adm-badge adm-badge-success">✅ Đã xác nhận</span>
+                        <span className="adm-badge adm-badge-success"><i className="bx bx-check-circle" /> Đã xác nhận</span>
                       ) : (
-                        <span className="adm-badge adm-badge-pending">⏳ Chờ xác nhận</span>
+                        <span className="adm-badge adm-badge-pending"><i className="bx bx-loader-circle" /> Chờ xác nhận</span>
                       )}
                     </td>
                     <td>
@@ -344,7 +344,7 @@ export default function AdminAccountsPage() {
 
       {toast && (
         <div className="apps-toast apps-toast-success">
-          <span>✅</span> {toast}
+          <span><i className="bx bx-check-circle" /></span> {toast}
           <button className="apps-toast-close" onClick={() => setToast(null)}>✕</button>
         </div>
       )}

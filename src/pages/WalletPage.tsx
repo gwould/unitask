@@ -16,12 +16,12 @@ import { hasAuthToken } from '../utils/auth';
 const TYPE_CONFIG = TX_TYPE_CONFIG;
 const STATUS_LABEL = TX_STATUS_LABEL;
 
-const TX_FILTER_OPTIONS: { key: TxFilter; label: string }[] = [
+const TX_FILTER_OPTIONS: { key: TxFilter; label: string; icon?: string }[] = [
   { key: 'all',            label: 'Tất cả' },
-  { key: 'income',         label: '💰 Thu nhập' },
-  { key: 'withdraw',       label: '🏦 Rút tiền' },
-  { key: 'escrow_in',      label: '🔒 Nạp Escrow' },
-  { key: 'escrow_release', label: '✅ Giải phóng' },
+  { key: 'income',         label: 'Thu nhập',    icon: 'bx-trending-up' },
+  { key: 'withdraw',       label: 'Rút tiền',    icon: 'bx-building-house' },
+  { key: 'escrow_in',      label: 'Nạp Escrow',  icon: 'bx-lock-alt' },
+  { key: 'escrow_release', label: 'Giải phóng',  icon: 'bx-lock-open-alt' },
 ];
 
 /* ─── HELPERS ─────────────────────────────────────── */
@@ -47,8 +47,8 @@ function getSeedTransactions(role: string): Transaction[] {
 
 function getDefaultBankMethods(): BankMethod[] {
   return [
-    { id: 'bm-1', icon: '🏦', name: 'Vietcombank', detail: '****1234 · Nguyễn Minh Anh',  isDefault: true },
-    { id: 'bm-2', icon: '📱', name: 'Ví MoMo',     detail: '0912***678',                   isDefault: false },
+    { id: 'bm-1', icon: 'bx-building-house', name: 'Vietcombank', detail: '****1234 · Nguyễn Minh Anh',  isDefault: true },
+    { id: 'bm-2', icon: 'bx-mobile-alt',    name: 'Ví MoMo',     detail: '0912***678',                   isDefault: false },
   ];
 }
 
@@ -113,7 +113,7 @@ function TransactionRow({ tx }: { tx: Transaction }) {
   const st = STATUS_LABEL[tx.status];
   return (
     <div className="wallet-tx-row">
-      <div className="wtx-icon" style={{ color: cfg.color }}>{cfg.icon}</div>
+      <div className="wtx-icon" style={{ color: cfg.color }}><i className={`bx ${cfg.icon}`} /></div>
       <div className="wtx-info">
         <div className="wtx-label">{tx.label}</div>
         <div className="wtx-date">{tx.date} · {cfg.label}</div>
@@ -160,7 +160,7 @@ export default function WalletPage() {
   const [withdrawError, setWithdrawError] = useState('');
   const [withdrawLoading, setWithdrawLoading] = useState(false);
 
-  const [newBank, setNewBank] = useState({ name: '', detail: '', icon: '🏦' });
+  const [newBank, setNewBank] = useState({ name: '', detail: '', icon: 'bx-building-house' });
   const [bankError, setBankError] = useState('');
 
   const [showDepositModal, setShowDepositModal] = useState(false);
@@ -394,7 +394,7 @@ export default function WalletPage() {
       return updated;
     });
     setShowAddBankModal(false);
-    setNewBank({ name: '', detail: '', icon: '🏦' });
+    setNewBank({ name: '', detail: '', icon: 'bx-building-house' });
     showToast(`Đã thêm ${method.name} thành công`);
   }, [newBank, bankMethods.length, showToast]);
 
@@ -425,7 +425,7 @@ export default function WalletPage() {
     <section className="page-wallet">
       <div className="container">
         <div className="wallet-header fade-up">
-          <h1>💰 Ví & Giao dịch</h1>
+          <h1><i className="bx bx-wallet" /> Ví & Giao dịch</h1>
           <p>Quản lý số dư, lịch sử giao dịch và rút tiền</p>
         </div>
 
@@ -437,11 +437,11 @@ export default function WalletPage() {
             <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
               {user.role === 'student' && (
                 <button className="btn btn-primary btn-sm" onClick={() => setShowWithdrawModal(true)}>
-                  🏦 Rút tiền
+                  <i className="bx bx-building-house" /> Rút tiền
                 </button>
               )}
               <button className="btn btn-accent btn-sm" onClick={() => setShowDepositModal(true)}>
-                📱 Nạp tiền qua MoMo
+                <i className="bx bx-mobile-alt" /> Nạp tiền qua MoMo
               </button>
             </div>
           </div>
@@ -477,7 +477,7 @@ export default function WalletPage() {
 
         {/* escrow explainer */}
         <div className="wallet-escrow-info fade-up">
-          <div className="wei-icon">🛡️</div>
+          <div className="wei-icon"><i className="bx bx-shield-quarter" /></div>
           <div>
             <strong>Hệ thống Escrow bảo vệ bạn</strong>
             <p>
@@ -503,7 +503,7 @@ export default function WalletPage() {
                 className={`apps-filter-btn${txFilter === f.key ? ' active' : ''}`}
                 onClick={() => setTxFilter(f.key)}
               >
-                {f.label}
+                {'icon' in f && f.icon && <i className={`bx ${f.icon}`} />} {f.label}
               </button>
             ))}
           </div>
@@ -517,7 +517,7 @@ export default function WalletPage() {
               </>
             ) : filteredTxs.length === 0 ? (
               <div className="wallet-tx-empty">
-                <div style={{ fontSize: 36, marginBottom: 8 }}>📭</div>
+                <div style={{ fontSize: 36, marginBottom: 8 }}><i className="bx bx-inbox" /></div>
                 <p>Không có giao dịch nào{txFilter !== 'all' ? ` loại "${TX_FILTER_OPTIONS.find((f) => f.key === txFilter)?.label}"` : ''}.</p>
               </div>
             ) : (
@@ -542,7 +542,7 @@ export default function WalletPage() {
               ) : (
                 bankMethods.map((m) => (
                   <div key={m.id} className="wallet-bank-card">
-                    <div className="wb-icon">{m.icon}</div>
+                    <div className="wb-icon"><i className={`bx ${m.icon}`} /></div>
                     <div className="wb-info">
                       <div className="wb-name">{m.name}</div>
                       <div className="wb-num">{m.detail}</div>
@@ -591,7 +591,7 @@ export default function WalletPage() {
       {showWithdrawModal && (
         <div className="modal-overlay" onClick={() => setShowWithdrawModal(false)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-            <h3>🏦 Rút tiền</h3>
+            <h3><i className="bx bx-building-house" /> Rút tiền</h3>
             <p style={{ marginBottom: 16 }}>Số dư khả dụng: <strong>{formatBalance(user.balance || 0)}</strong></p>
 
             <div className="pj-field" style={{ marginBottom: 12 }}>
@@ -631,7 +631,7 @@ export default function WalletPage() {
                 onChange={(e) => setWithdrawForm((f) => ({ ...f, methodId: e.target.value }))}
               >
                 {bankMethods.map((m) => (
-                  <option key={m.id} value={m.id}>{m.icon} {m.name} — {m.detail}</option>
+                  <option key={m.id} value={m.id}>{m.name} — {m.detail}</option>
                 ))}
               </select>
             </div>
@@ -645,7 +645,7 @@ export default function WalletPage() {
                 onClick={handleWithdraw}
                 disabled={withdrawLoading}
               >
-                {withdrawLoading ? '⏳ Đang xử lý...' : '💸 Xác nhận rút tiền'}
+                {withdrawLoading ? <><i className="bx bx-loader-circle bx-spin" /> Đang xử lý...</> : <><i className="bx bx-check" /> Xác nhận rút tiền</>}
               </button>
             </div>
           </div>
@@ -656,15 +656,15 @@ export default function WalletPage() {
       {showAddBankModal && (
         <div className="modal-overlay" onClick={() => setShowAddBankModal(false)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-            <h3>➕ Thêm phương thức rút tiền</h3>
+            <h3><i className="bx bx-plus-circle" /> Thêm phương thức rút tiền</h3>
 
             <div className="pj-field" style={{ marginBottom: 12, marginTop: 16 }}>
               <label>Loại</label>
               <div className="wallet-bank-type-btns">
                 {[
-                  { icon: '🏦', label: 'Ngân hàng' },
-                  { icon: '📱', label: 'Ví điện tử' },
-                  { icon: '💳', label: 'Thẻ' },
+                  { icon: 'bx-building-house', label: 'Ngân hàng' },
+                  { icon: 'bx-mobile-alt',     label: 'Ví điện tử' },
+                  { icon: 'bx-credit-card',    label: 'Thẻ' },
                 ].map((opt) => (
                   <button
                     key={opt.icon}
@@ -672,7 +672,7 @@ export default function WalletPage() {
                     onClick={() => setNewBank((p) => ({ ...p, icon: opt.icon }))}
                     type="button"
                   >
-                    {opt.icon} {opt.label}
+                    <i className={`bx ${opt.icon}`} /> {opt.label}
                   </button>
                 ))}
               </div>
@@ -714,7 +714,7 @@ export default function WalletPage() {
       {showDepositModal && (
         <div className="modal-overlay" onClick={() => setShowDepositModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>📱 Nạp tiền qua MoMo</h3>
+            <h3><i className="bx bx-mobile-alt" /> Nạp tiền qua MoMo</h3>
             <p style={{ fontSize: 13, color: 'var(--t3)', marginBottom: 16 }}>
               Bạn sẽ được chuyển sang MoMo để thanh toán. Số dư sẽ cập nhật tự động sau khi thành công.
             </p>
@@ -750,7 +750,7 @@ export default function WalletPage() {
                 onClick={handleMomoDeposit}
                 disabled={depositLoading || !depositAmount}
               >
-                {depositLoading ? 'Đang tạo giao dịch...' : '📱 Thanh toán MoMo'}
+                {depositLoading ? 'Đang tạo giao dịch...' : <><i className="bx bx-mobile-alt" /> Thanh toán MoMo</>}
               </button>
             </div>
           </div>
@@ -760,7 +760,7 @@ export default function WalletPage() {
       {/* Toast */}
       {toast && (
         <div className={`apps-toast apps-toast-${toast.type}`}>
-          <span>{toast.type === 'success' ? '✅' : '❌'}</span>
+          <span>{toast.type === 'success' ? <i className="bx bx-check-circle" /> : <i className="bx bx-x-circle" />}</span>
           {toast.message}
           <button className="apps-toast-close" onClick={() => setToast(null)}>✕</button>
         </div>

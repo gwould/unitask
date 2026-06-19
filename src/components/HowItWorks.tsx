@@ -64,13 +64,13 @@ export default function HowItWorks() {
             className={`how-tab${mode === 'student' ? ' active' : ''}`}
             onClick={() => setMode('student')}
           >
-            👨‍🎓 Dành cho Sinh viên
+            <i className="bx bxs-graduation" /> Dành cho Sinh viên
           </button>
           <button
             className={`how-tab${mode === 'business' ? ' active' : ''}`}
             onClick={() => setMode('business')}
           >
-            🏢 Dành cho Doanh nghiệp
+            <i className="bx bxs-building-house" /> Dành cho Doanh nghiệp
           </button>
         </div>
         {loading ? (

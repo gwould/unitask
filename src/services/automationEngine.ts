@@ -124,7 +124,7 @@ export function executeRule(
         createNotification({
           recipientId: String(applicant.userId),
           recipientType: 'student',
-          title: '✅ Bạn đã được chấp nhận',
+          title: 'Bạn đã được chấp nhận',
           message: `Bạn được chấp nhận cho vị trí ${applicant.name}. Vui lòng nộp bài.`,
           type: 'application_status',
           actionUrl: '/my-applications',
@@ -160,7 +160,7 @@ export function executeRule(
         createNotification({
           recipientId: String(applicant.userId),
           recipientType: 'student',
-          title: '❌ Không được chấp nhận',
+          title: 'Không được chấp nhận',
           message: `Xin lỗi, bạn không được chấp nhận cho vị trí này. Chúc bạn thành công với các cơ hội khác!`,
           type: 'application_status',
           actionUrl: '/jobs',
@@ -188,7 +188,7 @@ export function executeRule(
         createNotification({
           recipientId: String(applicant.userId),
           recipientType: 'student',
-          title: '🔔 Thông báo từ công ty',
+          title: 'Thông báo từ công ty',
           message: rule.action.message,
           type: 'system',
           actionUrl: '/my-applications',

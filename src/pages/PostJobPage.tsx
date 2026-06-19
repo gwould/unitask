@@ -219,7 +219,7 @@ export default function PostJobPage() {
       createNotification({
         recipientId: String(user.id),
         recipientType: 'business',
-        title: '📝 Đăng job thành công',
+        title: 'Đăng job thành công',
         message: `Job "${created.title}" đã được đăng. Mức lương: ${created.pay} · Hạn: ${created.deadline}.`,
         type: 'system',
         relatedJobId: created.id,
@@ -242,7 +242,7 @@ export default function PostJobPage() {
       <section className="page-postjob">
         <div className="container">
           <div className="pj-success fade-up visible">
-            <div className="pj-success-icon">🎉</div>
+            <div className="pj-success-icon"><i className="bx bx-party" /></div>
             <h2>Đăng việc thành công!</h2>
             <p>Job của bạn đã được gửi lên hệ thống và sẽ hiển thị cho sinh viên ngay.</p>
 
@@ -267,7 +267,7 @@ export default function PostJobPage() {
 
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
               <button className="btn btn-primary" onClick={() => navigate('/manage-jobs')}>
-                📂 Quản lý job
+                <i className="bx bx-folder-open" /> Quản lý job
               </button>
               <button className="btn btn-ghost" onClick={() => {
                 setSuccess(false);
@@ -287,7 +287,7 @@ export default function PostJobPage() {
                   skills: '',
                 });
               }}>
-                📝 Đăng thêm việc
+                <i className="bx bx-edit" /> Đăng thêm việc
               </button>
               <button className="btn btn-ghost" onClick={() => navigate('/dashboard')}>
                 Về Dashboard
@@ -297,7 +297,7 @@ export default function PostJobPage() {
         </div>
         {toast && (
           <div className="apps-toast apps-toast-success">
-            <span>✅</span>
+            <span><i className="bx bx-check-circle" /></span>
             {toast}
             <button className="apps-toast-close" onClick={() => setToast(null)}>✕</button>
           </div>
@@ -310,7 +310,7 @@ export default function PostJobPage() {
     <section className="page-postjob">
       <div className="container">
         <div className="pj-header fade-up">
-          <h1>📝 Đăng việc mới</h1>
+          <h1><i className="bx bx-edit" /> Đăng việc mới</h1>
           <p>Tạo job và kết nối với sinh viên tài năng chỉ trong vài phút</p>
         </div>
 
@@ -318,7 +318,7 @@ export default function PostJobPage() {
           {/* Cảnh báo tài khoản demo */}
           {!isApiAuthenticated && (
             <div className="demo-mode-warning">
-              <span className="demo-mode-icon">⚠️</span>
+              <span className="demo-mode-icon"><i className="bx bx-error" /></span>
               <div>
                 <strong>Bạn đang dùng tài khoản demo (chỉ local)</strong>
                 <p>
@@ -552,7 +552,7 @@ export default function PostJobPage() {
 
           <div className="pj-actions">
             <button type="submit" className="btn btn-primary" disabled={submitting || (hasErrors && Object.keys(touched).length > 3)}>
-              {submitting ? 'Đang đăng...' : '🚀 Đăng việc ngay'}
+              {submitting ? 'Đang đăng...' : <><i className="bx bx-rocket" /> Đăng việc ngay</>}
             </button>
             <button type="button" className="btn btn-ghost" onClick={() => navigate('/dashboard')}>Hủy</button>
           </div>

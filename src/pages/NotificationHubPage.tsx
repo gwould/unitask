@@ -8,13 +8,13 @@ import { useNotifications } from '../contexts/NotificationContext';
 import { hasAuthToken } from '../utils/auth';
 
 const TYPE_ICONS: Record<Notification['type'], string> = {
-  job_match: '🎯',
-  application_status: '📋',
-  submission_request: '📤',
-  approval: '✅',
-  payment: '💰',
-  system: '🔔',
-  reminder: '⏰',
+  job_match: 'bx-target-lock',
+  application_status: 'bx-file',
+  submission_request: 'bx-upload',
+  approval: 'bx-check-circle',
+  payment: 'bx-wallet',
+  system: 'bx-bell',
+  reminder: 'bx-time-five',
 };
 
 const TYPE_COLOR: Record<Notification['type'], string> = {
@@ -49,46 +49,60 @@ function timeAgo(date: string) {
  * Resolve the best link for a notification based on its type, actionUrl, and related data.
  */
 function resolveNotificationLink(n: Notification, userRole?: string): { url: string; label: string } | null {
-  // If actionUrl is set and is a valid path, use it
+  // If actionUrl is set and is a valid path, use it with smart labels
   if (n.actionUrl && n.actionUrl.startsWith('/')) {
-    // Determine a more descriptive label based on the target
     let label = 'Xem chi tiết';
-    if (n.actionUrl.startsWith('/jobs/')) label = 'Xem công việc';
-    else if (n.actionUrl === '/jobs') label = 'Tìm việc mới';
-    else if (n.actionUrl === '/manage-jobs') label = 'Quản lý job';
-    else if (n.actionUrl === '/my-applications') label = 'Xem đơn ứng tuyển';
-    else if (n.actionUrl === '/wallet') label = 'Xem ví';
-    else if (n.actionUrl === '/messages' || n.actionUrl.startsWith('/messages/')) label = 'Xem tin nhắn';
-    else if (n.actionUrl === '/dashboard') label = 'Về Dashboard';
-    else if (n.actionUrl === '/profile') label = 'Xem hồ sơ';
+    if (n.actionUrl.startsWith('/jobs/')) label = 'Xem công việc →';
+    else if (n.actionUrl === '/jobs') label = 'Tìm việc mới →';
+    else if (n.actionUrl === '/manage-jobs') label = 'Xem ứng viên →';
+    else if (n.actionUrl === '/my-applications') label = 'Xem đơn ứng tuyển →';
+    else if (n.actionUrl === '/my-tasks') label = 'Xem công việc →';
+    else if (n.actionUrl === '/wallet') label = 'Xem ví →';
+    else if (n.actionUrl === '/messages' || n.actionUrl.startsWith('/messages/')) label = 'Xem tin nhắn →';
+    else if (n.actionUrl === '/dashboard') label = 'Về Dashboard →';
+    else if (n.actionUrl === '/profile') label = 'Xem hồ sơ →';
+    else if (n.actionUrl.startsWith('/contracts')) label = 'Xem hợp đồng →';
+    else if (n.actionUrl === '/admin-accounts') label = 'Quản lý tài khoản →';
+
+    // Override for submission-related notifications → business should go to manage-jobs
+    if (n.type === 'submission_request' && userRole === 'business' && n.actionUrl.startsWith('/jobs/')) {
+      return { url: '/manage-jobs', label: 'Kiểm tra bài nộp →' };
+    }
+
     return { url: n.actionUrl, label };
   }
 
   // Fallback: derive link from notification type + relatedJobId
-  if (n.relatedJobId) {
-    return { url: `/jobs/${n.relatedJobId}`, label: 'Xem công việc' };
-  }
-
-  // Type-based fallbacks
   switch (n.type) {
     case 'job_match':
-      return { url: '/jobs', label: 'Tìm việc' };
+      return n.relatedJobId
+        ? { url: `/jobs/${n.relatedJobId}`, label: 'Xem công việc →' }
+        : { url: '/jobs', label: 'Tìm việc →' };
     case 'application_status':
-      return userRole === 'business'
-        ? { url: '/manage-jobs', label: 'Quản lý ứng viên' }
-        : { url: '/my-applications', label: 'Xem đơn ứng tuyển' };
+      if (userRole === 'business') {
+        return { url: '/manage-jobs', label: 'Xem ứng viên →' };
+      }
+      return n.relatedJobId
+        ? { url: `/jobs/${n.relatedJobId}`, label: 'Xem công việc →' }
+        : { url: '/my-applications', label: 'Xem đơn ứng tuyển →' };
     case 'submission_request':
-      return { url: '/my-applications', label: 'Nộp bài' };
+      return userRole === 'business'
+        ? { url: '/manage-jobs', label: 'Kiểm tra bài nộp →' }
+        : { url: '/my-tasks', label: 'Xem công việc →' };
     case 'payment':
-      return { url: '/wallet', label: 'Xem ví' };
+      return { url: '/wallet', label: 'Xem ví →' };
     case 'approval':
       return userRole === 'admin'
-        ? { url: '/admin-accounts', label: 'Quản lý tài khoản' }
-        : { url: '/dashboard', label: 'Về Dashboard' };
+        ? { url: '/admin-accounts', label: 'Quản lý tài khoản →' }
+        : { url: '/dashboard', label: 'Về Dashboard →' };
     case 'reminder':
-      return { url: '/dashboard', label: 'Về Dashboard' };
+      return n.relatedJobId
+        ? { url: `/jobs/${n.relatedJobId}`, label: 'Xem công việc →' }
+        : { url: '/dashboard', label: 'Về Dashboard →' };
     default:
-      return null;
+      return n.relatedJobId
+        ? { url: `/jobs/${n.relatedJobId}`, label: 'Xem chi tiết →' }
+        : null;
   }
 }
 
@@ -117,7 +131,7 @@ function NotificationItem({ notification, onMarkRead, onDelete, apiMode, userRol
       onClick={handleClick}
       style={{ cursor: link ? 'pointer' : undefined }}
     >
-      <div className="nh-item-icon">{TYPE_ICONS[notification.type]}</div>
+      <div className="nh-item-icon"><i className={`bx ${TYPE_ICONS[notification.type]}`} /></div>
       <div className="nh-item-body">
         <div className="nh-item-top-row">
           <div className="nh-item-title">{notification.title}</div>
@@ -262,7 +276,7 @@ export default function NotificationHubPage() {
         <div className="nh-header">
           <div className="nh-header-left">
             <h1 className="nh-title">
-              <span className="nh-title-icon">🔔</span>
+              <span className="nh-title-icon"><i className="bx bx-bell" /></span>
               Trung tâm thông báo
             </h1>
             <p className="nh-subtitle">
@@ -332,7 +346,7 @@ export default function NotificationHubPage() {
                 className={`nh-cat-chip${categoryFilter === type ? ' active' : ''}`}
                 onClick={() => setCategoryFilter(type)}
               >
-                {TYPE_ICONS[type]} {TYPE_LABELS[type]} <span className="nh-cat-count">{count}</span>
+                <i className={`bx ${TYPE_ICONS[type]}`} /> {TYPE_LABELS[type]} <span className="nh-cat-count">{count}</span>
               </button>
             ))}
           </div>
@@ -341,7 +355,7 @@ export default function NotificationHubPage() {
         {/* List */}
         {filtered.length === 0 ? (
           <div className="nh-empty">
-            <div className="nh-empty-icon">{filterType === 'unread' ? '📭' : '🔔'}</div>
+            <div className="nh-empty-icon"><i className={`bx ${filterType === 'unread' ? 'bx-inbox' : 'bx-bell'}`} /></div>
             <h3>{filterType === 'unread' ? 'Không có thông báo chưa đọc' : 'Chưa có thông báo'}</h3>
             <p>{filterType === 'unread' ? 'Tất cả đã được đọc!' : 'Bạn sẽ nhận thông báo khi có điều gì mới.'}</p>
           </div>

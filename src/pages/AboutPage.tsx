@@ -5,10 +5,10 @@ import { useAuth } from '../contexts/AuthContext';
 /* ─── DATA ────────────────────────────────────────── */
 
 const STATS = [
-  { target: 12000, suffix: '+', label: 'Sinh viên đã tham gia', icon: '👨‍🎓' },
-  { target: 350,   suffix: '+', label: 'Doanh nghiệp đối tác', icon: '🏢' },
-  { target: 5600,  suffix: '+', label: 'Job đã hoàn thành',    icon: '✅' },
-  { target: 98,    suffix: '%', label: 'Tỷ lệ hài lòng',      icon: '⭐' },
+  { target: 12000, suffix: '+', label: 'Sinh viên đã tham gia', icon: 'bxs-graduation' },
+  { target: 350,   suffix: '+', label: 'Doanh nghiệp đối tác', icon: 'bxs-building-house' },
+  { target: 5600,  suffix: '+', label: 'Job đã hoàn thành',    icon: 'bx-check-circle' },
+  { target: 98,    suffix: '%', label: 'Tỷ lệ hài lòng',      icon: 'bxs-star' },
 ];
 
 const TEAM = [
@@ -19,10 +19,10 @@ const TEAM = [
 ];
 
 const VALUES = [
-  { icon: '🎯', title: 'Thực chiến, không lý thuyết', desc: 'Mỗi job trên UniTask đều là dự án thật, không phải bài tập mô phỏng.' },
-  { icon: '🛡️', title: 'An toàn với Escrow', desc: 'Hệ thống giữ tiền đảm bảo sinh viên được trả công, doanh nghiệp nhận sản phẩm chất lượng.' },
-  { icon: '🤝', title: 'Win-win cho cả hai bên', desc: 'Sinh viên có kinh nghiệm + thu nhập. Doanh nghiệp có nhân lực chất lượng giá hợp lý.' },
-  { icon: '🚀', title: 'Nhanh chóng & Hiệu quả', desc: 'Hệ thống tự động kết nối bạn với job/ứng viên phù hợp trong vài phút.' },
+  { icon: 'bx-target-lock', title: 'Thực chiến, không lý thuyết', desc: 'Mỗi job trên UniTask đều là dự án thật, không phải bài tập mô phỏng.' },
+  { icon: 'bx-shield-quarter', title: 'An toàn với Escrow', desc: 'Hệ thống giữ tiền đảm bảo sinh viên được trả công, doanh nghiệp nhận sản phẩm chất lượng.' },
+  { icon: 'bx-handshake', title: 'Win-win cho cả hai bên', desc: 'Sinh viên có kinh nghiệm + thu nhập. Doanh nghiệp có nhân lực chất lượng giá hợp lý.' },
+  { icon: 'bx-rocket', title: 'Nhanh chóng & Hiệu quả', desc: 'Hệ thống tự động kết nối bạn với job/ứng viên phù hợp trong vài phút.' },
 ];
 
 const SUBSCRIPTION_PLANS = [
@@ -132,7 +132,7 @@ function StatCard({ target, suffix, label, icon }: typeof STATS[0]) {
 
   return (
     <div ref={ref} className="about-stat-card">
-      <div className="about-stat-icon">{icon}</div>
+      <div className="about-stat-icon"><i className={`bx ${icon}`} /></div>
       <div className="about-stat-num">{formatted}{suffix}</div>
       <div className="about-stat-label">{label}</div>
     </div>
@@ -195,7 +195,7 @@ function ValueCard({ value, index }: { value: typeof VALUES[0]; index: number })
         transition: `opacity 0.5s ease ${index * 0.1}s, transform 0.5s ease ${index * 0.1}s`,
       }}
     >
-      <div className="about-value-icon">{value.icon}</div>
+      <div className="about-value-icon"><i className={`bx ${value.icon}`} /></div>
       <h3>{value.title}</h3>
       <p>{value.desc}</p>
     </div>
@@ -348,7 +348,7 @@ export default function AboutPage() {
               onMouseEnter={() => setCtaHover('student')}
               onMouseLeave={() => setCtaHover(null)}
             >
-              🎓 Đăng ký Sinh viên
+              <i className="bx bxs-graduation" /> Đăng ký Sinh viên
               {ctaHover === 'student' && <span className="cta-hint">Miễn phí 100%</span>}
             </Link>
             <Link
@@ -357,7 +357,7 @@ export default function AboutPage() {
               onMouseEnter={() => setCtaHover('business')}
               onMouseLeave={() => setCtaHover(null)}
             >
-              🏢 Đăng ký Doanh nghiệp
+              <i className="bx bxs-building-house" /> Đăng ký Doanh nghiệp
               {ctaHover === 'business' && <span className="cta-hint">5 job miễn phí</span>}
             </Link>
           </div>

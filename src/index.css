@@ -3590,3 +3590,240 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
   .dash-stats{grid-template-columns:repeat(2,1fr)}
 }
 
+/* ═══════════════════════════════════════════════════════
+   DESKTOP UI UPGRADE — Jobs Page + Job Detail
+   Boxicons integration, match badge, toolbar, card polish
+   ═══════════════════════════════════════════════════════ */
+
+/* Jobs page: Toolbar (sort + clear) */
+.pj-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.pj-toolbar .pj-sort-row{flex:1;margin:0}
+.pj-clear-filters{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;border-radius:var(--rpill);border:1px solid rgba(255,77,107,.25);background:rgba(255,77,107,.06);color:var(--red);font-size:12.5px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0}
+.pj-clear-filters:hover{background:rgba(255,77,107,.12);border-color:rgba(255,77,107,.4)}
+.pj-clear-filters i{font-size:16px}
+
+/* Jobs page: Match badge on card */
+.pj-match-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:var(--rpill);font-size:11px;font-weight:700;background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(16,185,129,.12));color:var(--teal);border:1px solid rgba(16,185,129,.2);margin-bottom:10px}
+.pj-match-badge i{font-size:13px}
+
+/* Jobs page: Verified icon */
+.pj-verified{color:var(--p);font-size:14px;vertical-align:middle;margin-left:2px}
+
+/* Jobs page: Skill +N badge */
+.pj-skill-more{background:rgba(124,58,237,.05)!important;color:var(--t3)!important;border-color:var(--border)!important}
+
+/* Jobs page: Card icons */
+.pj-card-company i{font-size:13px;vertical-align:middle}
+.pj-pay i,.pj-deadline i{font-size:14px;vertical-align:middle;margin-right:2px}
+.pj-card-spots i{font-size:13px;margin-right:2px}
+
+/* Jobs page: Search icon in input */
+.pj-input-wrap i{font-size:18px;color:var(--t3);flex-shrink:0}
+
+/* Jobs page: Eyebrow icon */
+.pj-eyebrow i{font-size:12px;vertical-align:middle;margin-right:2px}
+
+/* Job Detail: Info label icons */
+.pd-info-label i{font-size:13px;vertical-align:middle;margin-right:2px}
+
+/* Job Detail: Action box icons */
+.pd-action-pay i{font-size:20px;vertical-align:middle;margin-right:4px}
+.pd-action-duration i{font-size:14px;vertical-align:middle;margin-right:2px}
+.pd-escrow-note i{font-size:15px;vertical-align:middle;margin-right:4px;color:var(--teal)}
+
+/* Job Detail: Applied success icon */
+.pd-applied-icon{font-size:48px;color:var(--teal);margin-bottom:12px}
+.pd-applied-icon i{font-size:48px}
+
+/* Job Detail: Company card enhancement */
+.pd-company-card{transition:all .2s}
+.pd-company-card:hover{border-color:rgba(124,58,237,.3);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.15)}
+
+/* Job Detail: Section header icon alignment */
+.pd-section h2 i{font-size:16px;vertical-align:middle}
+
+/* Job Detail: Related jobs card hover enhancement */
+.pd-related-card{transition:all .25s}
+.pd-related-card:hover{border-color:rgba(124,58,237,.3);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.15)}
+
+/* Light mode: match badge */
+[data-theme="light"] .pj-match-badge{background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(16,185,129,.06));color:#009977;border-color:rgba(16,185,129,.15)}
+[data-theme="light"] .pj-clear-filters{background:rgba(255,77,107,.04);border-color:rgba(255,77,107,.2)}
+[data-theme="light"] .pj-verified{color:#5B4FFF}
+[data-theme="light"] .pd-applied-icon{color:#009977}
+
+/* ═══════════════════════════════════════════════════════
+   COMPREHENSIVE MOBILE RESPONSIVE — ALL PAGES
+   Phase 1-6: PostJob, Profile, Wallet, JobDetail,
+   Dashboard, ManageJobs, MyApplications, Messages,
+   NotificationHub, Admin, Global polish
+   ═══════════════════════════════════════════════════════ */
+
+/* ─── 768px: Tablet / Mobile ─────────────────────────── */
+@media(max-width:768px){
+  /* === Phase 1: PostJob === */
+  .pj-form{padding:24px 16px}
+  .pj-form-grid{grid-template-columns:1fr}
+  .pj-summary{flex-direction:column;gap:10px;padding:14px 16px}
+  .pj-success{padding:40px 24px;margin:80px auto}
+  .pj-success h2{font-size:22px}
+
+  /* === Phase 1: Profile === */
+  .prof-header{flex-direction:column;text-align:center;padding:20px 16px}
+  .prof-avatar{width:64px;height:64px;font-size:22px}
+  .prof-avatar::after{display:none}
+  .prof-info h1{font-size:22px}
+  .prof-form{padding:24px 16px}
+  .prof-grid{grid-template-columns:1fr}
+  .prof-tips{padding:16px}
+
+  /* === Phase 1: Wallet === */
+  .wallet-header h1{font-size:28px}
+  .wallet-escrow-info{flex-direction:column;gap:12px;padding:18px}
+  .wallet-tx-row{padding:14px 16px}
+  .wtx-label{font-size:13.5px}
+
+  /* === Phase 2: Job Detail === */
+  .pd-hero-card{padding:20px 16px}
+  .pd-top{flex-direction:column;gap:12px}
+  .pd-title{font-size:20px}
+  .pd-section{padding:20px 16px}
+  .pd-action-box{padding:20px 16px}
+  .pd-action-pay{font-size:20px}
+  .pd-related-grid{grid-template-columns:1fr}
+  .pd-breadcrumb{font-size:12px;padding:12px 16px}
+
+  /* === Phase 3: Dashboard === */
+  .dash-toolbar{flex-direction:column;align-items:stretch;gap:12px}
+  .dash-toolbar .dash-greeting{font-size:20px}
+  .dash-period-tabs{width:100%;justify-content:center}
+  .dash-section{padding:20px 16px}
+  .dash-section-header h2{font-size:15px}
+  .dash-nav-item{min-height:44px;padding:12px 16px}
+  .dash-sf-flow{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .dash-sf-step{min-width:140px}
+
+  /* === Phase 3: ManageJobs === */
+  .manage-panel{padding:20px 16px}
+  .manage-panel-header{flex-direction:column;align-items:flex-start;gap:8px}
+  .manage-panel-header h2{font-size:16px}
+  .manage-job-card{padding:12px}
+  .manage-panel-toolbar{flex-direction:column;gap:8px}
+
+  /* === Phase 4: MyApplications === */
+  .apps-filter-btn{min-height:44px;padding:10px 16px}
+  .apps-card{padding:16px}
+  .apps-header-top{flex-direction:column;align-items:stretch;gap:12px}
+
+  /* === Phase 4: Messages === */
+  .msg-sidebar{max-height:250px}
+  .msg-compose input{font-size:16px}
+  .msg-bubble{max-width:85%}
+  .msg-panel-head{padding:12px 14px}
+
+  /* === Phase 4: NotificationHub === */
+  .nh-header{flex-direction:column;gap:12px}
+  .nh-header-stats{width:100%;justify-content:space-between}
+  .nh-filters{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+  .nh-filters::-webkit-scrollbar{display:none}
+  .nh-item{padding:14px 16px}
+  .nh-controls{flex-direction:column;align-items:stretch;gap:8px}
+
+  /* === Phase 5: Admin Finance === */
+  .admin-bar-chart{height:180px;gap:6px}
+  .admin-panel{padding:16px}
+
+  /* === Phase 5: Admin Accounts === */
+  .adm-table th,.adm-table td{padding:10px 12px;font-size:.8rem}
+  .adm-table{min-width:600px}
+  .adm-tabs{flex-wrap:wrap;gap:4px}
+
+  /* === Phase 6: Automation === */
+  .page-automation-rules{padding:80px 16px 40px}
+  .biz-auto-big{font-size:24px}
+
+  /* === Phase 6: Contract/Kanban === */
+  .ms-form-row{flex-direction:column}
+  .ms-form-amount,.ms-form-date{width:100%}
+  .kb-back-bar{padding:12px 16px 0}
+
+  /* === Phase 6: Global touch targets & iOS zoom fix === */
+  input,select,textarea{font-size:16px}
+  .btn-sm{min-height:40px}
+}
+
+/* ─── 500px: Small Mobile ────────────────────────────── */
+@media(max-width:500px){
+  /* === Phase 1: PostJob === */
+  .pj-actions{flex-direction:column}
+  .pj-actions .btn{width:100%}
+  .pj-char-count{font-size:10px}
+  .pj-success{padding:32px 20px;margin:60px 16px}
+
+  /* === Phase 1: Wallet === */
+  .wallet-tx-row{flex-direction:column;align-items:flex-start;gap:8px}
+  .wtx-amount{margin-left:0;padding-left:0;width:auto;text-align:left}
+  .wallet-bank-card{flex-direction:column;align-items:flex-start;gap:10px}
+  .wc-amount{font-size:26px}
+  .wallet-header h1{font-size:24px}
+
+  /* === Phase 2: Job Detail === */
+  .pd-top{gap:10px}
+  .pd-title{font-size:18px}
+  .pd-quick-info{gap:6px}
+  .pd-section h2{font-size:16px}
+
+  /* === Phase 3: Dashboard === */
+  .dash-onboard-step{padding:12px;gap:10px}
+  .dash-greeting{font-size:18px!important}
+  .dash-section{padding:16px 14px}
+  .dash-sf-step{min-width:120px}
+
+  /* === Phase 3: ManageJobs === */
+  .manage-ap-top{flex-direction:column;align-items:flex-start;gap:8px}
+  .manage-ap-actions .btn{flex:1;justify-content:center;min-width:0}
+  .manage-panel{padding:16px 14px}
+  .manage-job-card{padding:10px}
+
+  /* === Phase 4: MyApplications === */
+  .apps-card-actions{flex-direction:column}
+  .apps-card-actions .btn{width:100%}
+  .apps-mini-stat{min-width:56px;padding:8px 12px}
+  .apps-card-meta{gap:6px;font-size:11px}
+
+  /* === Phase 4: NotificationHub === */
+  .nh-controls{flex-direction:column;align-items:stretch}
+  .nh-stat-chip{flex:1;min-width:0;font-size:12px}
+
+  /* === Phase 5: Admin === */
+  .admin-finance-head{flex-direction:column;gap:8px}
+  .admin-finance-actions .btn{flex:1}
+  .admin-bar-chart{height:150px}
+
+  /* === Phase 6: Student Tasks === */
+  .stask-stats{grid-template-columns:1fr}
+  .stask-journey{padding:20px 16px}
+
+  /* === Phase 6: Contract/Kanban === */
+  .kb-col{width:calc(100vw - 48px)}
+  .contract-card{padding:12px}
+
+  /* === Phase 6: Modals === */
+  .modal-actions{flex-direction:column}
+  .modal-actions .btn{width:100%}
+  .modal-box{padding:24px 20px}
+
+  /* === Phase 6: Global === */
+  .container{padding:0 14px}
+  section.section{padding:36px 0}
+}
+
+/* ─── Job Detail: Mobile sticky bottom bar ───────────── */
+.pd-mobile-bar{display:none}
+@media(max-width:900px){
+  .pd-mobile-bar{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:100;padding:12px 20px;background:var(--card);border-top:1px solid var(--border);align-items:center;justify-content:space-between;gap:12px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+  .pd-mobile-bar .pd-mobile-price{font-family:var(--font-display);font-size:18px;font-weight:800;color:var(--teal)}
+  .pd-mobile-bar .btn{flex-shrink:0}
+  .pd-layout{padding-bottom:72px}
+}
+[data-theme="light"] .pd-mobile-bar{background:rgba(255,255,255,.95);border-top-color:rgba(0,0,0,.08)}

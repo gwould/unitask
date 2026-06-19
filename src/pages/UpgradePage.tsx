@@ -68,7 +68,7 @@ export default function UpgradePage() {
     return (
       <section className="page-upgrade">
         <div className="container" style={{ maxWidth: 560, textAlign: 'center', paddingTop: 60 }}>
-          <div style={{ fontSize: 48 }}>🤔</div>
+          <div style={{ fontSize: 48 }}><i className="bx bx-help-circle" /></div>
           <h2>Gói không hợp lệ</h2>
           <p style={{ color: 'var(--text-2)' }}>Gói bạn chọn không tồn tại hoặc là gói miễn phí.</p>
           <Link to="/about#pricing" className="btn btn-primary" style={{ marginTop: 16 }}>Xem bảng giá</Link>
@@ -123,7 +123,7 @@ export default function UpgradePage() {
       <section className="page-upgrade">
         <div className="container" style={{ maxWidth: 560 }}>
           <div className="upg-success fade-up">
-            <div className="upg-success-icon">🎉</div>
+            <div className="upg-success-icon"><i className="bx bx-party" /></div>
             <h2>Thanh toán thành công!</h2>
             <p>Gói <strong>{plan.name}</strong> đã được kích hoạt cho tài khoản của bạn.</p>
             <div className="upg-receipt">
@@ -134,11 +134,11 @@ export default function UpgradePage() {
               <div className="upg-receipt-row upg-receipt-total"><span>Đã thanh toán</span><strong>{formatMoney(paidInvoice.total)}</strong></div>
             </div>
             {payMethod === 'bank' && (
-              <p className="upg-bank-note">⏳ Giao dịch chuyển khoản sẽ được xác nhận trong vòng 24h làm việc.</p>
+              <p className="upg-bank-note"><i className="bx bx-time-five" /> Giao dịch chuyển khoản sẽ được xác nhận trong vòng 24h làm việc.</p>
             )}
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 24, flexWrap: 'wrap' }}>
-              <Link to="/post-job" className="btn btn-primary">📝 Đăng việc ngay</Link>
-              <Link to="/wallet" className="btn btn-ghost">💰 Xem giao dịch</Link>
+              <Link to="/post-job" className="btn btn-primary"><i className="bx bx-edit" /> Đăng việc ngay</Link>
+              <Link to="/wallet" className="btn btn-ghost"><i className="bx bx-wallet" /> Xem giao dịch</Link>
               <Link to="/dashboard" className="btn btn-ghost">Về Dashboard</Link>
             </div>
           </div>
@@ -152,13 +152,13 @@ export default function UpgradePage() {
     <section className="page-upgrade">
       <div className="container" style={{ maxWidth: 920 }}>
         <div className="upg-header fade-up">
-          <h1>💳 Thanh toán nâng cấp gói</h1>
+          <h1><i className="bx bx-credit-card" /> Thanh toán nâng cấp gói</h1>
           <p>Hoàn tất thanh toán để kích hoạt gói <strong>{plan.name}</strong> ngay lập tức.</p>
         </div>
 
         {isCurrentPlan && (
           <div className="upg-current-notice fade-up">
-            ℹ️ Bạn đang sử dụng gói này. Thanh toán sẽ gia hạn thêm 1 tháng.
+            <i className="bx bx-info-circle" /> Bạn đang sử dụng gói này. Thanh toán sẽ gia hạn thêm 1 tháng.
           </div>
         )}
 
@@ -166,7 +166,7 @@ export default function UpgradePage() {
           {/* Left: plan summary + payment method */}
           <div className="upg-left">
             <div className="upg-card">
-              <div className="upg-card-title">📦 Gói đã chọn</div>
+              <div className="upg-card-title"><i className="bx bx-package" /> Gói đã chọn</div>
               <div className="upg-plan-box">
                 <div className="upg-plan-top">
                   <div>
@@ -181,16 +181,16 @@ export default function UpgradePage() {
                 <ul className="upg-plan-features">
                   {plan.features.map((f) => <li key={f}>✓ {f}</li>)}
                 </ul>
-                <Link to="/about#pricing" className="upg-change-plan">↔️ Đổi gói khác</Link>
+                <Link to="/about#pricing" className="upg-change-plan"><i className="bx bx-transfer" /> Đổi gói khác</Link>
               </div>
             </div>
 
             <div className="upg-card">
-              <div className="upg-card-title">💳 Hình thức thanh toán</div>
+              <div className="upg-card-title"><i className="bx bx-credit-card" /> Hình thức thanh toán</div>
               <label className={`upg-pay-option${payMethod === 'wallet' ? ' active' : ''}`}>
                 <input type="radio" name="paym" checked={payMethod === 'wallet'} onChange={() => setPayMethod('wallet')} />
                 <div className="upg-pay-info">
-                  <strong>💰 Ví UniTask</strong>
+                  <strong><i className="bx bx-wallet" /> Ví UniTask</strong>
                   <span>Số dư hiện tại: {formatMoney(balance)}{balance < total && <em className="upg-insufficient"> — không đủ</em>}</span>
                 </div>
                 <span className="upg-pay-tag">Kích hoạt ngay</span>
@@ -198,7 +198,7 @@ export default function UpgradePage() {
               <label className={`upg-pay-option${payMethod === 'bank' ? ' active' : ''}`}>
                 <input type="radio" name="paym" checked={payMethod === 'bank'} onChange={() => setPayMethod('bank')} />
                 <div className="upg-pay-info">
-                  <strong>🏦 Chuyển khoản ngân hàng</strong>
+                  <strong><i className="bx bx-building-house" /> Chuyển khoản ngân hàng</strong>
                   <span>Xác nhận trong vòng 24h làm việc</span>
                 </div>
               </label>
@@ -216,7 +216,7 @@ export default function UpgradePage() {
           {/* Right: invoice */}
           <div className="upg-right">
             <div className="upg-card upg-invoice">
-              <div className="upg-card-title">🧾 Hóa đơn</div>
+              <div className="upg-card-title"><i className="bx bx-receipt" /> Hóa đơn</div>
               <div className="upg-inv-meta">
                 <div><span>Số hóa đơn</span><strong>{invoiceNo}</strong></div>
                 <div><span>Ngày</span><strong>{today}</strong></div>
@@ -238,16 +238,16 @@ export default function UpgradePage() {
                 </div>
               </div>
 
-              {error && <div className="upg-error">⚠️ {error}</div>}
+              {error && <div className="upg-error"><i className="bx bx-error" /> {error}</div>}
 
               <button
                 className="btn btn-primary upg-pay-btn"
                 onClick={handlePay}
                 disabled={isPaying}
               >
-                {isPaying ? '⏳ Đang xử lý...' : `Thanh toán ${formatMoney(total)}`}
+                {isPaying ? 'Đang xử lý...' : `Thanh toán ${formatMoney(total)}`}
               </button>
-              <p className="upg-secure-note">🔒 Giao dịch được mã hóa & bảo vệ. Có thể hủy gia hạn bất kỳ lúc nào.</p>
+              <p className="upg-secure-note"><i className="bx bx-lock-alt" /> Giao dịch được mã hóa & bảo vệ. Có thể hủy gia hạn bất kỳ lúc nào.</p>
             </div>
           </div>
         </div>

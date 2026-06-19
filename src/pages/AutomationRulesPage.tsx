@@ -38,13 +38,13 @@ function RuleCard({ rule, onToggle, onDelete, onEdit }: {
   onDelete: (id: string) => void;
   onEdit: (rule: AutomationRule) => void;
 }) {
-  const typeLabel: Record<string, string> = {
-    auto_accept: '✅ Tự động chấp nhận',
-    auto_reject: '❌ Tự động từ chối',
-    auto_approve: '🎯 Tự động duyệt & thanh toán',
-    auto_notify: '🔔 Tự động thông báo',
-    auto_assign: '📋 Tự động gán công việc',
-    auto_release: '💰 Tự động giải ngân',
+  const typeLabel: Record<string, { icon: string; text: string }> = {
+    auto_accept: { icon: 'bx-check-circle', text: 'Tự động chấp nhận' },
+    auto_reject: { icon: 'bx-x-circle', text: 'Tự động từ chối' },
+    auto_approve: { icon: 'bx-target-lock', text: 'Tự động duyệt & thanh toán' },
+    auto_notify: { icon: 'bx-bell', text: 'Tự động thông báo' },
+    auto_assign: { icon: 'bx-task', text: 'Tự động gán công việc' },
+    auto_release: { icon: 'bx-wallet', text: 'Tự động giải ngân' },
   };
 
   return (
@@ -61,18 +61,22 @@ function RuleCard({ rule, onToggle, onDelete, onEdit }: {
         </label>
       </div>
 
-      <div className="auth-rule-type">{typeLabel[rule.ruleType] || rule.ruleType}</div>
+      <div className="auth-rule-type">
+        {typeLabel[rule.ruleType]
+          ? <><i className={`bx ${typeLabel[rule.ruleType].icon}`} /> {typeLabel[rule.ruleType].text}</>
+          : rule.ruleType}
+      </div>
 
       <div className="auth-rule-conditions">
         <strong>Điều kiện:</strong>
         <ul>
-          {rule.conditions.minRating && <li>⭐ Rating ≥ {rule.conditions.minRating}</li>}
-          {rule.conditions.maxRating && <li>⭐ Rating ≤ {rule.conditions.maxRating}</li>}
+          {rule.conditions.minRating && <li><i className="bx bxs-star" /> Rating ≥ {rule.conditions.minRating}</li>}
+          {rule.conditions.maxRating && <li><i className="bx bxs-star" /> Rating ≤ {rule.conditions.maxRating}</li>}
           {rule.conditions.requiredSkills && rule.conditions.requiredSkills.length > 0 && (
-            <li>🛠️ Skill: {rule.conditions.requiredSkills.join(', ')}</li>
+            <li><i className="bx bx-wrench" /> Skill: {rule.conditions.requiredSkills.join(', ')}</li>
           )}
           {rule.conditions.jobTitles && rule.conditions.jobTitles.length > 0 && (
-            <li>📌 Công việc: {rule.conditions.jobTitles.join(', ')}</li>
+            <li><i className="bx bx-pin" /> Công việc: {rule.conditions.jobTitles.join(', ')}</li>
           )}
         </ul>
       </div>
@@ -83,8 +87,8 @@ function RuleCard({ rule, onToggle, onDelete, onEdit }: {
       </div>
 
       <div className="auth-rule-actions">
-        <button className="btn btn-ghost btn-sm" onClick={() => onEdit(rule)}>✏️ Sửa</button>
-        <button className="btn btn-danger-ghost btn-sm" onClick={() => onDelete(rule.id)}>🗑️ Xóa</button>
+        <button className="btn btn-ghost btn-sm" onClick={() => onEdit(rule)}><i className="bx bx-edit" /> Sửa</button>
+        <button className="btn btn-danger-ghost btn-sm" onClick={() => onDelete(rule.id)}><i className="bx bx-trash" /> Xóa</button>
       </div>
     </div>
   );
@@ -320,7 +324,7 @@ export default function AutomationRulesPage() {
     <div className="page-automation-rules">
       <div className="page-header">
         <div>
-          <h1>🤖 Tự động hóa quy trình</h1>
+          <h1><i className="bx bx-bot" /> Tự động hóa quy trình</h1>
           <p>Setup automation để tự động chấp nhận, từ chối, duyệt & thanh toán một cách tự động</p>
         </div>
         <button
@@ -367,7 +371,7 @@ export default function AutomationRulesPage() {
       {/* Rules List */}
       {rules.length === 0 ? (
         <div className="auth-empty-state">
-          <div className="auth-empty-icon">🤖</div>
+          <div className="auth-empty-icon"><i className="bx bx-bot" /></div>
           <h3>Chưa có quy tắc tự động hóa</h3>
           <p>Tạo quy tắc đầu tiên để bắt đầu tự động hóa quy trình tuyển dụng</p>
         </div>

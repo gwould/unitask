@@ -32,7 +32,7 @@ export default function Navbar() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const megaLinkRef = useRef<HTMLDivElement>(null);
   const megaRef = useRef<HTMLDivElement>(null);
-  const megaTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const megaTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const isHome = location.pathname === '/';
 

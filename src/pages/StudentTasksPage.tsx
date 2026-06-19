@@ -52,7 +52,7 @@ export default function StudentTasksPage() {
   return (
     <section className="container" style={{ padding: '100px 20px 60px', maxWidth: 880 }}>
       <div style={{ marginBottom: 20 }}>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, marginBottom: 6 }}>🔨 Công việc của tôi</h1>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, marginBottom: 6 }}><i className="bx bx-task" /> Công việc của tôi</h1>
         <p style={{ color: 'var(--text-2)' }}>
           Theo dõi tiến trình milestone, nộp sản phẩm và nhận thanh toán khi doanh nghiệp nghiệm thu.
         </p>
@@ -65,7 +65,7 @@ export default function StudentTasksPage() {
             {MILESTONE_STATUS_MAP[s].label}: {stats[s]}
           </span>
         ))}
-        <span className="ms-badge ms-completed">💰 Đã nhận: {formatMoney(totalEarned)}</span>
+        <span className="ms-badge ms-completed"><i className="bx bx-wallet" /> Đã nhận: {formatMoney(totalEarned)}</span>
       </div>
 
       {loading ? (
@@ -89,7 +89,7 @@ export default function StudentTasksPage() {
               <Link key={c.id} to={`/contracts/${c.id}`} className="contract-card">
                 <div className="contract-card-top">
                   <strong>{c.jobTitle ?? 'Hợp đồng'}</strong>
-                  {actionable > 0 && <span className="ms-badge ms-escrowed">⚡ {actionable} task cần nộp</span>}
+                  {actionable > 0 && <span className="ms-badge ms-escrowed"><i className="bx bx-bolt-circle" /> {actionable} task cần nộp</span>}
                 </div>
                 <div className="contract-card-meta">
                   <span>{formatMoney(c.finalPrice)}</span>

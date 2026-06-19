@@ -153,7 +153,7 @@ export default function MessagesPage() {
     <section className="page-messages">
       <div className="container">
         <div className="msg-header fade-up">
-          <h1>💬 Tin nhắn</h1>
+          <h1><i className="bx bx-message-rounded-dots" /> Tin nhắn</h1>
           <p>Trao đổi trực tiếp với sinh viên hoặc doanh nghiệp</p>
         </div>
 
@@ -231,7 +231,7 @@ export default function MessagesPage() {
                       style={{ color: 'var(--red)' }}
                       onClick={() => setReportTarget({ id: activeConversation.otherUser.id, name: activeConversation.otherUser.name })}
                     >
-                      🚩 Báo cáo
+                      <i className="bx bx-flag" /> Báo cáo
                     </button>
                   </div>
                   <div className="msg-messages" ref={listRef} onScroll={handleMsgScroll}>

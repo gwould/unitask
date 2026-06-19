@@ -52,7 +52,7 @@ export default function CreateContractModal({
   return (
     <div className="modal-overlay" onClick={loading ? undefined : onCancel}>
       <div className="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 560 }}>
-        <h3>🤝 Tạo hợp đồng</h3>
+        <h3><i className="bx bx-file" /> Tạo hợp đồng</h3>
         <p className="modal-sub">Chia milestone thanh toán cho {studentName}</p>
 
         <div className="ms-form-list">

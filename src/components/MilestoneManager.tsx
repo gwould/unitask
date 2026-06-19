@@ -243,13 +243,13 @@ export default function MilestoneManager({ contractId }: MilestoneManagerProps) 
         <div className="kb-card-meta">
           <span className="kb-amount">{formatMoney(m.amount)}</span>
           <span className={`kb-deadline${deadline.overdue ? ' kb-overdue' : ''}`}>
-            📅 {deadline.text}{deadline.overdue ? ' (quá hạn)' : ''}
+            <i className="bx bx-calendar" /> {deadline.text}{deadline.overdue ? ' (quá hạn)' : ''}
           </span>
         </div>
 
         {/* Bài nộp / feedback */}
         {sub?.fileUrl && (m.status === 'UNDER_REVIEW' || m.status === 'COMPLETED') && (
-          <a className="kb-sub-link" href={sub.fileUrl} target="_blank" rel="noopener noreferrer">⬇️ File sản phẩm</a>
+          <a className="kb-sub-link" href={sub.fileUrl} target="_blank" rel="noopener noreferrer"><i className="bx bx-download" /> File sản phẩm</a>
         )}
         {sub?.coverLetter && m.status === 'UNDER_REVIEW' && (
           <p className="kb-sub-note">{sub.coverLetter}</p>
@@ -258,56 +258,56 @@ export default function MilestoneManager({ contractId }: MilestoneManagerProps) 
           <p className="ms-feedback" style={{ marginTop: 6 }}>Cần sửa: “{sub.clientFeedback}”</p>
         )}
         {m.status === 'REVISION' && sub?.clientEvidenceUrl && (
-          <a className="kb-sub-link" href={sub.clientEvidenceUrl} target="_blank" rel="noopener noreferrer">📎 Bằng chứng từ chối</a>
+          <a className="kb-sub-link" href={sub.clientEvidenceUrl} target="_blank" rel="noopener noreferrer"><i className="bx bx-paperclip" /> Bằng chứng từ chối</a>
         )}
 
         {/* Hành động theo vai trò */}
         <div className="kb-actions">
           {isBusiness && m.status === 'PENDING' && (
             <button className="btn btn-primary btn-sm" disabled={isBusy} onClick={() => handleEscrow(m)}>
-              {isBusy ? '…' : '🔒 Nạp ký quỹ'}
+              {isBusy ? '…' : <><i className="bx bx-lock-alt" /> Nạp ký quỹ</>}
             </button>
           )}
           {isBusiness && m.status === 'UNDER_REVIEW' && (
             <>
-              <button className="btn btn-success btn-sm" disabled={isBusy} onClick={() => setModal({ type: 'approve', milestone: m })}>✅ Nghiệm thu</button>
-              <button className="btn btn-danger btn-sm" disabled={isBusy} onClick={() => setModal({ type: 'request-changes', milestone: m })}>✏️ Yêu cầu sửa</button>
+              <button className="btn btn-success btn-sm" disabled={isBusy} onClick={() => setModal({ type: 'approve', milestone: m })}><i className="bx bx-check-circle" /> Nghiệm thu</button>
+              <button className="btn btn-danger btn-sm" disabled={isBusy} onClick={() => setModal({ type: 'request-changes', milestone: m })}><i className="bx bx-edit" /> Yêu cầu sửa</button>
             </>
           )}
           {isStudent && (m.status === 'ESCROWED' || m.status === 'REVISION') && (
             <button className="btn btn-primary btn-sm" disabled={isBusy} onClick={() => setModal({ type: 'submit', milestone: m })}>
-              📤 {m.status === 'REVISION' ? 'Nộp lại' : 'Nộp bài'}
+              <i className="bx bx-upload" /> {m.status === 'REVISION' ? 'Nộp lại' : 'Nộp bài'}
             </button>
           )}
           {isBusiness && m.status !== 'COMPLETED' && m.status !== 'CANCELED' && (
-            <button className="btn btn-danger-ghost btn-sm" disabled={isBusy} onClick={() => setModal({ type: 'cancel', milestone: m })}>🚫 Hủy</button>
+            <button className="btn btn-danger-ghost btn-sm" disabled={isBusy} onClick={() => setModal({ type: 'cancel', milestone: m })}><i className="bx bx-block" /> Hủy</button>
           )}
           {/* Gợi ý trạng thái cho phía còn lại */}
-          {isStudent && m.status === 'PENDING' && <span className="kb-hint">⏳ Chờ doanh nghiệp ký quỹ</span>}
-          {isStudent && m.status === 'UNDER_REVIEW' && <span className="kb-hint">👀 Chờ nghiệm thu</span>}
-          {isBusiness && m.status === 'ESCROWED' && <span className="kb-hint">⏳ Chờ sinh viên nộp</span>}
-          {isBusiness && m.status === 'REVISION' && <span className="kb-hint">🔁 Chờ nộp lại</span>}
+          {isStudent && m.status === 'PENDING' && <span className="kb-hint"><i className="bx bx-time-five" /> Chờ doanh nghiệp ký quỹ</span>}
+          {isStudent && m.status === 'UNDER_REVIEW' && <span className="kb-hint"><i className="bx bx-show" /> Chờ nghiệm thu</span>}
+          {isBusiness && m.status === 'ESCROWED' && <span className="kb-hint"><i className="bx bx-time-five" /> Chờ sinh viên nộp</span>}
+          {isBusiness && m.status === 'REVISION' && <span className="kb-hint"><i className="bx bx-revision" /> Chờ nộp lại</span>}
         </div>
 
         {/* Tranh chấp (B1–B4) */}
         {dispute ? (
           <div className="kb-dispute">
-            <span className="kb-dispute-tag">⚠️ Tranh chấp: {DISPUTE_LABEL[dispute.status] ?? dispute.status}</span>
+            <span className="kb-dispute-tag"><i className="bx bx-error" /> Tranh chấp: {DISPUTE_LABEL[dispute.status] ?? dispute.status}</span>
             {dispute.status === 'RESOLVED' && dispute.decision && (
               <span className="kb-hint">Quyết định: {dispute.decision}{dispute.decision === 'SPLIT' ? ` (${dispute.studentPercent ?? 0}%)` : ''}</span>
             )}
             <div className="kb-actions">
               {dispute.status === 'NEGOTIATION' && (
-                <button className="btn btn-ghost btn-sm" disabled={dBusy} onClick={() => handleRequestMediation(dispute)}>🧑‍⚖️ Yêu cầu hòa giải</button>
+                <button className="btn btn-ghost btn-sm" disabled={dBusy} onClick={() => handleRequestMediation(dispute)}><i className="bx bx-user-check" /> Yêu cầu hòa giải</button>
               )}
               {appealOpen && (
-                <button className="btn btn-ghost btn-sm" disabled={dBusy} onClick={() => handleAppeal(dispute)}>📨 Kháng cáo</button>
+                <button className="btn btn-ghost btn-sm" disabled={dBusy} onClick={() => handleAppeal(dispute)}><i className="bx bx-envelope" /> Kháng cáo</button>
               )}
             </div>
           </div>
         ) : canOpenDispute && (
           <div className="kb-actions">
-            <button className="btn btn-danger-ghost btn-sm" disabled={dBusy} onClick={() => setModal({ type: 'open-dispute', milestone: m })}>⚠️ Tranh chấp</button>
+            <button className="btn btn-danger-ghost btn-sm" disabled={dBusy} onClick={() => setModal({ type: 'open-dispute', milestone: m })}><i className="bx bx-error" /> Tranh chấp</button>
           </div>
         )}
       </div>
@@ -329,7 +329,7 @@ export default function MilestoneManager({ contractId }: MilestoneManagerProps) 
             <h3 className="kb-project-title">
               Tiến độ dự án{contract.jobTitle ? ` · ${contract.jobTitle}` : ''}
             </h3>
-            {contract.studentName && <span className="kb-sub-name">👨‍🎓 {contract.studentName}</span>}
+            {contract.studentName && <span className="kb-sub-name"><i className="bx bxs-graduation" /> {contract.studentName}</span>}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
             <span className="ms-total">Giá trị HĐ: {formatMoney(contract.finalPrice)}</span>
@@ -340,7 +340,7 @@ export default function MilestoneManager({ contractId }: MilestoneManagerProps) 
         </div>
         <div className="ms-progress">
           <div className="ms-progress-info">
-            <span>{doneCount}/{totalCount} task hoàn thành · <span style={{ opacity: 0.7 }}>💡 kéo thẻ sang cột hợp lệ để chuyển nhanh</span></span>
+            <span>{doneCount}/{totalCount} task hoàn thành · <span style={{ opacity: 0.7 }}><i className="bx bx-bulb" /> kéo thẻ sang cột hợp lệ để chuyển nhanh</span></span>
             <span>Đã giải ngân: {formatMoney(paidAmount)}</span>
           </div>
           <div className="contract-progress"><div className="contract-progress-fill" style={{ width: `${pct}%` }} /></div>

@@ -32,7 +32,7 @@ function ProfileModal({ ap, onClose }: { ap: Applicant; onClose: () => void }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-box biz-profile-modal" onClick={(e) => e.stopPropagation()}>
         <div className="biz-pm-header">
-          <h3>📄 Hồ sơ ứng viên</h3>
+          <h3><i className="bx bx-file" /> Hồ sơ ứng viên</h3>
           <button className="stask-sm-close" onClick={onClose}>✕</button>
         </div>
 
@@ -40,16 +40,16 @@ function ProfileModal({ ap, onClose }: { ap: Applicant; onClose: () => void }) {
           <div className="biz-pm-avatar">{ap.name.charAt(0)}</div>
           <div className="biz-pm-info">
             <h2>{ap.name}</h2>
-            {ap.university && <div className="biz-pm-uni">🎓 {ap.university}</div>}
+            {ap.university && <div className="biz-pm-uni"><i className="bx bxs-graduation" /> {ap.university}</div>}
             {ap.rating != null && ap.rating > 0 && (
-              <div className="biz-pm-rating">⭐ {ap.rating}/5.0</div>
+              <div className="biz-pm-rating"><i className="bx bxs-star" /> {ap.rating}/5.0</div>
             )}
           </div>
         </div>
 
         {ap.skills && ap.skills.length > 0 && (
           <div className="biz-pm-section">
-            <h4>🎯 Kỹ năng</h4>
+            <h4><i className="bx bx-target-lock" /> Kỹ năng</h4>
             <div className="biz-pm-skills">
               {ap.skills.map(s => <span key={s} className="pj-skill">{s}</span>)}
             </div>
@@ -58,13 +58,13 @@ function ProfileModal({ ap, onClose }: { ap: Applicant; onClose: () => void }) {
 
         {ap.coverLetter && (
           <div className="biz-pm-section">
-            <h4>✍️ Cover Letter</h4>
+            <h4><i className="bx bx-edit-alt" /> Cover Letter</h4>
             <div className="biz-pm-letter">{ap.coverLetter}</div>
           </div>
         )}
 
         <div className="biz-pm-section">
-          <h4>📊 Thống kê</h4>
+          <h4><i className="bx bx-bar-chart-alt-2" /> Thống kê</h4>
           <div className="biz-pm-stats">
             <div className="biz-pm-stat">
               <span className="biz-pm-stat-num">{ap.rating?.toFixed(1) || '—'}</span>
@@ -75,7 +75,7 @@ function ProfileModal({ ap, onClose }: { ap: Applicant; onClose: () => void }) {
               <span className="biz-pm-stat-label">Kỹ năng</span>
             </div>
             <div className="biz-pm-stat">
-              <span className="biz-pm-stat-num">📅</span>
+              <span className="biz-pm-stat-num"><i className="bx bx-calendar" /></span>
               <span className="biz-pm-stat-label">{ap.appliedAt}</span>
             </div>
           </div>
@@ -124,7 +124,7 @@ function ApplicantCard({ ap, onAccept, onReject, onMessage, onViewProfile, onMan
         <div className="manage-ap-info">
           <div className="manage-ap-name">
             {ap.name}
-            {ap.rating && <span className="manage-ap-rating">⭐ {ap.rating}</span>}
+            {ap.rating && <span className="manage-ap-rating"><i className="bx bxs-star" /> {ap.rating}</span>}
           </div>
           <div className="manage-ap-date">
             {ap.university && <>{ap.university} · </>}
@@ -160,29 +160,29 @@ function ApplicantCard({ ap, onAccept, onReject, onMessage, onViewProfile, onMan
 
       <div className="manage-ap-actions">
         <button className="btn btn-ghost btn-sm" onClick={() => onViewProfile(ap)} title="Xem hồ sơ số">
-          📄 CV
+          <i className="bx bx-file" /> CV
         </button>
         <button className="btn btn-ghost btn-sm" onClick={() => onMessage(String(ap.userId))}>
-          💬 Nhắn tin
+          <i className="bx bx-message-rounded-dots" /> Nhắn tin
         </button>
         {ap.status === 'pending' && (
           <>
             <button className="btn btn-primary btn-sm" onClick={() => onAccept(ap.id)}>
-              ✅ Chấp nhận
+              <i className="bx bx-check" /> Chấp nhận
             </button>
             <button className="btn btn-danger-ghost btn-sm" onClick={() => onReject(ap.id)}>
-              ❌ Từ chối
+              <i className="bx bx-x" /> Từ chối
             </button>
           </>
         )}
         {ap.status === 'accepted' && (
           <button className="btn btn-primary btn-sm" onClick={() => onManageContract(ap)}>
-            🤝 Quản lý task & Milestone
+            <i className="bx bx-transfer" /> Quản lý task & Milestone
           </button>
         )}
         {ap.status === 'completed' && (
           <button className="btn btn-ghost btn-sm" onClick={() => onManageContract(ap)}>
-            📊 Xem hợp đồng
+            <i className="bx bx-bar-chart-alt-2" /> Xem hợp đồng
           </button>
         )}
         {ap.status === 'rejected' && (
@@ -212,13 +212,13 @@ function JobCard({ job, isSelected, applicantCount, pendingCount, onClick }: {
         )}
       </div>
       <div className="manage-job-meta">
-        <span>📍 {job.location}</span>
-        <span>💰 {job.pay}</span>
-        <span>👥 {applicantCount} ứng viên</span>
+        <span><i className="bx bx-map" /> {job.location}</span>
+        <span><i className="bx bx-money" /> {job.pay}</span>
+        <span><i className="bx bx-group" /> {applicantCount} ứng viên</span>
       </div>
       <div className="manage-job-meta">
-        <span>⏰ {job.deadline}</span>
-        <span>📅 Đăng: {job.postedAt}</span>
+        <span><i className="bx bx-time-five" /> {job.deadline}</span>
+        <span><i className="bx bx-calendar" /> Đăng: {job.postedAt}</span>
       </div>
     </div>
   );
@@ -388,30 +388,30 @@ export default function ManageJobsPage() {
           createNotification({
             recipientId: String(ap.userId),
             recipientType: 'student',
-            title: action === 'accept' ? '✅ Bạn đã được chấp nhận' : '❌ Hồ sơ không được chấp nhận',
+            title: action === 'accept' ? 'Bạn đã được chấp nhận' : 'Hồ sơ không được chấp nhận',
             message: action === 'accept'
               ? buildAcceptMessage(jobForNotify)
               : buildRejectMessage(jobForNotify),
             type: 'application_status',
             relatedJobId: jobForNotify ? jobForNotify.id : undefined,
             relatedApplicationId: ap.appId ? String(ap.appId) : undefined,
-            actionUrl: buildJobActionUrl(jobForNotify),
+            actionUrl: action === 'accept' ? '/my-tasks' : '/jobs',
           });
         }
 
-        showToast(`${action === 'accept' ? 'Chấp nhận' : 'Từ chối'} ${ids.length} ứng viên ✅`);
+        showToast(`${action === 'accept' ? 'Chấp nhận' : 'Từ chối'} ${ids.length} ứng viên`);
       } else if (action === 'notify' && message) {
         for (const ap of targetApplicants) {
           createNotification({
             recipientId: String(ap.userId),
             recipientType: 'student',
-            title: '🔔 Thông báo từ công ty',
+            title: 'Thông báo từ công ty',
             message,
             type: 'system',
             actionUrl: '/my-applications',
           });
         }
-        showToast(`Gửi thông báo đến ${ids.length} ứng viên ✅`);
+        showToast(`Gửi thông báo đến ${ids.length} ứng viên`);
       }
 
       setSelectedApplicantIds(new Set());
@@ -447,25 +447,24 @@ export default function ManageJobsPage() {
     createNotification({
       recipientId: String(targetApplicant.userId),
       recipientType: 'student',
-      title: newStatus === 'accepted' ? '✅ Bạn đã được chấp nhận' : '❌ Hồ sơ không được chấp nhận',
+      title: newStatus === 'accepted' ? 'Bạn đã được chấp nhận' : 'Hồ sơ không được chấp nhận',
       message: newStatus === 'accepted'
         ? buildAcceptMessage(targetJob)
         : buildRejectMessage(targetJob),
       type: 'application_status',
       relatedJobId: targetJob ? targetJob.id : undefined,
       relatedApplicationId: targetApplicant.appId ? String(targetApplicant.appId) : undefined,
-      actionUrl: buildJobActionUrl(targetJob),
+      actionUrl: newStatus === 'accepted' ? '/my-tasks' : '/jobs',
     });
 
     setActioningId(null);
 
     if (newStatus === 'accepted') {
-      // Auto-send welcome message to chat
       try {
         const conv = await conversationService.start(String(targetApplicant.userId));
         await conversationService.sendMessage(conv.id, buildAcceptMessage(targetJob));
       } catch { /* messaging is best-effort */ }
-      showToast(`Đã chấp nhận ${targetApplicant.name || 'ứng viên'} 🎉 Tin nhắn tự động đã gửi!`);
+      showToast(`Đã chấp nhận ${targetApplicant.name || 'ứng viên'}. Tin nhắn tự động đã gửi!`);
     } else {
       try {
         const conv = await conversationService.start(String(targetApplicant.userId));
@@ -517,7 +516,7 @@ export default function ManageJobsPage() {
     try {
       const contract = await milestoneService.createContract(input);
       setContractModal(null);
-      showToast('Đã tạo hợp đồng ✅');
+      showToast('Đã tạo hợp đồng');
       navigate(`/contracts/${contract.id}`);
     } catch (e: unknown) {
       showToast(e instanceof Error ? e.message : 'Không tạo được hợp đồng.', 'error');
@@ -539,16 +538,16 @@ export default function ManageJobsPage() {
       <div className="container">
         {/* Tổng quan nhanh — chi tiết tiến trình nằm trong trang hợp đồng (Kanban milestone) */}
         <div className="biz-flow-stats biz-flow-stats-standalone fade-up">
-          <span>📋 {myJobs.length} job</span>
-          <span>👥 {totalApplicants} ứng viên</span>
-          <span>⏳ {pendingCount} chờ duyệt</span>
-          <span>✅ {acceptedCount} đã nhận</span>
-          <span>💰 {completedCount} hoàn thành</span>
+          <span><i className="bx bx-briefcase-alt-2" /> {myJobs.length} job</span>
+          <span><i className="bx bx-group" /> {totalApplicants} ứng viên</span>
+          <span><i className="bx bx-loader-circle" /> {pendingCount} chờ duyệt</span>
+          <span><i className="bx bx-check-circle" /> {acceptedCount} đã nhận</span>
+          <span><i className="bx bx-trophy" /> {completedCount} hoàn thành</span>
         </div>
 
         <div className="manage-header fade-up">
           <div>
-            <h1>📂 Quản lý Job đã đăng</h1>
+            <h1><i className="bx bx-folder-open" /> Quản lý Job đã đăng</h1>
             <p>Xem danh sách job, quản lý ứng viên và theo dõi tiến trình</p>
           </div>
           <Link to="/post-job" className="btn btn-primary">+ Đăng việc mới</Link>
@@ -592,7 +591,7 @@ export default function ManageJobsPage() {
             ) : myJobs.length === 0 ? (
               <div className="apps-empty">
                 <p>Bạn chưa đăng job nào.</p>
-                <Link to="/post-job" className="btn btn-primary" style={{ marginTop: 16 }}>📝 Đăng việc ngay</Link>
+                <Link to="/post-job" className="btn btn-primary" style={{ marginTop: 16 }}><i className="bx bx-edit" /> Đăng việc ngay</Link>
               </div>
             ) : filteredJobs.length === 0 ? (
               <div className="apps-empty">
@@ -649,7 +648,7 @@ export default function ManageJobsPage() {
                 {/* Panel toolbar */}
                 <div className="manage-panel-toolbar">
                   <div className="apps-search" style={{ flex: 1 }}>
-                    <span className="apps-search-icon">🔍</span>
+                    <span className="apps-search-icon"><i className="bx bx-search" /></span>
                     <input
                       type="text"
                       placeholder="Tìm ứng viên..."
@@ -742,8 +741,8 @@ export default function ManageJobsPage() {
         <div className="modal-overlay" onClick={() => setConfirmAction(null)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <h3>
-              {confirmAction.action === 'accept' && '✅ Chấp nhận ứng viên?'}
-              {confirmAction.action === 'reject' && '❌ Từ chối ứng viên?'}
+              {confirmAction.action === 'accept' && 'Chấp nhận ứng viên?'}
+              {confirmAction.action === 'reject' && 'Từ chối ứng viên?'}
             </h3>
             <p>
               {confirmAction.action === 'accept' && `Bạn muốn chấp nhận "${confirmAction.name}" vào job "${selectedJob?.title}"? Sau đó bạn có thể giao task & milestone cho ứng viên.`}
@@ -761,8 +760,8 @@ export default function ManageJobsPage() {
                   }
                 }}
               >
-                {confirmAction.action === 'accept' && '✅ Chấp nhận'}
-                {confirmAction.action === 'reject' && '❌ Từ chối'}
+                {confirmAction.action === 'accept' && <><i className="bx bx-check" /> Chấp nhận</>}
+                {confirmAction.action === 'reject' && <><i className="bx bx-x" /> Từ chối</>}
               </button>
             </div>
           </div>
@@ -786,7 +785,7 @@ export default function ManageJobsPage() {
       {/* Toast */}
       {toast && (
         <div className={`apps-toast apps-toast-${toast.type}`}>
-          <span>{toast.type === 'success' ? '✅' : '❌'}</span>
+          <span>{toast.type === 'success' ? <i className="bx bx-check-circle" /> : <i className="bx bx-x-circle" />}</span>
           {toast.message}
           <button className="apps-toast-close" onClick={() => setToast(null)}>✕</button>
         </div>

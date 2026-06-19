@@ -6,7 +6,7 @@ import { APP_STATUS_MAP, STORAGE_KEYS } from '../constants';
 import type { Notification } from '../types/automation';
 import { ConfirmModal, RatingModal } from '../components/ui';
 import { serviceRegistry } from '../services';
-// import { simulateDelay } from '../utils/async';
+import { createNotification } from '../services/automationEngine';
 
 const { applications: applicationService, jobs: jobService } = serviceRegistry;
 
@@ -25,11 +25,11 @@ interface WithdrawConfirm {
 const STATUS_MAP = APP_STATUS_MAP;
 
 const FILTERS: { key: FilterKey; label: string; icon: string }[] = [
-  { key: 'all',       label: 'Tất cả',    icon: '📋' },
-  { key: 'pending',   label: 'Đang chờ',  icon: '⏳' },
-  { key: 'accepted',  label: 'Đã nhận',   icon: '✅' },
-  { key: 'completed', label: 'Hoàn thành', icon: '🏆' },
-  { key: 'rejected',  label: 'Từ chối',   icon: '❌' },
+  { key: 'all',       label: 'Tất cả',    icon: 'bx-list-check' },
+  { key: 'pending',   label: 'Đang chờ',  icon: 'bx-loader-circle' },
+  { key: 'accepted',  label: 'Đã nhận',   icon: 'bx-check-circle' },
+  { key: 'completed', label: 'Hoàn thành', icon: 'bx-trophy' },
+  { key: 'rejected',  label: 'Từ chối',   icon: 'bx-x-circle' },
 ];
 
 const SORT_OPTIONS: { key: SortKey; label: string }[] = [
@@ -131,10 +131,10 @@ function ApplicationCard({ app, onWithdraw, onRate, onSubmitTask, expanding, onT
       </div>
 
       <div className="apps-card-meta">
-        <span>📅 {new Date(app.appliedAt).toLocaleDateString('vi-VN')}</span>
-        {job?.deadline && <span>⏰ Hạn: {new Date(job.deadline).toLocaleDateString('vi-VN')}</span>}
-        <span>🕐 {daysSinceApplied === 0 ? 'Hôm nay' : `${daysSinceApplied} ngày trước`}</span>
-        <span>📂 {job?.category || 'Khác'}</span>
+        <span><i className="bx bx-calendar" /> {new Date(app.appliedAt).toLocaleDateString('vi-VN')}</span>
+        {job?.deadline && <span><i className="bx bx-time-five" /> Hạn: {new Date(job.deadline).toLocaleDateString('vi-VN')}</span>}
+        <span><i className="bx bx-history" /> {daysSinceApplied === 0 ? 'Hôm nay' : `${daysSinceApplied} ngày trước`}</span>
+        <span><i className="bx bx-category" /> {job?.category || 'Khác'}</span>
       </div>
 
       {/* Skills tags */}
@@ -181,21 +181,21 @@ function ApplicationCard({ app, onWithdraw, onRate, onSubmitTask, expanding, onT
       {app.status === 'accepted' && app.submission && (
         <div className="apps-card-letter" style={{ marginTop: 10 }}>
           <div className="apps-letter-header">
-            <strong>📦 Bài nộp mới nhất</strong>
+            <strong><i className="bx bx-package" /> Bài nộp mới nhất</strong>
           </div>
           <div className="apps-letter-body" style={{ whiteSpace: 'pre-wrap' }}>
             {app.submission.summary}
             {app.submission.deliverableUrl && (
               <div style={{ marginTop: 8 }}>
-                🔗 <a href={app.submission.deliverableUrl} target="_blank" rel="noreferrer">{app.submission.deliverableUrl}</a>
+                <i className="bx bx-link" /> <a href={app.submission.deliverableUrl} target="_blank" rel="noreferrer">{app.submission.deliverableUrl}</a>
               </div>
             )}
             {app.submission.reviewStatus === 'submitted' && (
-              <div style={{ marginTop: 8, color: 'var(--pl)' }}>⏳ Doanh nghiệp đang kiểm tra bài nộp.</div>
+              <div style={{ marginTop: 8, color: 'var(--pl)' }}><i className="bx bx-loader-circle" /> Doanh nghiệp đang kiểm tra bài nộp.</div>
             )}
             {app.submission.reviewStatus === 'revision_requested' && (
               <div style={{ marginTop: 8, color: 'var(--a)' }}>
-                🔁 Cần chỉnh sửa: {app.submission.reviewNote || 'Vui lòng cập nhật lại bài nộp.'}
+                <i className="bx bx-revision" /> Cần chỉnh sửa: {app.submission.reviewNote || 'Vui lòng cập nhật lại bài nộp.'}
               </div>
             )}
           </div>
@@ -224,10 +224,10 @@ function ApplicationCard({ app, onWithdraw, onRate, onSubmitTask, expanding, onT
 
         {app.status === 'accepted' && (
           app.submission?.reviewStatus === 'submitted' ? (
-            <span className="apps-card-hint">⏳ Đã nộp bài, đang chờ duyệt</span>
+            <span className="apps-card-hint"><i className="bx bx-loader-circle" /> Đã nộp bài, đang chờ duyệt</span>
           ) : (
             <button className="btn btn-primary btn-sm" onClick={() => onSubmitTask(app)}>
-              📤 {app.submission?.reviewStatus === 'revision_requested' ? 'Nộp lại nhiệm vụ' : 'Nộp nhiệm vụ'}
+              <i className="bx bx-upload" /> {app.submission?.reviewStatus === 'revision_requested' ? 'Nộp lại nhiệm vụ' : 'Nộp nhiệm vụ'}
             </button>
           )
         )}
@@ -237,13 +237,13 @@ function ApplicationCard({ app, onWithdraw, onRate, onSubmitTask, expanding, onT
             className="btn btn-accent btn-sm"
             onClick={() => onRate(app.id, jobTitle)}
           >
-            ⭐ Đánh giá
+            <i className="bx bxs-star" /> Đánh giá
           </button>
         )}
 
         {app.status === 'rejected' && (
           <Link to="/jobs" className="btn btn-ghost btn-sm">
-            🔍 Tìm job khác
+            <i className="bx bx-search" /> Tìm job khác
           </Link>
         )}
       </div>
@@ -460,13 +460,27 @@ export default function MyApplicationsPage() {
       // localStorage already saved — backend will sync later
     }
 
+    // Notify business about the submission
+    const submittedJob = jobs.find((j) => String(j.id) === String(submitTarget.jobId));
+    if (submittedJob?.companyId) {
+      createNotification({
+        recipientId: String(submittedJob.companyId),
+        recipientType: 'business',
+        title: 'Sinh viên đã nộp bài',
+        message: `${user.name} đã nộp bài cho task "${submittedJob.title}". Vui lòng nghiệm thu.`,
+        type: 'submission_request',
+        relatedJobId: submittedJob.id,
+        actionUrl: '/manage-jobs',
+      });
+    }
+
     setActionLoading(null);
     setSubmitTarget(null);
     setSubmitSummary('');
     setSubmitUrl('');
     setSubmitNote('');
     showToast('Đã nộp nhiệm vụ thành công. Doanh nghiệp sẽ kiểm tra sớm.');
-  }, [showToast, submitNote, submitSummary, submitTarget, submitUrl, user]);
+  }, [jobs, showToast, submitNote, submitSummary, submitTarget, submitUrl, user]);
 
   const handleRate = useCallback(async (rating: number, review: string) => {
     if (!ratingTarget) return;
@@ -480,7 +494,7 @@ export default function MyApplicationsPage() {
       // fallback — still show success in demo mode
     }
     setActionLoading(null);
-    showToast(`Đã gửi đánh giá ${rating}/5 sao cho "${target.jobTitle}" 🎉`);
+    showToast(`Đã gửi đánh giá ${rating}/5 sao cho "${target.jobTitle}"`);
   }, [ratingTarget, showToast]);
 
   const toggleExpand = useCallback((id: number | string) => {
@@ -527,7 +541,7 @@ export default function MyApplicationsPage() {
         <div className="apps-header fade-up">
           <div className="apps-header-top">
             <div>
-              <h1>📋 Đơn ứng tuyển của tôi</h1>
+              <h1><i className="bx bx-list-check" /> Đơn ứng tuyển của tôi</h1>
               <p>Theo dõi tất cả đơn ứng tuyển và trạng thái xử lý</p>
             </div>
             <div className="apps-header-stats">
@@ -550,7 +564,7 @@ export default function MyApplicationsPage() {
         {/* Search + Sort bar */}
         <div className="apps-toolbar fade-up">
           <div className="apps-search">
-            <span className="apps-search-icon">🔍</span>
+            <span className="apps-search-icon"><i className="bx bx-search" /></span>
             <input
               type="text"
               placeholder="Tìm theo tên job, công ty..."
@@ -587,7 +601,7 @@ export default function MyApplicationsPage() {
               className={`apps-filter-btn${filter === f.key ? ' active' : ''}`}
               onClick={() => setFilter(f.key)}
             >
-              {f.icon} {f.label}
+              <i className={`bx ${f.icon}`} /> {f.label}
               <span className="apps-filter-count">{counts[f.key] || 0}</span>
             </button>
           ))}
@@ -623,20 +637,20 @@ export default function MyApplicationsPage() {
           </div>
           {counts.accepted > 0 && (
             <Link to="/my-tasks" className="btn btn-primary btn-sm apps-fb-cta">
-              🔨 Vào trang Công việc để nộp bài →
+              <i className="bx bx-task" /> Vào trang Công việc để nộp bài →
             </Link>
           )}
         </div>
 
         <div className="apps-results-info fade-up" style={{ marginTop: -18 }}>
-          📌 Khi đơn được chấp nhận → vào <Link to="/my-tasks"><strong>Công việc của tôi</strong></Link> để xem task, nộp sản phẩm, và theo dõi thanh toán.
+          <i className="bx bx-info-circle" /> Khi đơn được chấp nhận → vào <Link to="/my-tasks"><strong>Công việc của tôi</strong></Link> để xem task, nộp sản phẩm, và theo dõi thanh toán.
         </div>
         {error && (
           <div className="apps-error fade-up">
-            <div className="apps-error-icon">⚠️</div>
+            <div className="apps-error-icon"><i className="bx bx-error" /></div>
             <p>{error}</p>
             <button className="btn btn-primary btn-sm" onClick={handleRetry}>
-              🔄 Thử lại
+              <i className="bx bx-refresh" /> Thử lại
             </button>
           </div>
         )}
@@ -666,7 +680,7 @@ export default function MyApplicationsPage() {
                 <div className="apps-empty">
                   {searchQuery ? (
                     <>
-                      <div style={{ fontSize: 40, marginBottom: 12 }}>🔍</div>
+                      <div style={{ fontSize: 40, marginBottom: 12 }}><i className="bx bx-search" /></div>
                       <p>Không tìm thấy đơn nào phù hợp với "{searchQuery}"</p>
                       <button
                         className="btn btn-ghost btn-sm"
@@ -679,7 +693,7 @@ export default function MyApplicationsPage() {
                   ) : filter !== 'all' ? (
                     <>
                       <div style={{ fontSize: 40, marginBottom: 12 }}>
-                        {FILTERS.find((f) => f.key === filter)?.icon}
+                        <i className={`bx ${FILTERS.find((f) => f.key === filter)?.icon}`} />
                       </div>
                       <p>Không có đơn ứng tuyển nào với trạng thái "{FILTERS.find((f) => f.key === filter)?.label}"</p>
                       <button
@@ -692,13 +706,13 @@ export default function MyApplicationsPage() {
                     </>
                   ) : (
                     <>
-                      <div style={{ fontSize: 48, marginBottom: 12 }}>📭</div>
+                      <div style={{ fontSize: 48, marginBottom: 12 }}><i className="bx bx-mail-send" /></div>
                       <p>Bạn chưa ứng tuyển job nào.</p>
                       <p style={{ fontSize: 13, marginTop: 4, opacity: 0.7 }}>
                         Khám phá hàng trăm cơ hội phù hợp với kỹ năng của bạn!
                       </p>
                       <Link to="/jobs" className="btn btn-primary" style={{ marginTop: 16 }}>
-                        🔍 Tìm việc ngay
+                        <i className="bx bx-search" /> Tìm việc ngay
                       </Link>
                     </>
                   )}
@@ -767,7 +781,7 @@ export default function MyApplicationsPage() {
       {submitTarget && (
         <div className="modal-overlay" onClick={() => setSubmitTarget(null)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-            <h3>📤 Nộp nhiệm vụ</h3>
+            <h3><i className="bx bx-upload" /> Nộp nhiệm vụ</h3>
             <p style={{ marginBottom: 12 }}>
               Job: <strong>{submitTarget.job?.title || `#${submitTarget.jobId}`}</strong>
             </p>
@@ -805,7 +819,7 @@ export default function MyApplicationsPage() {
                 onClick={handleSubmitTask}
                 disabled={actionLoading === submitTarget.id}
               >
-                {actionLoading === submitTarget.id ? 'Đang gửi...' : '📤 Gửi bài nộp'}
+                {actionLoading === submitTarget.id ? 'Đang gửi...' : <><i className="bx bx-upload" /> Gửi bài nộp</>}
               </button>
             </div>
           </div>

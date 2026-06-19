@@ -242,13 +242,13 @@ export default function DashboardPage() {
               </div>
               <h3>{user.name}</h3>
               <div className="dash-role-badge">
-                {user.role === 'student' ? '👨‍🎓 Sinh viên' : '🏢 Doanh nghiệp'}
+                {user.role === 'student' ? <><i className="bx bxs-graduation" /> Sinh viên</> : <><i className="bx bxs-building-house" /> Doanh nghiệp</>}
               </div>
               {user.university && <p className="dash-uni">{user.university}</p>}
               {user.major && <p className="dash-major">{user.major}</p>}
               {user.companyName && <p className="dash-uni">{user.companyName}</p>}
               {user.rating !== undefined && user.rating > 0 && (
-                <div className="dash-rating">⭐ {user.rating}/5.0</div>
+                <div className="dash-rating"><i className="bx bxs-star" /> {user.rating}/5.0</div>
               )}
               <Link to="/profile" className="btn btn-ghost btn-sm" style={{ width: '100%', justifyContent: 'center', marginTop: 12 }}>
                 Chỉnh sửa hồ sơ
@@ -256,7 +256,7 @@ export default function DashboardPage() {
             </div>
 
             <div className="dash-wallet">
-              <div className="dash-wallet-label">💰 Số dư ví</div>
+              <div className="dash-wallet-label"><i className="bx bx-wallet" /> Số dư ví</div>
               <div className="dash-wallet-amount">{formatMoney(walletBalance)}</div>
               <Link to="/wallet" className="btn btn-primary btn-sm" style={{ width: '100%', justifyContent: 'center', marginTop: 8 }}>
                 {user.role === 'student' ? 'Xem ví →' : 'Nạp tiền Escrow →'}
@@ -265,17 +265,17 @@ export default function DashboardPage() {
 
             {studentDash && user.role === 'student' && (
               <div className="dash-wallet" style={{ marginTop: 12 }}>
-                <div className="dash-wallet-label">📈 Tổng thu nhập</div>
+                <div className="dash-wallet-label"><i className="bx bx-trending-up" /> Tổng thu nhập</div>
                 <div className="dash-wallet-amount" style={{ fontSize: '1.1rem' }}>
                   {formatMoney(studentDash.stats.totalEarnings)}
                 </div>
-                <div className="dash-uni">⭐ {studentDash.stats.averageRating.toFixed(1)} đánh giá TB</div>
+                <div className="dash-uni"><i className="bx bxs-star" /> {studentDash.stats.averageRating.toFixed(1)} đánh giá TB</div>
               </div>
             )}
 
             {businessDash && user.role === 'business' && (
               <div className="dash-wallet" style={{ marginTop: 12 }}>
-                <div className="dash-wallet-label">💳 Đã chi</div>
+                <div className="dash-wallet-label"><i className="bx bx-credit-card" /> Đã chi</div>
                 <div className="dash-wallet-amount" style={{ fontSize: '1.1rem' }}>
                   {formatMoney(businessDash.stats.totalSpent)}
                 </div>
@@ -283,29 +283,29 @@ export default function DashboardPage() {
             )}
 
             <nav className="dash-nav">
-              <Link to="/dashboard" className="dash-nav-item active">📊 Tổng quan</Link>
+              <Link to="/dashboard" className="dash-nav-item active"><i className="bx bxs-dashboard" /> Tổng quan</Link>
               {user.role === 'student' ? (
                 <>
-                  <Link to="/jobs" className="dash-nav-item">🔍 Tìm việc</Link>
-                  <Link to="/my-applications" className="dash-nav-item">📋 Đơn ứng tuyển</Link>
-                  <Link to="/my-tasks" className="dash-nav-item">🔨 Công việc của tôi</Link>
-                  <Link to="/wallet" className="dash-nav-item">💰 Ví & Giao dịch</Link>
-                  <Link to="/messages" className="dash-nav-item">💬 Tin nhắn</Link>
-                  <Link to="/notifications" className="dash-nav-item">🔔 Thông báo</Link>
-                  <Link to="/profile" className="dash-nav-item">👤 Hồ sơ số</Link>
+                  <Link to="/jobs" className="dash-nav-item"><i className="bx bx-search-alt" /> Tìm việc</Link>
+                  <Link to="/my-applications" className="dash-nav-item"><i className="bx bx-list-check" /> Đơn ứng tuyển</Link>
+                  <Link to="/my-tasks" className="dash-nav-item"><i className="bx bx-task" /> Công việc của tôi</Link>
+                  <Link to="/wallet" className="dash-nav-item"><i className="bx bx-wallet" /> Ví & Giao dịch</Link>
+                  <Link to="/messages" className="dash-nav-item"><i className="bx bx-message-rounded-dots" /> Tin nhắn</Link>
+                  <Link to="/notifications" className="dash-nav-item"><i className="bx bx-bell" /> Thông báo</Link>
+                  <Link to="/profile" className="dash-nav-item"><i className="bx bx-user" /> Hồ sơ số</Link>
                 </>
               ) : (
                 <>
-                  <Link to="/post-job" className="dash-nav-item">📝 Đăng việc mới</Link>
-                  <Link to="/manage-jobs" className="dash-nav-item">📂 Quản lý job</Link>
-                  <Link to="/business-automation" className="dash-nav-item">🎯 Trung tâm tăng trưởng</Link>
-                  <Link to="/wallet" className="dash-nav-item">💰 Escrow & Thanh toán</Link>
-                  <Link to="/messages" className="dash-nav-item">💬 Tin nhắn</Link>
-                  <Link to="/notifications" className="dash-nav-item">🔔 Thông báo</Link>
+                  <Link to="/post-job" className="dash-nav-item"><i className="bx bx-edit" /> Đăng việc mới</Link>
+                  <Link to="/manage-jobs" className="dash-nav-item"><i className="bx bx-folder-open" /> Quản lý job</Link>
+                  <Link to="/business-automation" className="dash-nav-item"><i className="bx bx-target-lock" /> Trung tâm tăng trưởng</Link>
+                  <Link to="/wallet" className="dash-nav-item"><i className="bx bx-wallet" /> Escrow & Thanh toán</Link>
+                  <Link to="/messages" className="dash-nav-item"><i className="bx bx-message-rounded-dots" /> Tin nhắn</Link>
+                  <Link to="/notifications" className="dash-nav-item"><i className="bx bx-bell" /> Thông báo</Link>
                 </>
               )}
               <button className="dash-nav-item" onClick={() => { logout(); navigate('/'); }}>
-                🚪 Đăng xuất
+                <i className="bx bx-log-out" /> Đăng xuất
               </button>
             </nav>
           </aside>
@@ -333,7 +333,7 @@ export default function DashboardPage() {
                     ))}
                   </div>
                   <button className="btn btn-ghost btn-sm" onClick={handleRefresh} title="Làm mới">
-                    🔄
+                    <i className="bx bx-refresh" />
                   </button>
                 </div>
               </div>
@@ -341,22 +341,22 @@ export default function DashboardPage() {
               {/* stat cards */}
               <div className="dash-stats fade-up">
                 <div className="dash-stat-card">
-                  <div className="ds-icon" style={{ background: 'rgba(91,79,255,.15)' }}>📋</div>
+                  <div className="ds-icon" style={{ background: 'rgba(91,79,255,.15)', color: '#7C3AED' }}><i className="bx bx-briefcase-alt-2" /></div>
                   <div className="ds-num">{stats.total}</div>
                   <div className="ds-label">{user.role === 'business' ? 'Job đã đăng' : 'Đã ứng tuyển'}</div>
                 </div>
                 <div className="dash-stat-card">
-                  <div className="ds-icon" style={{ background: 'rgba(0,212,170,.1)' }}>✅</div>
+                  <div className="ds-icon" style={{ background: 'rgba(0,212,170,.1)', color: '#10B981' }}><i className="bx bx-check-circle" /></div>
                   <div className="ds-num">{stats.accepted}</div>
                   <div className="ds-label">{user.role === 'business' ? 'Đã được nhận' : 'Đã được nhận'}</div>
                 </div>
                 <div className="dash-stat-card">
-                  <div className="ds-icon" style={{ background: 'rgba(255,179,64,.1)' }}>⏳</div>
+                  <div className="ds-icon" style={{ background: 'rgba(255,179,64,.1)', color: '#F59E0B' }}><i className="bx bx-loader-circle" /></div>
                   <div className="ds-num">{stats.pending}</div>
                   <div className="ds-label">Đang chờ duyệt</div>
                 </div>
                 <div className="dash-stat-card">
-                  <div className="ds-icon" style={{ background: 'rgba(255,107,53,.1)' }}>🏆</div>
+                  <div className="ds-icon" style={{ background: 'rgba(255,107,53,.1)', color: '#F97316' }}><i className="bx bx-trophy" /></div>
                   <div className="ds-num">{stats.completed}</div>
                   <div className="ds-label">{user.role === 'business' ? 'Đã hết hạn' : 'Hoàn thành'}</div>
                 </div>
@@ -366,7 +366,7 @@ export default function DashboardPage() {
               {user.role === 'student' && stats.total === 0 && (
                 <div className="dash-onboard fade-up">
                   <div className="dash-onboard-header">
-                    <h2>🚀 Bắt đầu hành trình của bạn</h2>
+                    <h2><i className="bx bx-rocket" /> Bắt đầu hành trình của bạn</h2>
                     <p>Hoàn thành 7 bước để kiếm tiền từ kỹ năng của bạn</p>
                   </div>
                   <div className="dash-onboard-steps">
@@ -429,7 +429,7 @@ export default function DashboardPage() {
               {user.role === 'student' && (
                 <div className="dash-student-flow fade-up">
                   <div className="dash-sf-header">
-                    <h3>🗺️ Hành trình của bạn</h3>
+                    <h3><i className="bx bx-map-alt" /> Hành trình của bạn</h3>
                   </div>
                   <div className="dash-sf-steps">
                     <Link to="/jobs" className={`dash-sf-step${stats.total === 0 ? ' current' : ' done'}`}>
@@ -471,7 +471,7 @@ export default function DashboardPage() {
               {user.role === 'business' && stats.total === 0 && (
                 <div className="dash-onboard fade-up">
                   <div className="dash-onboard-header">
-                    <h2>🏢 Bắt đầu tuyển dụng trên UniTask</h2>
+                    <h2><i className="bx bxs-building-house" /> Bắt đầu tuyển dụng trên UniTask</h2>
                     <p>4 bước đơn giản để tìm sinh viên tài năng</p>
                   </div>
                   <div className="dash-onboard-steps">
@@ -514,7 +514,7 @@ export default function DashboardPage() {
               {user.role === 'business' && (
                 <div className="dash-student-flow fade-up">
                   <div className="dash-sf-header">
-                    <h3>📊 Quy trình tuyển dụng</h3>
+                    <h3><i className="bx bx-bar-chart-alt-2" /> Quy trình tuyển dụng</h3>
                   </div>
                   <div className="dash-sf-steps">
                     <Link to="/post-job" className={`dash-sf-step${stats.total > 0 ? ' done' : ' current'}`}>
@@ -548,23 +548,23 @@ export default function DashboardPage() {
               {user.role === 'business' && (
                 <div className="dash-quick-actions fade-up">
                   <Link to="/post-job" className="dash-qa-card dash-qa-highlight">
-                    <span className="dash-qa-icon">📝</span>
+                    <span className="dash-qa-icon"><i className="bx bx-edit" /></span>
                     <span className="dash-qa-label">Đăng việc</span>
                   </Link>
                   <Link to="/manage-jobs" className="dash-qa-card">
-                    <span className="dash-qa-icon">📂</span>
+                    <span className="dash-qa-icon"><i className="bx bx-folder-open" /></span>
                     <span className="dash-qa-label">Quản lý job</span>
                   </Link>
                   <Link to="/wallet" className="dash-qa-card">
-                    <span className="dash-qa-icon">💰</span>
+                    <span className="dash-qa-icon"><i className="bx bx-wallet" /></span>
                     <span className="dash-qa-label">Escrow</span>
                   </Link>
                   <Link to="/messages" className="dash-qa-card">
-                    <span className="dash-qa-icon">💬</span>
+                    <span className="dash-qa-icon"><i className="bx bx-message-rounded-dots" /></span>
                     <span className="dash-qa-label">Tin nhắn</span>
                   </Link>
                   <Link to="/business-automation" className="dash-qa-card">
-                    <span className="dash-qa-icon">🎯</span>
+                    <span className="dash-qa-icon"><i className="bx bx-target-lock" /></span>
                     <span className="dash-qa-label">Tăng trưởng</span>
                   </Link>
                 </div>
@@ -574,27 +574,27 @@ export default function DashboardPage() {
               {user.role === 'student' && (
                 <div className="dash-quick-actions fade-up">
                   <Link to="/jobs" className="dash-qa-card">
-                    <span className="dash-qa-icon">🔍</span>
+                    <span className="dash-qa-icon"><i className="bx bx-search-alt" /></span>
                     <span className="dash-qa-label">Tìm việc</span>
                   </Link>
                   <Link to="/my-applications" className="dash-qa-card">
-                    <span className="dash-qa-icon">📋</span>
+                    <span className="dash-qa-icon"><i className="bx bx-list-check" /></span>
                     <span className="dash-qa-label">Đơn ứng tuyển</span>
                   </Link>
                   <Link to="/my-tasks" className="dash-qa-card dash-qa-highlight">
-                    <span className="dash-qa-icon">🔨</span>
+                    <span className="dash-qa-icon"><i className="bx bx-task" /></span>
                     <span className="dash-qa-label">Công việc</span>
                   </Link>
                   <Link to="/wallet" className="dash-qa-card">
-                    <span className="dash-qa-icon">💰</span>
+                    <span className="dash-qa-icon"><i className="bx bx-wallet" /></span>
                     <span className="dash-qa-label">Ví tiền</span>
                   </Link>
                   <Link to="/messages" className="dash-qa-card">
-                    <span className="dash-qa-icon">💬</span>
+                    <span className="dash-qa-icon"><i className="bx bx-message-rounded-dots" /></span>
                     <span className="dash-qa-label">Tin nhắn</span>
                   </Link>
                   <Link to="/profile" className="dash-qa-card">
-                    <span className="dash-qa-icon">👤</span>
+                    <span className="dash-qa-icon"><i className="bx bx-user" /></span>
                     <span className="dash-qa-label">Hồ sơ</span>
                   </Link>
                 </div>
@@ -624,7 +624,7 @@ export default function DashboardPage() {
                       </button>
                     ) : (
                       <Link to={user.role === 'business' ? '/post-job' : '/jobs'} className="btn btn-primary" style={{ marginTop: 12 }}>
-                        {user.role === 'business' ? '📝 Đăng việc ngay' : '🔍 Tìm việc ngay'}
+                        {user.role === 'business' ? <><i className="bx bx-edit" /> Đăng việc ngay</> : <><i className="bx bx-search-alt" /> Tìm việc ngay</>}
                       </Link>
                     )}
                   </div>
@@ -704,7 +704,7 @@ export default function DashboardPage() {
               {dashNotifications.length > 0 && (
                 <div className="dash-section fade-up">
                   <div className="dash-section-header">
-                    <h2>🔔 Thông báo gần đây</h2>
+                    <h2><i className="bx bx-bell" /> Thông báo gần đây</h2>
                     <Link to="/notifications" className="btn btn-ghost btn-sm">Xem tất cả →</Link>
                   </div>
                   <div className="dash-apps-list">
@@ -725,7 +725,7 @@ export default function DashboardPage() {
               {user.role === 'student' && (
                 <div className="dash-section fade-up">
                   <div className="dash-section-header">
-                    <h2>🤖 Gợi ý cho bạn</h2>
+                    <h2><i className="bx bx-bot" /> Gợi ý cho bạn</h2>
                   </div>
                   <div className="dash-rec-grid">
                     {jobsData.slice(0, 3).map((job) => (
@@ -735,7 +735,7 @@ export default function DashboardPage() {
                         </div>
                         <div>
                           <div className="dash-app-title">{job.title}</div>
-                          <div className="dash-app-company">{job.company} · 💰 {job.pay}</div>
+                          <div className="dash-app-company">{job.company} · <i className="bx bx-money" /> {job.pay}</div>
                         </div>
                       </Link>
                     ))}

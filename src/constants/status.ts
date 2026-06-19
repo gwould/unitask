@@ -15,11 +15,11 @@ export const APPLICANT_STATUS_MAP: Record<AppStatus, { label: string; cls: strin
 };
 
 export const TX_TYPE_CONFIG: Record<TxType, { icon: string; color: string; label: string }> = {
-  income:         { icon: '💰', color: 'var(--t)',  label: 'Thu nhập' },
-  escrow_in:      { icon: '🔒', color: 'var(--pl)', label: 'Nạp Escrow' },
-  withdraw:       { icon: '🏦', color: 'var(--a)',  label: 'Rút tiền' },
-  escrow_release: { icon: '✅', color: 'var(--t)',  label: 'Giải phóng' },
-  subscription:   { icon: '📦', color: 'var(--pl)', label: 'Gói đăng ký' },
+  income:         { icon: 'bx-trending-up',   color: 'var(--t)',  label: 'Thu nhập' },
+  escrow_in:      { icon: 'bx-lock-alt',      color: 'var(--pl)', label: 'Nạp Escrow' },
+  withdraw:       { icon: 'bx-building-house', color: 'var(--a)',  label: 'Rút tiền' },
+  escrow_release: { icon: 'bx-lock-open-alt', color: 'var(--t)',  label: 'Giải phóng' },
+  subscription:   { icon: 'bx-package',       color: 'var(--pl)', label: 'Gói đăng ký' },
 };
 
 export const TX_STATUS_LABEL: Record<TxStatus, { text: string; cls: string }> = {

@@ -200,7 +200,7 @@ export default function AdminFinancePage() {
       <div className="container">
         <div className="admin-finance-head fade-up visible">
           <div>
-            <h1>📈 Admin Finance Dashboard</h1>
+            <h1><i className="bx bx-line-chart" /> Admin Finance Dashboard</h1>
             <p>Thống kê tổng quan dòng tiền và các cách kiếm tiền của UniTask.</p>
           </div>
           <div className="admin-finance-actions">

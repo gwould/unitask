@@ -172,9 +172,9 @@ export default function JobDetailPage() {
       createNotification({
         recipientId: String(job.companyId),
         recipientType: 'business',
-        title: '📥 Có ứng viên mới',
-        message: `${user.name} vừa ứng tuyển vào job "${job.title}".`,
-        type: 'system',
+        title: 'Ứng viên mới',
+        message: `Có ứng viên mới ứng tuyển cho vị trí ${job.title}`,
+        type: 'application_status',
         relatedJobId: job.id,
         relatedApplicationId: appId ? String(appId) : undefined,
         actionUrl: '/manage-jobs',
@@ -184,12 +184,12 @@ export default function JobDetailPage() {
     createNotification({
       recipientId: String(user.id),
       recipientType: 'student',
-      title: '📨 Ứng tuyển thành công',
+      title: 'Ứng tuyển thành công',
       message: `Bạn đã ứng tuyển job "${job.title}" · Lương: ${job.pay} · Hạn: ${job.deadline}.`,
       type: 'application_status',
       relatedJobId: job.id,
       relatedApplicationId: appId ? String(appId) : undefined,
-      actionUrl: `/jobs/${job.id}`,
+      actionUrl: `/my-applications`,
     });
 
     setSubmitting(false);
@@ -236,22 +236,22 @@ export default function JobDetailPage() {
               </div>
               <div className="pd-quick-info">
                 <div className="pd-info-item">
-                  <span className="pd-info-label">💰 Mức lương</span>
+                  <span className="pd-info-label"><i className="bx bx-money" /> Mức lương</span>
                   <span className="pd-info-value">{job.pay}</span>
                 </div>
                 <div className="pd-info-item">
-                  <span className="pd-info-label">⏱ Thời gian</span>
+                  <span className="pd-info-label"><i className="bx bx-time-five" /> Thời gian</span>
                   <span className="pd-info-value">{job.duration || 'Linh hoạt'}</span>
                 </div>
                 <div className="pd-info-item">
-                  <span className="pd-info-label">⏰ Hạn ứng tuyển</span>
+                  <span className="pd-info-label"><i className="bx bx-calendar" /> Hạn ứng tuyển</span>
                   <span className="pd-info-value">
                     {deadlineText && <span className={deadlineText === 'Đã hết hạn' ? 'pd-expired' : ''}>{deadlineText}</span>}
                     {!deadlineText && job.deadline}
                   </span>
                 </div>
                 <div className="pd-info-item">
-                  <span className="pd-info-label">👥 Còn lại</span>
+                  <span className="pd-info-label"><i className="bx bx-group" /> Còn lại</span>
                   <span className="pd-info-value">{job.spotsLeft}/{job.spotsTotal} chỗ</span>
                   <div className="pd-spots-bar">
                     <div className="pd-spots-fill" style={{ width: `${spotsPercent}%` }} />
@@ -340,7 +340,7 @@ export default function JobDetailPage() {
             <div className="pd-sticky">
               {applied ? (
                 <div className="pd-applied-box">
-                  <div style={{ fontSize: 48, marginBottom: 12 }}>🎉</div>
+                  <div className="pd-applied-icon"><i className="bx bx-check-circle" /></div>
                   <h3>Ứng tuyển thành công!</h3>
                   <p>Doanh nghiệp sẽ xem hồ sơ và phản hồi bạn qua hệ thống.</p>
 
@@ -369,16 +369,16 @@ export default function JobDetailPage() {
 
                   <div className="pd-applied-actions">
                     <Link to="/my-applications" className="btn btn-primary btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
-                      📋 Theo dõi đơn
+                      <i className="bx bx-list-check" /> Theo dõi đơn
                     </Link>
                     <Link to="/my-tasks" className="btn btn-ghost btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
-                      🔨 Công việc
+                      <i className="bx bx-task" /> Công việc
                     </Link>
                   </div>
                 </div>
               ) : showApply ? (
                 <div className="pd-apply-form">
-                  <h3>✍️ Ứng tuyển vị trí này</h3>
+                  <h3><i className="bx bx-edit-alt" /> Ứng tuyển vị trí này</h3>
                   <p style={{ fontSize: 13, color: 'var(--t3)', marginBottom: 12 }}>
                     Giới thiệu ngắn gọn vì sao bạn phù hợp với job này.
                   </p>
@@ -440,7 +440,8 @@ export default function JobDetailPage() {
                           Đang gửi...
                         </>
                       ) : (
-                        '📨 Nộp CV & Ứng tuyển'
+                        <><i className="bx bx-send" /> Nộp CV & Ứng tuyển</>
+
                       )}
                     </button>
                     <button className="btn btn-ghost" onClick={() => setShowApply(false)}>
@@ -450,11 +451,11 @@ export default function JobDetailPage() {
                 </div>
               ) : (
                 <div className="pd-action-box">
-                  <div className="pd-action-pay">💰 {job.pay}</div>
-                  <div className="pd-action-duration">⏱ {job.duration || 'Linh hoạt'}</div>
+                  <div className="pd-action-pay"><i className="bx bx-money" /> {job.pay}</div>
+                  <div className="pd-action-duration"><i className="bx bx-time-five" /> {job.duration || 'Linh hoạt'}</div>
                   {deadlineText === 'Đã hết hạn' ? (
                     <div className="pd-expired-notice">
-                      ⏰ Job này đã hết hạn ứng tuyển
+                      <i className="bx bx-time-five" /> Job này đã hết hạn ứng tuyển
                     </div>
                   ) : (
                     <button
@@ -462,7 +463,7 @@ export default function JobDetailPage() {
                       style={{ width: '100%', justifyContent: 'center' }}
                       onClick={() => user ? setShowApply(true) : navigate('/login')}
                     >
-                      🚀 Ứng tuyển ngay
+                      <i className="bx bx-rocket" /> Ứng tuyển ngay
                     </button>
                   )}
                   {user && job.companyUserId && String(job.companyUserId) !== String(user.id) && (
@@ -478,7 +479,7 @@ export default function JobDetailPage() {
                         }
                       }}
                     >
-                      💬 Nhắn tin cho doanh nghiệp
+                      <i className="bx bx-message-rounded-dots" /> Nhắn tin cho doanh nghiệp
                     </button>
                   )}
                   {!user && (
@@ -487,7 +488,7 @@ export default function JobDetailPage() {
                     </p>
                   )}
                   <div className="pd-escrow-note">
-                    🛡️ Job này được bảo vệ bởi <strong>Escrow UniTask</strong>. Tiền đã được giữ — bạn sẽ nhận đủ khi hoàn thành.
+                    <i className="bx bx-shield-quarter" /> Job này được bảo vệ bởi <strong>Escrow UniTask</strong>. Tiền đã được giữ — bạn sẽ nhận đủ khi hoàn thành.
                   </div>
                   {user && (
                     <button
@@ -495,7 +496,7 @@ export default function JobDetailPage() {
                       style={{ width: '100%', justifyContent: 'center', marginTop: 8, color: 'var(--red)' }}
                       onClick={() => setShowReport(true)}
                     >
-                      🚩 Báo cáo job này
+                      <i className="bx bx-flag" /> Báo cáo job này
                     </button>
                   )}
                 </div>
@@ -516,6 +517,14 @@ export default function JobDetailPage() {
           </div>
         </div>
       </div>
+      {!applied && !showApply && deadlineText !== 'Đã hết hạn' && (
+        <div className="pd-mobile-bar">
+          <span className="pd-mobile-price">💰 {job.pay}</span>
+          <button className="btn btn-accent btn-sm" onClick={() => user ? setShowApply(true) : navigate('/login')}>
+            Ứng tuyển
+          </button>
+        </div>
+      )}
       {toast && (
         <div className="apps-toast apps-toast-success">
           <span>✅</span>

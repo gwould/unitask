@@ -90,7 +90,7 @@ export default function AIMatchingPanel({
               </div>
               <div className="jc-title">{job.title}</div>
               <div className="jc-company">
-                {job.company} {job.verified && <span className="verified">✅</span>} · {job.location}
+                {job.company} {job.verified && <span className="verified"><i className="bx bxs-badge-check" /></span>} · {job.location}
               </div>
               <div className="jc-tags aim-tags">
                 {job.tags.slice(0, 3).map((tag, index) => (
@@ -116,7 +116,7 @@ export default function AIMatchingPanel({
                 ))}
               </div>
               <div className="jc-footer">
-                <div className="jc-deadline">⏰ {job.deadline}</div>
+                <div className="jc-deadline"><i className="bx bx-time-five" /> {job.deadline}</div>
                 <span className="jc-btn">Xem chi tiết →</span>
               </div>
             </Link>

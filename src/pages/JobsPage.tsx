@@ -164,6 +164,8 @@ export default function JobsPage() {
     setCurrentPage(1);
   };
 
+  const activeFilterCount = [category, location, payRange !== 'all' ? payRange : '', availability !== 'all' ? availability : ''].filter(Boolean).length;
+
   return (
     <section className="page-jobs">
       <div className="page-jobs-hero">
@@ -171,12 +173,12 @@ export default function JobsPage() {
         <div className="container page-jobs-hero-inner">
           <div className="pj-header fade-up">
             <div className="pj-header-text">
-              <span className="pj-eyebrow">🌐 Việc làm</span>
+              <span className="pj-eyebrow"><i className="bx bx-globe" /> Việc làm</span>
               <h1 className="section-title">Tìm việc làm</h1>
               {(filtered.length > 0 || query) && (
                 <p className="section-sub">
                   Tìm thấy <strong>{filtered.length}</strong> việc làm
-                  {query && <> cho "<strong>{query}</strong>"</>}
+                  {query && <> cho &ldquo;<strong>{query}</strong>&rdquo;</>}
                 </p>
               )}
             </div>
@@ -188,7 +190,7 @@ export default function JobsPage() {
         <div className="pj-filters fade-up">
           <div className="pj-search-row">
             <div className="pj-input-wrap">
-              <span>🔍</span>
+              <i className="bx bx-search" />
               <input
                 type="text"
                 placeholder="Tìm theo tên job, kỹ năng..."
@@ -225,25 +227,32 @@ export default function JobsPage() {
               <option value="full">Đã đủ slot</option>
             </select>
             <button className="btn btn-primary" onClick={handleSearch}>
-              Tìm kiếm
+              <i className="bx bx-search" /> Tìm kiếm
             </button>
           </div>
-          <div className="pj-sort-row">
-            <span>Sắp xếp:</span>
-            {([
-              ['newest', 'Mới nhất'],
-              ['pay-high', 'Lương cao → thấp'],
-              ['pay-low', 'Lương thấp → cao'],
-              ['deadline', 'Sắp hết hạn'],
-            ] as const).map(([val, label]) => (
-              <button
-                key={val}
-                className={`pj-sort-btn${sort === val ? ' active' : ''}`}
-                onClick={() => setSort(val)}
-              >
-                {label}
+          <div className="pj-toolbar">
+            <div className="pj-sort-row">
+              <span><i className="bx bx-sort-alt-2" /> Sắp xếp:</span>
+              {([
+                ['newest', 'Mới nhất'],
+                ['pay-high', 'Lương cao → thấp'],
+                ['pay-low', 'Lương thấp → cao'],
+                ['deadline', 'Sắp hết hạn'],
+              ] as const).map(([val, label]) => (
+                <button
+                  key={val}
+                  className={`pj-sort-btn${sort === val ? ' active' : ''}`}
+                  onClick={() => setSort(val)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            {activeFilterCount > 0 && (
+              <button className="pj-clear-filters" onClick={() => { setCategory(''); setLocation(''); setPayRange('all'); setAvailability('all'); }}>
+                <i className="bx bx-x" /> Xóa {activeFilterCount} bộ lọc
               </button>
-            ))}
+            )}
           </div>
         </div>
 
@@ -293,46 +302,53 @@ export default function JobsPage() {
             </div>
 
             <div className="pj-grid">
-              {paginatedJobs.map((job) => (
-                <Link to={`/jobs/${job.id}`} key={job.id} className="pj-card fade-up">
-                  <div className="pj-card-top">
-                    <div className="jc-logo" style={{ background: job.logoGradient }}>
-                      {job.logoText}
-                    </div>
-                    <div className="pj-card-meta">
-                      <div className="pj-card-title">{job.title}</div>
-                      <div className="pj-card-company">
-                        {job.company} {job.verified && '✅'} · {job.location}
+              {paginatedJobs.map((job) => {
+                const score = matchMap[job.id];
+                return (
+                  <Link to={`/jobs/${job.id}`} key={job.id} className="pj-card fade-up">
+                    {score != null && score >= 60 && (
+                      <span className="pj-match-badge"><i className="bx bx-target-lock" /> {Math.round(score)}% phù hợp</span>
+                    )}
+                    <div className="pj-card-top">
+                      <div className="jc-logo" style={{ background: job.logoGradient }}>
+                        {job.logoText}
+                      </div>
+                      <div className="pj-card-meta">
+                        <div className="pj-card-title">{job.title}</div>
+                        <div className="pj-card-company">
+                          {job.company} {job.verified && <i className="bx bxs-badge-check pj-verified" />} · <i className="bx bx-map" /> {job.location}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="jc-tags" style={{ marginBottom: 10 }}>
-                    {job.tags.map((t, i) => (
-                      <span key={i} className={`tag tag-${t.variant}`}>{t.label}</span>
-                    ))}
-                  </div>
-                  <div className="pj-card-skills">
-                    {job.skills.slice(0, 4).map((s) => (
-                      <span key={s} className="pj-skill">{s}</span>
-                    ))}
-                  </div>
-                  <div className="pj-card-bottom">
-                    <span className="pj-pay">💰 {job.pay}</span>
-                    <span className="pj-deadline">⏰ {job.deadline}</span>
-                  </div>
-                  <div className="pj-card-spots">
-                    Còn {job.spotsLeft}/{job.spotsTotal} chỗ
-                    <div className="spots-bar" style={{ flex: 1 }}>
-                      <div
-                        className="spots-fill"
-                        style={{
-                          width: `${((job.spotsTotal - job.spotsLeft) / job.spotsTotal) * 100}%`,
-                        }}
-                      />
+                    <div className="jc-tags" style={{ marginBottom: 10 }}>
+                      {job.tags.map((t, i) => (
+                        <span key={i} className={`tag tag-${t.variant}`}>{t.label}</span>
+                      ))}
                     </div>
-                  </div>
-                </Link>
-              ))}
+                    <div className="pj-card-skills">
+                      {job.skills.slice(0, 4).map((s) => (
+                        <span key={s} className="pj-skill">{s}</span>
+                      ))}
+                      {job.skills.length > 4 && <span className="pj-skill pj-skill-more">+{job.skills.length - 4}</span>}
+                    </div>
+                    <div className="pj-card-bottom">
+                      <span className="pj-pay"><i className="bx bx-money" /> {job.pay}</span>
+                      <span className="pj-deadline"><i className="bx bx-time-five" /> {job.deadline}</span>
+                    </div>
+                    <div className="pj-card-spots">
+                      <i className="bx bx-user" /> Còn {job.spotsLeft}/{job.spotsTotal} chỗ
+                      <div className="spots-bar" style={{ flex: 1 }}>
+                        <div
+                          className="spots-fill"
+                          style={{
+                            width: `${((job.spotsTotal - job.spotsLeft) / job.spotsTotal) * 100}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
 
             {/* Pagination */}

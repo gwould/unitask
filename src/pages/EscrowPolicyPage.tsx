@@ -114,7 +114,7 @@ export default function EscrowPolicyPage() {
           <div className="policy-meta">
             <span>Áp dụng cho tất cả giao dịch</span>
             <span className="dot">•</span>
-            <span>Mục có ⚙️ được hệ thống tự động thực thi</span>
+            <span>Mục có <i className="bx bx-cog" /> được hệ thống tự động thực thi</span>
           </div>
           <div className="policy-actions">
             <Link to="/contact" className="btn btn-primary">Liên hệ hỗ trợ</Link>
@@ -131,7 +131,7 @@ export default function EscrowPolicyPage() {
               ))}
             </ul>
             <div className="policy-note">
-              ⚙️ Đã tự động hoá: 1.1, 1.2, 1.4. Các điều còn lại đang ở dạng quy định/vận hành.
+              <i className="bx bx-cog" /> Đã tự động hoá: 1.1, 1.2, 1.4. Các điều còn lại đang ở dạng quy định/vận hành.
             </div>
           </aside>
 
@@ -144,7 +144,7 @@ export default function EscrowPolicyPage() {
                   <ul>
                     {g.items.map((it) => (
                       <li key={it.code} style={{ marginBottom: 10 }}>
-                        <strong>{it.code}{it.title ? ` — ${it.title}` : ''}{it.auto ? ' ⚙️' : ''}:</strong>{' '}
+                        <strong>{it.code}{it.title ? ` — ${it.title}` : ''}{it.auto ? ' <i className="bx bx-cog" />' : ''}:</strong>{' '}
                         {it.rule}
                         {it.note && (
                           <div style={{ fontSize: 13, color: 'var(--text-2)', marginTop: 3 }}>{it.note}</div>

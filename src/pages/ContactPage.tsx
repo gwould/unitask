@@ -104,11 +104,11 @@ export default function ContactPage() {
       <section className="page-contact">
         <div className="container">
           <div className="contact-success fade-up">
-            <div style={{ fontSize: 56, marginBottom: 16 }}>✉️</div>
+            <div style={{ fontSize: 56, marginBottom: 16 }}><i className="bx bx-check-circle" /></div>
             <h2>Đã gửi thành công!</h2>
             <p>Cảm ơn bạn đã liên hệ. Chúng tôi sẽ phản hồi trong 24 giờ làm việc.</p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 24 }}>
-              <button className="btn btn-primary" onClick={handleReset}>📩 Gửi tin nhắn khác</button>
+              <button className="btn btn-primary" onClick={handleReset}><i className="bx bx-envelope" /> Gửi tin nhắn khác</button>
               <Link to="/" className="btn btn-ghost">← Về trang chủ</Link>
             </div>
           </div>
@@ -195,35 +195,35 @@ export default function ContactPage() {
               </div>
             </div>
             <button type="submit" className="btn btn-primary" disabled={sending}>
-              {sending ? '⏳ Đang gửi...' : '📩 Gửi tin nhắn'}
+              {sending ? 'Đang gửi...' : <><i className="bx bx-send" /> Gửi tin nhắn</>}
             </button>
           </form>
 
           {/* info */}
           <div className="contact-info fade-up">
             <div className="contact-info-card">
-              <div className="ci-icon">📧</div>
+              <div className="ci-icon"><i className="bx bx-envelope" /></div>
               <div>
                 <h4>Email hỗ trợ</h4>
                 <p>support@unitask.io.vn</p>
               </div>
             </div>
             <div className="contact-info-card">
-              <div className="ci-icon">📱</div>
+              <div className="ci-icon"><i className="bx bx-phone" /></div>
               <div>
                 <h4>Zalo / Hotline</h4>
                 <p>0382-xxx-xxx (Thứ 2–6, 8h–18h)</p>
               </div>
             </div>
             <div className="contact-info-card">
-              <div className="ci-icon">📍</div>
+              <div className="ci-icon"><i className="bx bx-map" /></div>
               <div>
                 <h4>Trụ sở</h4>
                 <p>TP. Hồ Chí Minh, Việt Nam</p>
               </div>
             </div>
             <div className="contact-info-card">
-              <div className="ci-icon">💬</div>
+              <div className="ci-icon"><i className="bx bx-message-rounded-dots" /></div>
               <div>
                 <h4>Mạng xã hội</h4>
                 <p>Facebook · LinkedIn · TikTok</p>
@@ -231,7 +231,7 @@ export default function ContactPage() {
             </div>
 
             <div className="contact-faq">
-              <h4>❓ Câu hỏi thường gặp</h4>
+              <h4><i className="bx bx-help-circle" /> Câu hỏi thường gặp</h4>
               {FAQ_DATA.map((faq, i) => (
                 <div key={i} className={`contact-faq-item${openFaq === i ? ' open' : ''}`}>
                   <button
@@ -255,7 +255,7 @@ export default function ContactPage() {
       {/* Toast */}
       {toast && (
         <div className="apps-toast apps-toast-success">
-          <span>✅</span>
+          <span><i className="bx bx-check-circle" /></span>
           {toast}
           <button className="apps-toast-close" onClick={() => setToast(null)}>✕</button>
         </div>

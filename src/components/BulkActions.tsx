@@ -61,9 +61,9 @@ export function BulkActions({ selectedIds, applicants, onApplyAction, isLoading 
           <span className="bulk-count">{selectedCount}</span>
           <span className="bulk-label">ứng viên được chọn</span>
           <div className="bulk-stats">
-            <span title="Pending">⏳ {selectedStats.pending}</span>
-            <span title="Accepted">✅ {selectedStats.accepted}</span>
-            <span title="Avg rating">⭐ {selectedStats.avgRating}</span>
+            <span title="Pending"><i className="bx bx-loader-circle" /> {selectedStats.pending}</span>
+            <span title="Accepted"><i className="bx bx-check-circle" /> {selectedStats.accepted}</span>
+            <span title="Avg rating"><i className="bx bxs-star" /> {selectedStats.avgRating}</span>
           </div>
         </div>
 
@@ -86,7 +86,7 @@ export function BulkActions({ selectedIds, applicants, onApplyAction, isLoading 
             onClick={() => setIsOpen(true)}
             disabled={isLoading}
           >
-            📋 {selectedCount} thao tác
+            <i className="bx bx-list-check" /> {selectedCount} thao tác
           </button>
         </div>
       )}
@@ -101,14 +101,14 @@ export function BulkActions({ selectedIds, applicants, onApplyAction, isLoading 
                 onClick={handleBulkAccept}
                 disabled={isLoading}
               >
-                ✅ Chấp nhận cả {selectedCount}
+                <i className="bx bx-check" /> Chấp nhận cả {selectedCount}
               </button>
               <button
                 className="btn btn-danger-ghost btn-sm"
                 onClick={handleBulkReject}
                 disabled={isLoading}
               >
-                ❌ Từ chối cả {selectedCount}
+                <i className="bx bx-x" /> Từ chối cả {selectedCount}
               </button>
             </div>
           </div>
@@ -120,7 +120,7 @@ export function BulkActions({ selectedIds, applicants, onApplyAction, isLoading 
                 className="btn btn-ghost btn-sm"
                 onClick={() => setShowNotifyForm(true)}
               >
-                🔔 Gửi thông báo cho {selectedCount}
+                <i className="bx bx-bell" /> Gửi thông báo cho {selectedCount}
               </button>
             ) : (
               <div className="bulk-notify-form">

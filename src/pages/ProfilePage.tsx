@@ -131,10 +131,10 @@ export default function ProfilePage() {
             <div className="prof-info">
               <h1>{user.name}</h1>
               <div className="prof-role-badge">
-                {user.role === 'student' ? '👨‍🎓 Sinh viên' : '🏢 Doanh nghiệp'}
+                <i className={`bx ${user.role === 'student' ? 'bxs-graduation' : 'bxs-building-house'}`} /> {user.role === 'student' ? 'Sinh viên' : 'Doanh nghiệp'}
               </div>
               {user.rating !== undefined && user.rating > 0 && (
-                <div className="prof-rating">⭐ {user.rating}/5.0 · 🏆 {user.completedJobs || 0} job hoàn thành</div>
+                <div className="prof-rating"><i className="bx bxs-star" /> {user.rating}/5.0 · <i className="bx bx-trophy" /> {user.completedJobs || 0} job hoàn thành</div>
               )}
               <div className="prof-completion">
                 <div className="prof-comp-bar">
@@ -152,22 +152,22 @@ export default function ProfilePage() {
           {user.role === 'student' && (
             <div className="prof-stats fade-up">
               <div className="prof-stat-card">
-                <div className="prof-stat-icon">🏆</div>
+                <div className="prof-stat-icon"><i className="bx bx-trophy" /></div>
                 <div className="prof-stat-num">{user.completedJobs || 0}</div>
                 <div className="prof-stat-label">Job hoàn thành</div>
               </div>
               <div className="prof-stat-card">
-                <div className="prof-stat-icon">⭐</div>
+                <div className="prof-stat-icon"><i className="bx bxs-star" /></div>
                 <div className="prof-stat-num">{user.rating?.toFixed(1) || '0.0'}</div>
                 <div className="prof-stat-label">Đánh giá TB</div>
               </div>
               <div className="prof-stat-card">
-                <div className="prof-stat-icon">🎯</div>
+                <div className="prof-stat-icon"><i className="bx bx-target-lock" /></div>
                 <div className="prof-stat-num">{(user.skills || []).length}</div>
                 <div className="prof-stat-label">Kỹ năng</div>
               </div>
               <div className="prof-stat-card">
-                <div className="prof-stat-icon">📊</div>
+                <div className="prof-stat-icon"><i className="bx bx-bar-chart-alt-2" /></div>
                 <div className="prof-stat-num">{completion}%</div>
                 <div className="prof-stat-label">Hoàn thiện</div>
               </div>
@@ -178,7 +178,7 @@ export default function ProfilePage() {
           {missingFields.length > 0 && completion < 100 && (
             <div className="prof-tips fade-up">
               <div className="prof-tips-header">
-                <span>💡</span>
+                <span><i className="bx bx-bulb" /></span>
                 <strong>Hoàn thiện hồ sơ để tăng cơ hội được nhận</strong>
               </div>
               <div className="prof-tips-list">
@@ -206,7 +206,7 @@ export default function ProfilePage() {
 
           {/* form */}
           <form className="prof-form fade-up" onSubmit={handleSubmit}>
-            {saved && <div className="prof-saved">✅ Đã lưu thay đổi!</div>}
+            {saved && <div className="prof-saved"><i className="bx bx-check-circle" /> Đã lưu thay đổi!</div>}
 
             <h2>Thông tin cá nhân</h2>
 
@@ -283,7 +283,7 @@ export default function ProfilePage() {
             )}
 
             <div className="prof-actions">
-              <button type="submit" className="btn btn-primary">💾 Lưu thay đổi</button>
+              <button type="submit" className="btn btn-primary"><i className="bx bx-save" /> Lưu thay đổi</button>
               <Link to="/dashboard" className="btn btn-ghost">← Về Dashboard</Link>
             </div>
           </form>
