@@ -84,9 +84,11 @@ export const notificationService = {
         // fallback local
       }
     }
-    const all: Notification[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS) || '[]');
-    const updated = all.map((n) => (n.id === id ? { ...n, isRead: true } : n));
-    localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(updated));
+    try {
+      const all: Notification[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS) || '[]');
+      const updated = all.map((n) => (n.id === id ? { ...n, isRead: true } : n));
+      localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(updated));
+    } catch { /* corrupted storage */ }
   },
 
   async markAllRead(): Promise<void> {
@@ -98,18 +100,22 @@ export const notificationService = {
         // fallback
       }
     }
-    const all: Notification[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS) || '[]');
-    localStorage.setItem(
-      STORAGE_KEYS.NOTIFICATIONS,
-      JSON.stringify(all.map((n) => ({ ...n, isRead: true }))),
-    );
+    try {
+      const all: Notification[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS) || '[]');
+      localStorage.setItem(
+        STORAGE_KEYS.NOTIFICATIONS,
+        JSON.stringify(all.map((n) => ({ ...n, isRead: true }))),
+      );
+    } catch { /* corrupted storage */ }
   },
 
   deleteLocal(id: string): void {
-    const all: Notification[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS) || '[]');
-    localStorage.setItem(
-      STORAGE_KEYS.NOTIFICATIONS,
-      JSON.stringify(all.filter((n) => n.id !== id)),
-    );
+    try {
+      const all: Notification[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS) || '[]');
+      localStorage.setItem(
+        STORAGE_KEYS.NOTIFICATIONS,
+        JSON.stringify(all.filter((n) => n.id !== id)),
+      );
+    } catch { /* corrupted storage */ }
   },
 };

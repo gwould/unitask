@@ -398,7 +398,7 @@ export default function WalletPage() {
     setBankMethods((prev) => {
       const updated = prev.filter((m) => m.id !== id);
       if (updated.length > 0 && !updated.some((m) => m.isDefault)) {
-        updated[0].isDefault = true;
+        updated[0] = { ...updated[0], isDefault: true };
       }
       saveBankMethods(updated);
       return updated;

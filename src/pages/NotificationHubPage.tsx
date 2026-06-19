@@ -202,7 +202,9 @@ export default function NotificationHubPage() {
   }, [notifications, filterType]);
 
   const handleMarkRead = useCallback(async (id: string) => {
-    await notificationService.markRead(id);
+    try {
+      await notificationService.markRead(id);
+    } catch { /* best-effort */ }
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)));
     refreshBadge();
   }, [refreshBadge]);
@@ -214,7 +216,9 @@ export default function NotificationHubPage() {
   }, [refreshBadge]);
 
   const handleMarkAllRead = useCallback(async () => {
-    await notificationService.markAllRead();
+    try {
+      await notificationService.markAllRead();
+    } catch { /* best-effort */ }
     setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
     refreshBadge();
   }, [refreshBadge]);

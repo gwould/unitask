@@ -502,11 +502,15 @@ export default function ManageJobsPage() {
   const handleManageContract = useCallback(async (ap: Applicant) => {
     const appId = String(ap.appId ?? ap.id);
     showToast('Đang kiểm tra hợp đồng…');
-    const existing = await milestoneService.getContractByApplication(appId);
-    if (existing) {
-      navigate(`/contracts/${existing.id}`);
-    } else {
-      setContractModal(ap);
+    try {
+      const existing = await milestoneService.getContractByApplication(appId);
+      if (existing) {
+        navigate(`/contracts/${existing.id}`);
+      } else {
+        setContractModal(ap);
+      }
+    } catch {
+      showToast('Không thể kiểm tra hợp đồng. Vui lòng thử lại.', 'error');
     }
   }, [navigate, showToast]);
 
