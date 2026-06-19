@@ -50,7 +50,7 @@ export default function RegisterPage() {
       <div className="auth-container">
         <div className="auth-card">
           <div className="auth-header">
-            <span className="auth-logo-icon">🚀</span>
+            <span className="auth-logo-icon"><i className="bx bx-rocket" /></span>
             <h1>Tạo tài khoản</h1>
             <p>Tham gia cộng đồng UniTask — hoàn toàn miễn phí</p>
           </div>
@@ -62,24 +62,24 @@ export default function RegisterPage() {
               className={`role-btn${role === 'student' ? ' active' : ''}`}
               onClick={() => setRole('student')}
             >
-              👨‍🎓 Sinh viên
+              <i className="bx bxs-graduation" /> Sinh viên
             </button>
             <button
               type="button"
               className={`role-btn${role === 'business' ? ' active' : ''}`}
               onClick={() => setRole('business')}
             >
-              🏢 Doanh nghiệp
+              <i className="bx bxs-building-house" /> Doanh nghiệp
             </button>
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form" noValidate>
-            {error && <div className="auth-error">⚠️ {error}</div>}
+            {error && <div className="auth-error"><i className="bx bx-error" /> {error}</div>}
 
             <div className="form-group">
               <label>Họ và tên *</label>
               <div className="input-icon-wrap">
-                <span className="input-icon">👤</span>
+                <span className="input-icon"><i className="bx bx-user" /></span>
                 <input
                   type="text"
                   placeholder={role === 'student' ? 'Nguyễn Văn A' : 'Trần Quản lý'}
@@ -93,7 +93,7 @@ export default function RegisterPage() {
             <div className="form-group">
               <label>Email *</label>
               <div className="input-icon-wrap">
-                <span className="input-icon">📧</span>
+                <span className="input-icon"><i className="bx bx-envelope" /></span>
                 <input
                   type="email"
                   placeholder="you@example.com"
@@ -108,7 +108,7 @@ export default function RegisterPage() {
             <div className="form-group">
               <label>Mật khẩu *</label>
               <div className="input-icon-wrap">
-                <span className="input-icon">🔒</span>
+                <span className="input-icon"><i className="bx bx-lock-alt" /></span>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Tối thiểu 6 ký tự"
@@ -123,7 +123,7 @@ export default function RegisterPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   tabIndex={-1}
                 >
-                  {showPassword ? '🙈' : '👁️'}
+                  <i className={`bx ${showPassword ? 'bx-hide' : 'bx-show'}`} />
                 </button>
               </div>
               {password.length > 0 && password.length < 6 && (
@@ -139,7 +139,7 @@ export default function RegisterPage() {
                 <div className="form-group">
                   <label>Trường đại học</label>
                   <div className="input-icon-wrap">
-                    <span className="input-icon">🏫</span>
+                    <span className="input-icon"><i className="bx bxs-school" /></span>
                     <input
                       type="text"
                       placeholder="VD: Đại học Bách Khoa TP.HCM"
@@ -152,7 +152,7 @@ export default function RegisterPage() {
                 <div className="form-group">
                   <label>Chuyên ngành</label>
                   <div className="input-icon-wrap">
-                    <span className="input-icon">📚</span>
+                    <span className="input-icon"><i className="bx bx-book-open" /></span>
                     <input
                       type="text"
                       placeholder="VD: Công nghệ Thông tin"
@@ -169,7 +169,7 @@ export default function RegisterPage() {
               <div className="form-group">
                 <label>Tên công ty / tổ chức</label>
                 <div className="input-icon-wrap">
-                  <span className="input-icon">🏢</span>
+                  <span className="input-icon"><i className="bx bxs-building-house" /></span>
                   <input
                     type="text"
                     placeholder="VD: TechNova VN"

@@ -290,7 +290,7 @@ export default function JobsPage() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="pj-empty fade-up">
-            <div style={{ fontSize: 48, marginBottom: 16 }}>🔍</div>
+            <div style={{ fontSize: 48, marginBottom: 16 }}><i className="bx bx-search-alt" /></div>
             <h3>Không tìm thấy job phù hợp</h3>
             <p>Thử thay đổi bộ lọc hoặc tìm với từ khóa khác.</p>
           </div>

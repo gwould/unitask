@@ -470,7 +470,7 @@ export default function MyApplicationsPage() {
         message: `${user.name} đã nộp bài cho task "${submittedJob.title}". Vui lòng nghiệm thu.`,
         type: 'submission_request',
         relatedJobId: submittedJob.id,
-        actionUrl: '/manage-jobs',
+        actionUrl: '/contracts',
       });
     }
 

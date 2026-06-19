@@ -3827,3 +3827,207 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
   .pd-layout{padding-bottom:72px}
 }
 [data-theme="light"] .pd-mobile-bar{background:rgba(255,255,255,.95);border-top-color:rgba(0,0,0,.08)}
+
+/* ═══════════════════════════════════════════════════════
+   MOBILE DEEP-FIX — Dashboard, Contracts, All Flows
+   Fixes spacing, overflow, sidebar collapse, padding
+   ═══════════════════════════════════════════════════════ */
+
+/* Shared page section padding — responsive */
+.page-section-main{padding:100px 20px 60px}
+
+/* ─── 900px: Dashboard sidebar collapse ─────────────── */
+@media(max-width:900px){
+  /* Hide sidebar nav on tablet/mobile — mobile nav already provides navigation */
+  .dash-nav{display:none}
+  /* Sidebar cards: compact single column */
+  .dash-aside{position:static;display:flex;flex-direction:column;gap:12px;order:2}
+  .dash-main{order:1}
+  .dash-profile-card{padding:20px 16px}
+  .dash-profile-card h3{font-size:15px}
+  .dash-wallet{padding:16px}
+  .dash-wallet-amount{font-size:20px}
+  /* Toolbar: stack greeting + actions */
+  .dash-toolbar{gap:10px}
+  .dash-toolbar-actions{flex-wrap:wrap;gap:8px}
+  .dash-period-tabs{gap:4px}
+  .dash-period-btn{padding:7px 12px;font-size:12px}
+  /* Quick actions: 3 cols */
+  .dash-quick-actions{grid-template-columns:repeat(3,1fr);gap:8px}
+  .dash-qa-card{padding:14px 8px}
+  .dash-qa-label{font-size:11px}
+  /* Onboarding: tighter */
+  .dash-onboard{padding:20px 16px}
+  .dash-onboard-step{padding:12px 14px;gap:12px}
+  .dash-ob-info strong{font-size:13px}
+  .dash-ob-info span{font-size:11.5px}
+  /* Student flow: horizontal scroll */
+  .dash-student-flow{padding:18px 16px}
+  .dash-sf-steps{gap:0}
+  .dash-sf-step{min-width:130px;padding:12px 10px}
+  .dash-sf-info strong{font-size:12px}
+  .dash-sf-info span{font-size:10.5px}
+  /* Section: reduce gaps */
+  .dash-section{margin-bottom:16px}
+  .dash-section-header{margin-bottom:12px;padding-bottom:10px}
+  /* App rows: tighter */
+  .dash-app-row{padding:10px;gap:10px}
+  /* Kanban board */
+  .kb-board-scroll{padding:12px 16px 24px}
+  .kb-col{width:220px}
+  .kb-col-head{padding:8px 12px;font-size:10.5px}
+  .kb-col-body{padding:8px;gap:8px;max-height:calc(100vh - 280px)}
+  /* Contract page */
+  .page-contract{padding-top:80px}
+  .ms-panel{padding:16px 14px}
+  .ms-panel-head h3{font-size:15px}
+  .ms-item{padding:12px 14px}
+  .ms-actions{gap:8px}
+  .ms-actions .btn{font-size:12px;padding:7px 12px}
+}
+
+/* ─── 768px: Deep mobile fixes ──────────────────────── */
+@media(max-width:768px){
+  /* Page section padding on mobile */
+  .page-section-main{padding:80px 14px 40px}
+  /* All page-level wrappers: reduce padding */
+  .page-dashboard,.page-detail,.page-postjob,.page-admin-finance,.page-profile,.page-wallet,.page-apps,.page-manage,.page-business-automation,.page-about,.page-contact,.page-messages,.page-student-tasks,.adm-page{padding:80px 0 40px}
+  .page-auth{padding:80px 0 40px}
+  .sl-page{padding:80px 14px 40px}
+  /* Dashboard greeting */
+  .dash-greeting{font-size:18px!important;line-height:1.3}
+  /* Dashboard stat cards */
+  .dash-stat-card{padding:14px 12px}
+  .ds-num{font-size:22px}
+  .ds-label{font-size:11px}
+  .ds-icon{width:36px;height:36px}
+  .ds-icon i{font-size:18px}
+  /* Quick actions: 3→2 */
+  .dash-quick-actions{grid-template-columns:repeat(3,1fr)!important}
+  /* Onboarding: even tighter */
+  .dash-onboard-header h2{font-size:17px}
+  .dash-onboard-header p{font-size:12px}
+  /* Wallet page */
+  .wallet-cards{grid-template-columns:1fr}
+  .wallet-header{padding:0 0 16px}
+  .wallet-filter-row{flex-wrap:wrap;gap:6px}
+  /* Profile page */
+  .prof-header .prof-badges{flex-wrap:wrap;justify-content:center}
+  .prof-stat-card{padding:14px 12px}
+  .prof-stat-card .ps-num{font-size:20px}
+  /* Messages page */
+  .msg-layout{grid-template-columns:1fr!important}
+  .msg-sidebar{max-height:200px;overflow-y:auto}
+  .msg-compose{padding:10px 12px;gap:8px}
+  .msg-compose .btn{min-width:auto;padding:8px 14px}
+  /* Notification hub */
+  .nh-page{padding-top:80px}
+  .nh-container{padding:0 14px}
+  .nh-title{font-size:20px}
+  .nh-item-title{font-size:14px}
+  .nh-item-msg{font-size:12.5px}
+  .nh-item-link{font-size:12px}
+  .nh-category-filters{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;gap:6px;padding-bottom:4px}
+  .nh-category-filters::-webkit-scrollbar{display:none}
+  .nh-cat-chip{white-space:nowrap;flex-shrink:0;font-size:12px}
+  /* Contracts list */
+  .contract-card-top{flex-direction:column;align-items:flex-start;gap:6px}
+  .contract-card-meta{flex-direction:column;gap:4px}
+  /* Kanban mobile */
+  .kb-back-bar{padding:8px 14px 0}
+  .ms-form-row{flex-direction:column;gap:6px}
+  .ms-form-amount,.ms-form-date{width:100%}
+  .ms-submission{padding:12px}
+  /* ManageJobs deeper fixes */
+  .manage-ap-card{padding:12px}
+  .manage-ap-avatar{width:36px;height:36px;font-size:14px}
+  .manage-ap-info{gap:2px}
+  .manage-ap-name{font-size:13.5px}
+  /* Admin pages */
+  .admin-panel h2{font-size:16px}
+  .adm-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  /* Policy/Escrow page */
+  .page-policy .container{padding:80px 14px 40px}
+  .policy-layout{grid-template-columns:1fr!important}
+  .policy-toc{display:none}
+  .policy-card{padding:20px 16px}
+  .policy-hero h1{font-size:22px}
+  .policy-hero p{font-size:13px}
+  /* About page */
+  .about-hero h1{font-size:24px}
+  .about-team-grid{grid-template-columns:1fr}
+  .about-values-grid{grid-template-columns:1fr}
+  .about-plan-grid{grid-template-columns:1fr}
+  /* Contact page */
+  .contact-grid{grid-template-columns:1fr}
+  .contact-form{padding:20px 16px}
+  .contact-card{padding:16px}
+  /* Upgrade page */
+  .upgrade-plans{grid-template-columns:1fr}
+  .upgrade-hero h1{font-size:22px}
+  /* Automation pages */
+  .auto-rule-card{padding:14px}
+  /* Student tasks */
+  .stask-stats{grid-template-columns:repeat(2,1fr);gap:8px}
+  .stask-stat-card{padding:12px}
+}
+
+/* ─── 500px: Deep small mobile ──────────────────────── */
+@media(max-width:500px){
+  /* Dashboard */
+  .dash-quick-actions{grid-template-columns:repeat(2,1fr)!important}
+  .dash-qa-icon{width:32px;height:32px}
+  .dash-qa-icon i{font-size:16px}
+  .dash-stat-card{padding:12px 10px}
+  .ds-num{font-size:18px}
+  .ds-icon{width:32px;height:32px}
+  .ds-icon i{font-size:16px}
+  .dash-profile-card{padding:16px 12px}
+  .dash-wallet{padding:14px 12px}
+  .dash-wallet-amount{font-size:18px}
+  .dash-toolbar-actions{width:100%}
+  .dash-period-tabs{width:100%;justify-content:center}
+  /* Student flow: smaller */
+  .dash-sf-step{min-width:110px;padding:10px 8px}
+  .dash-sf-num{width:28px;height:28px;font-size:12px}
+  /* Onboarding */
+  .dash-onboard{padding:16px 12px}
+  .dash-onboard-step{padding:10px 12px;gap:10px}
+  .dash-ob-num{width:28px;height:28px;font-size:12px}
+  .dash-ob-arrow{display:none}
+  /* Kanban columns: full width with horizontal scroll */
+  .kb-board-scroll{padding:8px 10px 20px}
+  .kb-col{width:calc(100vw - 40px)}
+  .kb-col-head{font-size:10px}
+  /* Contracts list */
+  .contract-card{padding:10px 12px}
+  .contract-card-top strong{font-size:13px}
+  /* Notification hub */
+  .nh-item{padding:12px}
+  .nh-item-icon{width:28px;height:28px}
+  .nh-item-icon i{font-size:16px}
+  .nh-bulk-actions{flex-direction:column;gap:6px}
+  .nh-bulk-btn{width:100%;justify-content:center}
+  /* Messages */
+  .msg-sidebar{max-height:160px}
+  .msg-bubble{max-width:90%;font-size:13px}
+  .msg-compose input{padding:10px 12px}
+  /* ManageJobs */
+  .manage-panel-header h2{font-size:14px}
+  .manage-ap-actions{flex-direction:column;gap:6px}
+  .manage-ap-actions .btn{width:100%}
+  /* Profile */
+  .prof-avatar{width:56px;height:56px;font-size:20px}
+  .prof-info h1{font-size:20px}
+  .prof-stat-card{padding:10px}
+  .prof-stat-card .ps-num{font-size:18px}
+  /* Admin */
+  .admin-panel{padding:12px}
+  .adm-tabs .btn{font-size:11px;padding:6px 10px}
+  /* Policy */
+  .policy-card h2{font-size:16px}
+  .policy-card li{font-size:13px}
+  /* Wallet */
+  .wallet-escrow-info{padding:14px 12px}
+  .wallet-tx-row{padding:10px 12px}
+}

@@ -17,7 +17,7 @@ export default function ContractPage() {
 
   if (!id) {
     return (
-      <div className="container" style={{ padding: '100px 48px 60px' }}>
+      <div className="container page-section-main">
         <p>Không tìm thấy mã hợp đồng.</p>
         <Link to={backTo} className="btn btn-ghost btn-sm">{backLabel}</Link>
       </div>

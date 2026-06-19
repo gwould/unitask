@@ -7,14 +7,14 @@ import { useNotifications } from '../contexts/NotificationContext';
 import { useTheme } from '../contexts/ThemeContext';
 
 const megaCategories = [
-  { slug: 'it', icon: '💻', name: 'IT / Lập trình', count: '320+ việc' },
-  { slug: 'design', icon: '🎨', name: 'Thiết kế', count: '180+ việc' },
-  { slug: 'marketing', icon: '📢', name: 'Marketing', count: '150+ việc' },
-  { slug: 'content', icon: '✍️', name: 'Content & SEO', count: '120+ việc' },
-  { slug: 'language', icon: '🌐', name: 'Ngôn ngữ & Dịch thuật', count: '90+ việc' },
-  { slug: 'data', icon: '📊', name: 'Data & Phân tích', count: '75+ việc' },
-  { slug: 'business', icon: '💼', name: 'Kinh doanh', count: '60+ việc' },
-  { slug: 'other', icon: '🔧', name: 'Khác', count: '105+ việc' },
+  { slug: 'it', icon: 'bx-code-alt', name: 'IT / Lập trình', count: '320+ việc' },
+  { slug: 'design', icon: 'bx-palette', name: 'Thiết kế', count: '180+ việc' },
+  { slug: 'marketing', icon: 'bx-megaphone', name: 'Marketing', count: '150+ việc' },
+  { slug: 'content', icon: 'bx-pen', name: 'Content & SEO', count: '120+ việc' },
+  { slug: 'language', icon: 'bx-globe', name: 'Ngôn ngữ & Dịch thuật', count: '90+ việc' },
+  { slug: 'data', icon: 'bx-bar-chart-alt-2', name: 'Data & Phân tích', count: '75+ việc' },
+  { slug: 'business', icon: 'bx-briefcase-alt', name: 'Kinh doanh', count: '60+ việc' },
+  { slug: 'other', icon: 'bx-wrench', name: 'Khác', count: '105+ việc' },
 ];
 
 export default function Navbar() {
@@ -106,49 +106,47 @@ export default function Navbar() {
       {/* Mobile Nav */}
       <nav className={`mobile-nav${mobileOpen ? ' open' : ''}`}>
         <button className="mobile-close" onClick={closeMobile}>✕</button>
-        <Link to="/jobs" onClick={closeMobile}>🔍 Tìm việc</Link>
-        <Link to="/about#pricing" onClick={closeMobile}>💼 Bảng giá</Link>
+        <Link to="/jobs" onClick={closeMobile}><i className="bx bx-search" /> Tìm việc</Link>
+        <Link to="/about#pricing" onClick={closeMobile}><i className="bx bx-purchase-tag" /> Bảng giá</Link>
         {isHome && (
           <>
-            <a href="#how" onClick={closeMobile}>💡 Cách hoạt động</a>
-            <a href="#pricing" onClick={closeMobile}>💼 Bảng giá</a>
-            <a href="#features" onClick={closeMobile}>⭐ Tính năng</a>
+            <a href="#how" onClick={closeMobile}><i className="bx bx-bulb" /> Cách hoạt động</a>
+            <a href="#pricing" onClick={closeMobile}><i className="bx bx-purchase-tag" /> Bảng giá</a>
+            <a href="#features" onClick={closeMobile}><i className="bx bxs-star" /> Tính năng</a>
           </>
         )}
         {user ? (
           <>
-            <Link to="/profile" onClick={closeMobile}>👤 Hồ sơ</Link>
-            <Link to="/dashboard" onClick={closeMobile}>📊 Dashboard</Link>
-            <Link to="/wallet" onClick={closeMobile}>💰 Ví</Link>
-            <Link to="/notifications" onClick={closeMobile}>🔔 Thông báo{unreadCount > 0 && ` (${unreadCount})`}</Link>
-            <Link to="/messages" onClick={closeMobile}>💬 Tin nhắn</Link>
+            <Link to="/profile" onClick={closeMobile}><i className="bx bx-user" /> Hồ sơ</Link>
+            <Link to="/dashboard" onClick={closeMobile}><i className="bx bxs-dashboard" /> Dashboard</Link>
+            <Link to="/wallet" onClick={closeMobile}><i className="bx bx-wallet" /> Ví</Link>
+            <Link to="/notifications" onClick={closeMobile}><i className="bx bx-bell" /> Thông báo{unreadCount > 0 && ` (${unreadCount})`}</Link>
+            <Link to="/messages" onClick={closeMobile}><i className="bx bx-message-rounded-dots" /> Tin nhắn</Link>
             {user.role === 'student' && (
               <>
-                <Link to="/my-applications" onClick={closeMobile}>📋 Đơn ứng tuyển</Link>
-                <Link to="/contracts" onClick={closeMobile}>🤝 Hợp đồng</Link>
+                <Link to="/my-applications" onClick={closeMobile}><i className="bx bx-list-check" /> Đơn ứng tuyển</Link>
+                <Link to="/contracts" onClick={closeMobile}><i className="bx bx-file" /> Hợp đồng</Link>
               </>
             )}
             {user.role === 'business' && (
               <>
-                <Link to="/post-job" onClick={closeMobile}>📝 Đăng việc</Link>
-                <Link to="/manage-jobs" onClick={closeMobile}>📂 Quản lý job</Link>
-                <Link to="/contracts" onClick={closeMobile}>🤝 Hợp đồng</Link>
-                <Link to="/business-automation" onClick={closeMobile}>🎯 Trung tâm tăng trưởng</Link>
-                <Link to="/automation-rules" onClick={closeMobile}>🤖 Tự động hóa</Link>
+                <Link to="/post-job" onClick={closeMobile}><i className="bx bx-edit" /> Đăng việc</Link>
+                <Link to="/manage-jobs" onClick={closeMobile}><i className="bx bx-folder-open" /> Quản lý job</Link>
+                <Link to="/contracts" onClick={closeMobile}><i className="bx bx-file" /> Hợp đồng</Link>
               </>
             )}
             {user.role === 'admin' && (
               <>
-                <Link to="/admin-finance" onClick={closeMobile}>📈 Admin Finance</Link>
-                <Link to="/admin-accounts" onClick={closeMobile}>👥 Quản lý tài khoản</Link>
-                <Link to="/admin-messages" onClick={closeMobile}>🛡️ Giám sát tin nhắn</Link>
+                <Link to="/admin-finance" onClick={closeMobile}><i className="bx bx-line-chart" /> Admin Finance</Link>
+                <Link to="/admin-accounts" onClick={closeMobile}><i className="bx bx-group" /> Quản lý tài khoản</Link>
+                <Link to="/admin-messages" onClick={closeMobile}><i className="bx bx-shield" /> Giám sát tin nhắn</Link>
               </>
             )}
             <button
               style={{ marginTop: 16, textAlign: 'left', background: 'none', border: 'none', color: 'inherit', font: 'inherit', cursor: 'pointer', padding: '12px 0' }}
               onClick={() => { logout(); closeMobile(); }}
             >
-              🚪 Đăng xuất
+              <i className="bx bx-log-out" /> Đăng xuất
             </button>
           </>
         ) : (
@@ -191,7 +189,7 @@ export default function Navbar() {
                 className="nav-mega-item"
                 onClick={() => setMegaOpen(false)}
               >
-                <span className="nav-mega-icon">{cat.icon}</span>
+                <span className="nav-mega-icon"><i className={`bx ${cat.icon}`} /></span>
                 <div>
                   <div className="nav-mega-name">{cat.name}</div>
                   <div className="nav-mega-count">{cat.count}</div>
@@ -268,7 +266,7 @@ export default function Navbar() {
             {user ? (
               <>
                 <Link to="/notifications" className="nav-notif-btn" title="Thông báo">
-                  🔔
+                  <i className="bx bx-bell" />
                   {unreadCount > 0 && <span className="nav-notif-badge">{unreadCount}</span>}
                 </Link>
                 <div className="nav-user">
@@ -294,36 +292,34 @@ export default function Navbar() {
                   >
                     <div className="nav-dd-header">
                       <strong>{user.name}</strong>
-                      <span>{user.role === 'student' ? '👨‍🎓 Sinh viên' : user.role === 'business' ? '🏢 Doanh nghiệp' : '🛡️ Admin'}</span>
+                      <span>{user.role === 'student' ? <><i className="bx bxs-graduation" /> Sinh viên</> : user.role === 'business' ? <><i className="bx bxs-building-house" /> Doanh nghiệp</> : <><i className="bx bx-shield" /> Admin</>}</span>
                     </div>
-                    <Link to="/profile" className="nav-dd-item">👤 Hồ sơ</Link>
-                    <Link to="/dashboard" className="nav-dd-item">📊 Dashboard</Link>
-                    <Link to="/wallet" className="nav-dd-item">💰 Ví</Link>
-                    <Link to="/messages" className="nav-dd-item">💬 Tin nhắn</Link>
+                    <Link to="/profile" className="nav-dd-item"><i className="bx bx-user" /> Hồ sơ</Link>
+                    <Link to="/dashboard" className="nav-dd-item"><i className="bx bxs-dashboard" /> Dashboard</Link>
+                    <Link to="/wallet" className="nav-dd-item"><i className="bx bx-wallet" /> Ví</Link>
+                    <Link to="/messages" className="nav-dd-item"><i className="bx bx-message-rounded-dots" /> Tin nhắn</Link>
                     {user.role === 'student' && (
                       <>
-                        <Link to="/my-applications" className="nav-dd-item">📋 Đơn ứng tuyển</Link>
-                        <Link to="/contracts" className="nav-dd-item">🤝 Hợp đồng</Link>
+                        <Link to="/my-applications" className="nav-dd-item"><i className="bx bx-list-check" /> Đơn ứng tuyển</Link>
+                        <Link to="/contracts" className="nav-dd-item"><i className="bx bx-file" /> Hợp đồng</Link>
                       </>
                     )}
                     {user.role === 'business' && (
                       <>
-                        <Link to="/post-job" className="nav-dd-item">📝 Đăng việc</Link>
-                        <Link to="/manage-jobs" className="nav-dd-item">📂 Quản lý job</Link>
-                        <Link to="/contracts" className="nav-dd-item">🤝 Hợp đồng</Link>
-                        <Link to="/business-automation" className="nav-dd-item">🎯 Trung tâm tăng trưởng</Link>
-                        <Link to="/automation-rules" className="nav-dd-item">🤖 Tự động hóa</Link>
+                        <Link to="/post-job" className="nav-dd-item"><i className="bx bx-edit" /> Đăng việc</Link>
+                        <Link to="/manage-jobs" className="nav-dd-item"><i className="bx bx-folder-open" /> Quản lý job</Link>
+                        <Link to="/contracts" className="nav-dd-item"><i className="bx bx-file" /> Hợp đồng</Link>
                       </>
                     )}
                     {user.role === 'admin' && (
                       <>
-                        <Link to="/admin-finance" className="nav-dd-item">📈 Admin Finance</Link>
-                        <Link to="/admin-accounts" className="nav-dd-item">👥 Quản lý tài khoản</Link>
-                        <Link to="/admin-messages" className="nav-dd-item">🛡️ Giám sát tin nhắn</Link>
+                        <Link to="/admin-finance" className="nav-dd-item"><i className="bx bx-line-chart" /> Admin Finance</Link>
+                        <Link to="/admin-accounts" className="nav-dd-item"><i className="bx bx-group" /> Quản lý tài khoản</Link>
+                        <Link to="/admin-messages" className="nav-dd-item"><i className="bx bx-shield" /> Giám sát tin nhắn</Link>
                       </>
                     )}
                     <button className="nav-dd-item nav-dd-logout" onClick={logout}>
-                      🚪 Đăng xuất
+                      <i className="bx bx-log-out" /> Đăng xuất
                     </button>
                   </div>,
                   document.body

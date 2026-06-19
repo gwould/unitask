@@ -64,9 +64,9 @@ function resolveNotificationLink(n: Notification, userRole?: string): { url: str
     else if (n.actionUrl.startsWith('/contracts')) label = 'Xem hợp đồng →';
     else if (n.actionUrl === '/admin-accounts') label = 'Quản lý tài khoản →';
 
-    // Override for submission-related notifications → business should go to manage-jobs
-    if (n.type === 'submission_request' && userRole === 'business' && n.actionUrl.startsWith('/jobs/')) {
-      return { url: '/manage-jobs', label: 'Kiểm tra bài nộp →' };
+    // Override for submission-related notifications → business should go to contracts
+    if (n.type === 'submission_request' && userRole === 'business') {
+      return { url: '/contracts', label: 'Xem công việc →' };
     }
 
     return { url: n.actionUrl, label };
@@ -87,7 +87,7 @@ function resolveNotificationLink(n: Notification, userRole?: string): { url: str
         : { url: '/my-applications', label: 'Xem đơn ứng tuyển →' };
     case 'submission_request':
       return userRole === 'business'
-        ? { url: '/manage-jobs', label: 'Kiểm tra bài nộp →' }
+        ? { url: '/contracts', label: 'Xem công việc →' }
         : { url: '/my-tasks', label: 'Xem công việc →' };
     case 'payment':
       return { url: '/wallet', label: 'Xem ví →' };

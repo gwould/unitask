@@ -43,7 +43,7 @@ export default function SearchSection({
           <p style={{ fontSize: 14, color: 'var(--t3)' }}>Hơn 1.100 job đang chờ bạn</p>
         </div>
         <div className="search-box fade-up">
-          <span style={{ fontSize: 18 }}>🔍</span>
+          <i className="bx bx-search" style={{ fontSize: 18, color: 'var(--t3)' }} />
           <input
             type="text"
             placeholder="Tên job, kỹ năng... (VD: React, Thiết kế logo, SEO Content)"
@@ -53,11 +53,11 @@ export default function SearchSection({
           <div className="search-divider" />
           <select value={category} onChange={(e) => setCategory(e.target.value)}>
             <option value="">Tất cả ngành</option>
-            <option>💻 IT / Lập trình</option>
-            <option>🎨 Thiết kế</option>
-            <option>📢 Marketing</option>
-            <option>✍️ Content</option>
-            <option>🌐 Ngôn ngữ</option>
+            <option>IT / Lập trình</option>
+            <option>Thiết kế</option>
+            <option>Marketing</option>
+            <option>Content</option>
+            <option>Ngôn ngữ</option>
           </select>
           <div className="search-divider" />
           <select value={workType} onChange={(e) => setWorkType(e.target.value)}>

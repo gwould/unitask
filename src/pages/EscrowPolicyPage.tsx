@@ -144,7 +144,7 @@ export default function EscrowPolicyPage() {
                   <ul>
                     {g.items.map((it) => (
                       <li key={it.code} style={{ marginBottom: 10 }}>
-                        <strong>{it.code}{it.title ? ` — ${it.title}` : ''}{it.auto ? ' <i className="bx bx-cog" />' : ''}:</strong>{' '}
+                        <strong>{it.code}{it.title ? ` — ${it.title}` : ''}{it.auto && <> <i className="bx bx-cog" /></>}:</strong>{' '}
                         {it.rule}
                         {it.note && (
                           <div style={{ fontSize: 13, color: 'var(--text-2)', marginTop: 3 }}>{it.note}</div>

@@ -7,11 +7,11 @@ import { serviceRegistry } from '../services';
 const { jobs: jobService } = serviceRegistry;
 
 const TABS = [
-  { label: 'Tất cả', cat: 'all' },
-  { label: '💻 IT', cat: 'it' },
-  { label: '🎨 Thiết kế', cat: 'design' },
-  { label: '✍️ Content', cat: 'content' },
-  { label: '📢 Marketing', cat: 'marketing' },
+  { label: 'Tất cả', cat: 'all', icon: '' },
+  { label: 'IT', cat: 'it', icon: 'bx-code-alt' },
+  { label: 'Thiết kế', cat: 'design', icon: 'bx-palette' },
+  { label: 'Content', cat: 'content', icon: 'bx-pen' },
+  { label: 'Marketing', cat: 'marketing', icon: 'bx-megaphone' },
 ];
 
 const JOBS_PER_PAGE = 9;
@@ -22,11 +22,11 @@ function JobCard({ job }: { job: Job }) {
     <div className={`job-card fade-up${job.featured ? ' featured' : ''}`}>
       <div className="jc-header">
         <div className="jc-logo" style={{ background: job.logoGradient }}>{job.logoText}</div>
-        <div className="jc-save">🔖</div>
+        <div className="jc-save"><i className="bx bx-bookmark" /></div>
       </div>
       <div className="jc-title">{job.title}</div>
       <div className="jc-company">
-        {job.company} {job.verified && <span className="verified">✅</span>} · {job.location}
+        {job.company} {job.verified && <span className="verified"><i className="bx bxs-badge-check" /></span>} · {job.location}
       </div>
       <div className="jc-tags">
         {job.tags.map((t, i) => (
@@ -39,9 +39,9 @@ function JobCard({ job }: { job: Job }) {
           <div className="spots-fill" style={{ width: `${100 - spotsPct}%` }} />
         </div>
       </div>
-      <div className="jc-pay">💰 {job.pay}</div>
+      <div className="jc-pay"><i className="bx bx-money" /> {job.pay}</div>
       <div className="jc-footer">
-        <div className="jc-deadline">⏰ {job.deadline}</div>
+        <div className="jc-deadline"><i className="bx bx-time-five" /> {job.deadline}</div>
         <Link to={`/jobs/${job.id}`} className="jc-btn">Xem chi tiết →</Link>
       </div>
     </div>
@@ -117,7 +117,7 @@ export default function JobsSection() {
                 className={`job-tab${activeTab === tab.cat ? ' active' : ''}`}
                 onClick={() => setActiveTab(tab.cat)}
               >
-                {tab.label}
+                {tab.icon && <i className={`bx ${tab.icon}`} />} {tab.label}
               </div>
             ))}
           </div>

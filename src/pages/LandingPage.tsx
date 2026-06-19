@@ -9,15 +9,15 @@ const STATS = [
 ];
 
 const STUDENT_BENEFITS = [
-  { icon: '💰', title: 'Kiem tien tu ky nang', desc: 'Nhan viec thuc te tu doanh nghiep, lam tu nha hoac quan cafe. Thu nhap tu 500K - 10 trieu/thang.' },
-  { icon: '📋', title: 'Xay CV that', desc: 'Moi project hoan thanh tu dong cap nhat vao ho so so. CV cua ban se khac biet khi di xin viec.' },
-  { icon: '🛡️', title: '100% an toan', desc: 'Tien duoc giu trong Escrow truoc khi ban bat dau. Lam xong la nhan tien — khong so bi quit.' },
+  { icon: 'bx-wallet', title: 'Kiem tien tu ky nang', desc: 'Nhan viec thuc te tu doanh nghiep, lam tu nha hoac quan cafe. Thu nhap tu 500K - 10 trieu/thang.' },
+  { icon: 'bx-list-check', title: 'Xay CV that', desc: 'Moi project hoan thanh tu dong cap nhat vao ho so so. CV cua ban se khac biet khi di xin viec.' },
+  { icon: 'bx-shield', title: '100% an toan', desc: 'Tien duoc giu trong Escrow truoc khi ban bat dau. Lam xong la nhan tien — khong so bi quit.' },
 ];
 
 const BUSINESS_BENEFITS = [
-  { icon: '⚡', title: 'Tuyen nhanh trong 24h', desc: 'Dang job — nhan don ung tuyen trong vai gio. Khong can phong van phuc tap cho micro-task.' },
-  { icon: '🎓', title: 'Nhan luc chat luong', desc: 'Sinh vien da xac thuc, co ky nang thuc te. He thong goi y ung vien phu hop voi yeu cau cua ban.' },
-  { icon: '💳', title: 'Chi tra linh hoat', desc: 'Chi tra khi hai long voi san pham. Escrow bao ve ca hai ben. Ho tro MoMo, chuyen khoan.' },
+  { icon: 'bx-bolt-circle', title: 'Tuyen nhanh trong 24h', desc: 'Dang job — nhan don ung tuyen trong vai gio. Khong can phong van phuc tap cho micro-task.' },
+  { icon: 'bxs-graduation', title: 'Nhan luc chat luong', desc: 'Sinh vien da xac thuc, co ky nang thuc te. He thong goi y ung vien phu hop voi yeu cau cua ban.' },
+  { icon: 'bx-credit-card', title: 'Chi tra linh hoat', desc: 'Chi tra khi hai long voi san pham. Escrow bao ve ca hai ben. Ho tro MoMo, chuyen khoan.' },
 ];
 
 const TESTIMONIALS = [
@@ -27,10 +27,10 @@ const TESTIMONIALS = [
 ];
 
 const STEPS = [
-  { num: '1', title: 'Dang ky mien phi', desc: '30 giay — chi can email', icon: '📝' },
-  { num: '2', title: 'Tim & ung tuyen', desc: 'He thong goi y job phu hop', icon: '🎯' },
-  { num: '3', title: 'Lam viec & nop bai', desc: 'Lam tu bat cu dau, theo deadline', icon: '💻' },
-  { num: '4', title: 'Nhan tien', desc: 'Rut ve MoMo hoac ngan hang', icon: '💰' },
+  { num: '1', title: 'Dang ky mien phi', desc: '30 giay — chi can email', icon: 'bx-edit' },
+  { num: '2', title: 'Tim & ung tuyen', desc: 'He thong goi y job phu hop', icon: 'bx-target-lock' },
+  { num: '3', title: 'Lam viec & nop bai', desc: 'Lam tu bat cu dau, theo deadline', icon: 'bx-code-alt' },
+  { num: '4', title: 'Nhan tien', desc: 'Rut ve MoMo hoac ngan hang', icon: 'bx-wallet' },
 ];
 
 export default function LandingPage() {
@@ -109,7 +109,7 @@ export default function LandingPage() {
           <div className="landing-benefits">
             {benefits.map((b, i) => (
               <div key={i} className="landing-benefit-card">
-                <div className="landing-benefit-icon">{b.icon}</div>
+                <div className="landing-benefit-icon"><i className={`bx ${b.icon}`} /></div>
                 <h3>{b.title}</h3>
                 <p>{b.desc}</p>
               </div>
@@ -126,7 +126,7 @@ export default function LandingPage() {
             <div className="landing-steps">
               {STEPS.map((s, i) => (
                 <div key={i} className="landing-step">
-                  <div className="landing-step-num">{s.icon}</div>
+                  <div className="landing-step-num"><i className={`bx ${s.icon}`} /></div>
                   <h4>{s.title}</h4>
                   <p>{s.desc}</p>
                   {i < STEPS.length - 1 && <div className="landing-step-arrow" aria-hidden>→</div>}
@@ -161,7 +161,7 @@ export default function LandingPage() {
       {/* Escrow explainer */}
       <section className="landing-section" style={{ background: 'rgba(0,212,170,.04)' }}>
         <div className="container" style={{ maxWidth: 700, textAlign: 'center' }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>🛡️</div>
+          <div style={{ fontSize: 48, marginBottom: 16 }}><i className="bx bx-shield" /></div>
           <h2 style={{ fontSize: 28, marginBottom: 16 }}>Tien cua ban duoc bao ve 100%</h2>
           <p style={{ color: 'var(--t2)', fontSize: 16, lineHeight: 1.8, marginBottom: 28 }}>
             Moi giao dich tren UniTask deu su dung he thong <strong>Escrow</strong>. Tien luong duoc giu an toan truoc khi sinh vien bat dau lam viec. Chi giai ngan khi doanh nghiep xac nhan san pham dat yeu cau. Khong ai bi mat tien.

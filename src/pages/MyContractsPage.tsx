@@ -32,8 +32,8 @@ export default function MyContractsPage() {
   }, []);
 
   return (
-    <section className="container" style={{ padding: '100px 20px 60px', maxWidth: 880 }}>
-      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, marginBottom: 6 }}>🤝 Hợp đồng & Milestone</h1>
+    <section className="container page-section-main" style={{ maxWidth: 880 }}>
+      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, marginBottom: 6 }}><i className="bx bx-file" /> Hợp đồng & Milestone</h1>
       <p style={{ color: 'var(--text-2)', marginBottom: 24 }}>
         {user?.role === 'business'
           ? 'Quản lý tiến độ, ký quỹ và nghiệm thu các hợp đồng bạn đã giao.'
@@ -64,7 +64,7 @@ export default function MyContractsPage() {
                   </span>
                 </div>
                 {user?.role === 'business' && c.studentName && (
-                  <div className="contract-card-sub">👨‍🎓 {c.studentName}</div>
+                  <div className="contract-card-sub"><i className="bx bxs-graduation" /> {c.studentName}</div>
                 )}
                 <div className="contract-card-meta">
                   <span>{formatMoney(c.finalPrice)}</span>

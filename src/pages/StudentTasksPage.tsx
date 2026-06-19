@@ -50,7 +50,7 @@ export default function StudentTasksPage() {
   );
 
   return (
-    <section className="container" style={{ padding: '100px 20px 60px', maxWidth: 880 }}>
+    <section className="container page-section-main" style={{ maxWidth: 880 }}>
       <div style={{ marginBottom: 20 }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, marginBottom: 6 }}><i className="bx bx-task" /> Công việc của tôi</h1>
         <p style={{ color: 'var(--text-2)' }}>

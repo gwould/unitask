@@ -33,18 +33,18 @@ export default function LoginPage() {
       <div className="auth-container">
         <div className="auth-card">
           <div className="auth-header">
-            <span className="auth-logo-icon">🎓</span>
+            <span className="auth-logo-icon"><i className="bx bxs-graduation" /></span>
             <h1>Chào mừng trở lại</h1>
             <p>Đăng nhập vào UniTask để tiếp tục</p>
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form" noValidate>
-            {error && <div className="auth-error">⚠️ {error}</div>}
+            {error && <div className="auth-error"><i className="bx bx-error" /> {error}</div>}
 
             <div className="form-group">
               <label>Email</label>
               <div className="input-icon-wrap">
-                <span className="input-icon">📧</span>
+                <span className="input-icon"><i className="bx bx-envelope" /></span>
                 <input
                   type="email"
                   placeholder="you@example.com"
@@ -59,7 +59,7 @@ export default function LoginPage() {
             <div className="form-group">
               <label>Mật khẩu</label>
               <div className="input-icon-wrap">
-                <span className="input-icon">🔒</span>
+                <span className="input-icon"><i className="bx bx-lock-alt" /></span>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
@@ -74,7 +74,7 @@ export default function LoginPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   tabIndex={-1}
                 >
-                  {showPassword ? '🙈' : '👁️'}
+                  <i className={`bx ${showPassword ? 'bx-hide' : 'bx-show'}`} />
                 </button>
               </div>
             </div>
@@ -95,15 +95,15 @@ export default function LoginPage() {
 
           <div className="auth-features">
             <div className="auth-feature-item">
-              <span>🚀</span>
+              <span><i className="bx bx-rocket" /></span>
               <span>Tìm việc micro-job phù hợp</span>
             </div>
             <div className="auth-feature-item">
-              <span>💰</span>
+              <span><i className="bx bx-wallet" /></span>
               <span>Nhận thanh toán an toàn qua escrow</span>
             </div>
             <div className="auth-feature-item">
-              <span>📊</span>
+              <span><i className="bx bx-bar-chart-alt-2" /></span>
               <span>Xây CV thực tế từ dự án thật</span>
             </div>
           </div>
