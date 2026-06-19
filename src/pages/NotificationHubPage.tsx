@@ -52,7 +52,7 @@ function resolveNotificationLink(n: Notification, userRole?: string): { url: str
   // If actionUrl is set and is a valid path, use it with smart labels
   if (n.actionUrl && n.actionUrl.startsWith('/')) {
     let label = 'Xem chi tiết';
-    if (n.actionUrl.startsWith('/jobs/')) label = 'Xem công việc →';
+    if (n.actionUrl.startsWith('/contracts')) label = 'Xem công việc →';
     else if (n.actionUrl === '/jobs') label = 'Tìm việc mới →';
     else if (n.actionUrl === '/manage-jobs') label = 'Xem ứng viên →';
     else if (n.actionUrl === '/my-applications') label = 'Xem đơn ứng tuyển →';
@@ -61,7 +61,7 @@ function resolveNotificationLink(n: Notification, userRole?: string): { url: str
     else if (n.actionUrl === '/messages' || n.actionUrl.startsWith('/messages/')) label = 'Xem tin nhắn →';
     else if (n.actionUrl === '/dashboard') label = 'Về Dashboard →';
     else if (n.actionUrl === '/profile') label = 'Xem hồ sơ →';
-    else if (n.actionUrl.startsWith('/contracts')) label = 'Xem hợp đồng →';
+    // else if (n.actionUrl.startsWith('/contracts')) label = 'Xem hợp đồng →';
     else if (n.actionUrl === '/admin-accounts') label = 'Quản lý tài khoản →';
 
     // Override for submission-related notifications → business should go to contracts
