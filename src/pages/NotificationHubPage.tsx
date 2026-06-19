@@ -49,60 +49,39 @@ function timeAgo(date: string) {
  * Resolve the best link for a notification based on its type, actionUrl, and related data.
  */
 function resolveNotificationLink(n: Notification, userRole?: string): { url: string; label: string } | null {
-  // If actionUrl is set and is a valid path, use it with smart labels
-  if (n.actionUrl && n.actionUrl.startsWith('/')) {
-    let label = 'Xem chi tiết';
-    if (n.actionUrl.startsWith('/contracts')) label = 'Xem công việc →';
-    else if (n.actionUrl === '/jobs') label = 'Tìm việc mới →';
-    else if (n.actionUrl === '/manage-jobs') label = 'Xem ứng viên →';
-    else if (n.actionUrl === '/my-applications') label = 'Xem đơn ứng tuyển →';
-    else if (n.actionUrl === '/my-tasks') label = 'Xem công việc →';
-    else if (n.actionUrl === '/wallet') label = 'Xem ví →';
-    else if (n.actionUrl === '/messages' || n.actionUrl.startsWith('/messages/')) label = 'Xem tin nhắn →';
-    else if (n.actionUrl === '/dashboard') label = 'Về Dashboard →';
-    else if (n.actionUrl === '/profile') label = 'Xem hồ sơ →';
-    // else if (n.actionUrl.startsWith('/contracts')) label = 'Xem hợp đồng →';
-    else if (n.actionUrl === '/admin-accounts') label = 'Quản lý tài khoản →';
-
-    // Override for submission-related notifications → business should go to contracts
-    if (n.type === 'submission_request' && userRole === 'business') {
-      return { url: '/contracts', label: 'Xem công việc →' };
-    }
-
-    return { url: n.actionUrl, label };
-  }
-
-  // Fallback: derive link from notification type + relatedJobId
+  // Route by notification type — type determines destination, not actionUrl
   switch (n.type) {
-    case 'job_match':
-      return n.relatedJobId
-        ? { url: `/jobs/${n.relatedJobId}`, label: 'Xem công việc →' }
-        : { url: '/jobs', label: 'Tìm việc →' };
     case 'application_status':
+      // Có ứng viên ứng tuyển → dẫn đến Quản lý Job
       if (userRole === 'business') {
-        return { url: '/manage-jobs', label: 'Xem ứng viên →' };
+        return { url: '/manage-jobs', label: 'Quản lý Job →' };
       }
-      return n.relatedJobId
-        ? { url: `/jobs/${n.relatedJobId}`, label: 'Xem công việc →' }
-        : { url: '/my-applications', label: 'Xem đơn ứng tuyển →' };
+      // Sinh viên nhận kết quả ứng tuyển → đơn ứng tuyển
+      return { url: '/my-applications', label: 'Xem đơn ứng tuyển →' };
+
     case 'submission_request':
-      return userRole === 'business'
-        ? { url: '/contracts', label: 'Xem công việc →' }
-        : { url: '/my-tasks', label: 'Xem công việc →' };
+      // Nộp bài / nộp nhiệm vụ → dẫn đến trang Hợp đồng
+      return { url: '/contracts', label: 'Xem hợp đồng →' };
+
+    case 'approval':
+      // Nghiệm thu / phê duyệt → dẫn đến trang Hợp đồng
+      return { url: '/contracts', label: 'Xem hợp đồng →' };
+
+    case 'job_match':
+      return { url: '/jobs', label: 'Tìm việc →' };
+
     case 'payment':
       return { url: '/wallet', label: 'Xem ví →' };
-    case 'approval':
-      return userRole === 'admin'
-        ? { url: '/admin-accounts', label: 'Quản lý tài khoản →' }
-        : { url: '/dashboard', label: 'Về Dashboard →' };
+
     case 'reminder':
-      return n.relatedJobId
-        ? { url: `/jobs/${n.relatedJobId}`, label: 'Xem công việc →' }
-        : { url: '/dashboard', label: 'Về Dashboard →' };
+      return { url: '/contracts', label: 'Xem hợp đồng →' };
+
     default:
-      return n.relatedJobId
-        ? { url: `/jobs/${n.relatedJobId}`, label: 'Xem chi tiết →' }
-        : null;
+      // system or unknown — fallback to safe pages
+      if (n.actionUrl && n.actionUrl.startsWith('/') && !n.actionUrl.startsWith('/jobs/')) {
+        return { url: n.actionUrl, label: 'Xem chi tiết →' };
+      }
+      return { url: '/dashboard', label: 'Về Dashboard →' };
   }
 }
 
