@@ -26,33 +26,15 @@ const TX_FILTER_OPTIONS: { key: TxFilter; label: string; icon?: string }[] = [
 
 /* ─── HELPERS ─────────────────────────────────────── */
 
-function getSeedTransactions(role: string): Transaction[] {
-  if (role === 'student') {
-    return [
-      { id: 'tx-1', type: 'income',   label: 'Thanh toán job: Frontend Developer',     amount: 3_200_000,  date: '2026-03-01', status: 'completed', jobTitle: 'Frontend Developer (React + Tailwind)' },
-      { id: 'tx-2', type: 'income',   label: 'Thanh toán job: Viết 10 bài SEO Blog',   amount: 1_600_000,  date: '2026-02-22', status: 'completed', jobTitle: 'Viết 10 bài SEO Blog (chuẩn EEAT)' },
-      { id: 'tx-3', type: 'withdraw', label: 'Rút tiền về Vietcombank ****1234',        amount: -2_000_000, date: '2026-02-15', status: 'completed' },
-      { id: 'tx-4', type: 'income',   label: 'Thanh toán job: Dịch thuật tài liệu',    amount: 1_200_000,  date: '2026-02-10', status: 'completed' },
-      { id: 'tx-5', type: 'withdraw', label: 'Rút tiền về MoMo',                       amount: -1_500_000, date: '2026-01-28', status: 'completed' },
-    ];
-  }
-  return [
-    { id: 'tx-1', type: 'escrow_in',      label: 'Nạp Escrow: Frontend Developer',    amount: -4_000_000, date: '2026-02-25', status: 'completed' },
-    { id: 'tx-2', type: 'escrow_release', label: 'Giải phóng Escrow: Viết bài SEO',   amount: -1_800_000, date: '2026-02-20', status: 'completed' },
-    { id: 'tx-3', type: 'escrow_in',      label: 'Nạp Escrow: Thiết kế UI/UX',        amount: -3_000_000, date: '2026-02-18', status: 'pending' },
-    { id: 'tx-4', type: 'escrow_in',      label: 'Nạp Escrow: Video TikTok',          amount: -5_000_000, date: '2026-02-10', status: 'completed' },
-    { id: 'tx-5', type: 'escrow_release', label: 'Giải phóng Escrow: Dịch thuật',     amount: -1_500_000, date: '2026-01-30', status: 'completed' },
-  ];
+function getSeedTransactions(): Transaction[] {
+  return [];
 }
 
 function getDefaultBankMethods(): BankMethod[] {
-  return [
-    { id: 'bm-1', icon: 'bx-building-house', name: 'Vietcombank', detail: '****1234 · Nguyễn Minh Anh',  isDefault: true },
-    { id: 'bm-2', icon: 'bx-mobile-alt',    name: 'Ví MoMo',     detail: '0912***678',                   isDefault: false },
-  ];
+  return [];
 }
 
-function loadTransactions(role: string, userId: string): Transaction[] {
+function loadTransactions(userId: string): Transaction[] {
   try {
     const byUser: Record<string, Transaction[]> = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_TRANSACTIONS) || '{}');
     if (byUser[userId]?.length) return byUser[userId];
@@ -65,9 +47,9 @@ function loadTransactions(role: string, userId: string): Transaction[] {
       return stored.filter((tx) => !tx.userId || tx.userId === userId);
     }
   } catch {
-    // use seed
+    // empty
   }
-  return getSeedTransactions(role);
+  return getSeedTransactions();
 }
 
 function saveTransactions(userId: string, txs: Transaction[]) {
@@ -199,11 +181,11 @@ export default function WalletPage() {
         const combined = [...byId.values()].sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
         );
-        setTransactions(combined.length > 0 ? combined : loadTransactions(user.role, String(user.id)));
+        setTransactions(combined.length > 0 ? combined : loadTransactions(String(user.id)));
       } else {
         await simulateDelay(700);
         if (cancelled) return;
-        setTransactions(loadTransactions(user.role, String(user.id)));
+        setTransactions(loadTransactions(String(user.id)));
       }
 
       const methods = loadBankMethods();
