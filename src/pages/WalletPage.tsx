@@ -162,26 +162,31 @@ export default function WalletPage() {
     const load = async () => {
       if (hasAuthToken() && (user.role === 'student' || user.role === 'business')) {
         const role = user.role;
-        const [summary, walletTxs, paymentTxs] = await Promise.all([
-          role === 'student' ? walletService.getWalletSummary() : Promise.resolve(null),
-          walletService.getTransactions(role),
-          paymentService.listAsTransactions(String(user.id), role),
-        ]);
-        if (cancelled) return;
-        if (role === 'student' && summary?.balance != null) {
-          updateProfile({ balance: Number(summary.balance) });
+        try {
+          const [summary, walletTxs, paymentTxs] = await Promise.all([
+            role === 'student' ? walletService.getWalletSummary().catch(() => null) : Promise.resolve(null),
+            walletService.getTransactions(role).catch(() => [] as Transaction[]),
+            paymentService.listAsTransactions(String(user.id), role).catch(() => [] as Transaction[]),
+          ]);
+          if (cancelled) return;
+          if (role === 'student' && summary?.balance != null) {
+            updateProfile({ balance: Number(summary.balance) });
+          }
+          if (role === 'business') {
+            profileService.enrichUser(user).then((enriched) => {
+              if (!cancelled) updateProfile({ balance: enriched.balance });
+            }).catch(() => {});
+          }
+          const merged = [...paymentTxs, ...walletTxs];
+          const byId = new Map(merged.map((t) => [t.id, t]));
+          const combined = [...byId.values()].sort(
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+          );
+          setTransactions(combined.length > 0 ? combined : []);
+        } catch {
+          if (cancelled) return;
+          setTransactions([]);
         }
-        if (role === 'business') {
-          profileService.enrichUser(user).then((enriched) => {
-            if (!cancelled) updateProfile({ balance: enriched.balance });
-          }).catch(() => {});
-        }
-        const merged = [...paymentTxs, ...walletTxs];
-        const byId = new Map(merged.map((t) => [t.id, t]));
-        const combined = [...byId.values()].sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-        );
-        setTransactions(combined.length > 0 ? combined : loadTransactions(String(user.id)));
       } else {
         await simulateDelay(700);
         if (cancelled) return;
