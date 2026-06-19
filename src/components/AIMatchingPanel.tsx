@@ -76,39 +76,39 @@ export default function AIMatchingPanel({
               Chưa có job phù hợp đủ mạnh. Hãy cập nhật hồ sơ hoặc thử từ khóa khác.
             </div>
           ) : (
-            <div className="jobs-grid" style={{ gridTemplateColumns: compact ? 'repeat(2, minmax(0, 1fr))' : 'repeat(3, minmax(0, 1fr))' }}>
+            <div className="jobs-grid aim-grid" style={{ gridTemplateColumns: compact ? 'repeat(2, minmax(0, 1fr))' : 'repeat(3, minmax(0, 1fr))' }}>
           {matches.map((job) => (
-            <Link to={`/jobs/${job.id}`} key={job.id} className={`job-card${job.featured ? ' featured' : ''}`}>
+            <Link to={`/jobs/${job.id}`} key={job.id} className={`job-card aim-card${job.featured ? ' featured' : ''}`}>
               <div className="jc-header">
                 <div className="jc-logo" style={{ background: job.logoGradient }}>{job.logoText}</div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
-                  <span style={{ padding: '6px 10px', borderRadius: 999, background: 'rgba(91,79,255,.14)', color: '#C8C2FF', fontSize: 12, fontWeight: 800 }}>
+                <div className="aim-match-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+                  <span className="aim-match-badge" style={{ padding: '6px 10px', borderRadius: 999, background: 'rgba(91,79,255,.14)', color: '#C8C2FF', fontSize: 12, fontWeight: 800 }}>
                     {Math.round(job.matchScore)}% match
                   </span>
-                  <span style={{ fontSize: 11, color: 'var(--t3)' }}>Đề xuất cho bạn</span>
+                  <span className="aim-suggest-label" style={{ fontSize: 11, color: 'var(--t3)' }}>Đề xuất cho bạn</span>
                 </div>
               </div>
               <div className="jc-title">{job.title}</div>
               <div className="jc-company">
                 {job.company} {job.verified && <span className="verified">✅</span>} · {job.location}
               </div>
-              <div className="jc-tags">
+              <div className="jc-tags aim-tags">
                 {job.tags.slice(0, 3).map((tag, index) => (
                   <span key={`${job.id}-${index}`} className={`tag tag-${tag.variant}`}>{tag.label}</span>
                 ))}
               </div>
-              <div className="jc-spots">
+              <div className="aim-spots">
                 <span>Còn {job.spotsLeft}/{job.spotsTotal} chỗ</span>
                 <div className="spots-bar">
                   <div className="spots-fill" style={{ width: `${((job.spotsTotal - job.spotsLeft) / job.spotsTotal) * 100}%` }} />
                 </div>
               </div>
-              <div style={{ marginBottom: 14 }}>
+              <div className="aim-score-bar" style={{ marginBottom: 14 }}>
                 <div style={{ height: 6, borderRadius: 999, background: 'rgba(255,255,255,.08)', overflow: 'hidden' }}>
                   <div style={{ width: `${Math.min(100, job.matchScore)}%`, height: '100%', borderRadius: 999, background: 'linear-gradient(90deg, var(--teal), var(--p))' }} />
                 </div>
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
+              <div className="aim-reasons" style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
                 {job.matchReasons.map((reason) => (
                   <span key={reason} style={{ fontSize: 11, padding: '5px 9px', borderRadius: 999, background: 'rgba(255,255,255,.04)', color: 'var(--t2)', border: '1px solid rgba(255,255,255,.06)' }}>
                     {reason}

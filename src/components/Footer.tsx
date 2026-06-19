@@ -14,10 +14,10 @@ export default function Footer() {
               và freelance từ các startup & SME.
             </p>
             <div className="social-links">
-              <a href="#" className="social-link" aria-label="Facebook">📘</a>
-              <a href="#" className="social-link" aria-label="LinkedIn">💼</a>
-              <a href="#" className="social-link" aria-label="TikTok">🎵</a>
-              <a href="#" className="social-link" aria-label="YouTube">▶️</a>
+              <a href="#" className="social-link" aria-label="Facebook"><i className="bx bxl-facebook" /></a>
+              <a href="#" className="social-link" aria-label="LinkedIn"><i className="bx bxl-linkedin" /></a>
+              <a href="#" className="social-link" aria-label="TikTok"><i className="bx bxl-tiktok" /></a>
+              <a href="#" className="social-link" aria-label="YouTube"><i className="bx bxl-youtube" /></a>
             </div>
           </div>
           <div className="footer-col">
@@ -44,10 +44,10 @@ export default function Footer() {
           </div>
         </div>
         <div className="footer-bottom">
-          <p>© 2026 UniTask. Made with 💜 for Vietnamese students.</p>
+          <p>&copy; 2026 UniTask. Made with <span style={{ color: 'var(--pl)' }}>&hearts;</span> for Vietnamese students.</p>
           <div className="footer-badges">
-            <span className="f-badge">🔒 SSL Secured</span>
-            <span className="f-badge">✅ DMCA Protected</span>
+            <span className="f-badge"><i className="bx bx-lock-alt" /> SSL Secured</span>
+            <span className="f-badge"><i className="bx bx-check-shield" /> DMCA Protected</span>
           </div>
         </div>
       </div>

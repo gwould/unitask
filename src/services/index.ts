@@ -14,3 +14,4 @@ export { paymentService, paymentToTransactions } from './paymentService';
 export { dashboardService, mapDashboardNotification } from './dashboardService';
 export type { StudentDashboardData, BusinessDashboardData } from './dashboardService';
 export { milestoneService } from './milestoneService';
+export type { PlatformStats } from './siteService';

@@ -6,10 +6,23 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../contexts/NotificationContext';
 import { useTheme } from '../contexts/ThemeContext';
 
+const megaCategories = [
+  { slug: 'it', icon: '💻', name: 'IT / Lập trình', count: '320+ việc' },
+  { slug: 'design', icon: '🎨', name: 'Thiết kế', count: '180+ việc' },
+  { slug: 'marketing', icon: '📢', name: 'Marketing', count: '150+ việc' },
+  { slug: 'content', icon: '✍️', name: 'Content & SEO', count: '120+ việc' },
+  { slug: 'language', icon: '🌐', name: 'Ngôn ngữ & Dịch thuật', count: '90+ việc' },
+  { slug: 'data', icon: '📊', name: 'Data & Phân tích', count: '75+ việc' },
+  { slug: 'business', icon: '💼', name: 'Kinh doanh', count: '60+ việc' },
+  { slug: 'other', icon: '🔧', name: 'Khác', count: '105+ việc' },
+];
+
 export default function Navbar() {
   const scrolled = useScrolled(60);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [megaOpen, setMegaOpen] = useState(false);
+  const [megaPos, setMegaPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
   const [ddPos, setDdPos] = useState<{ top: number; right: number }>({ top: 0, right: 0 });
   const { user, logout } = useAuth();
   const { unreadCount } = useNotifications();
@@ -17,6 +30,9 @@ export default function Navbar() {
   const location = useLocation();
   const avatarBtnRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const megaLinkRef = useRef<HTMLDivElement>(null);
+  const megaRef = useRef<HTMLDivElement>(null);
+  const megaTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   const isHome = location.pathname === '/';
 
@@ -30,7 +46,6 @@ export default function Navbar() {
     document.body.style.overflow = '';
   };
 
-  // close dropdown on outside click
   useEffect(() => {
     if (!dropdownOpen) return;
     const handler = (e: MouseEvent) => {
@@ -55,6 +70,30 @@ export default function Navbar() {
       return !prev;
     });
   }, []);
+
+  const handleMegaEnter = () => {
+    clearTimeout(megaTimeoutRef.current);
+    if (megaLinkRef.current) {
+      const rect = megaLinkRef.current.getBoundingClientRect();
+      setMegaPos({
+        top: rect.bottom + 4,
+        left: rect.left + rect.width / 2,
+      });
+    }
+    setMegaOpen(true);
+  };
+
+  const handleMegaLeave = () => {
+    megaTimeoutRef.current = setTimeout(() => setMegaOpen(false), 120);
+  };
+
+  const handleMegaDropdownEnter = () => {
+    clearTimeout(megaTimeoutRef.current);
+  };
+
+  const handleMegaDropdownLeave = () => {
+    megaTimeoutRef.current = setTimeout(() => setMegaOpen(false), 120);
+  };
 
   return (
     <>
@@ -132,6 +171,43 @@ export default function Navbar() {
         )}
       </nav>
 
+      {/* Mega-menu portal */}
+      {megaOpen && createPortal(
+        <div
+          ref={megaRef}
+          className="nav-mega"
+          style={{ top: megaPos.top, left: megaPos.left }}
+          onMouseEnter={handleMegaDropdownEnter}
+          onMouseLeave={handleMegaDropdownLeave}
+        >
+          <div className="nav-mega-header">
+            <span>Khám phá theo ngành nghề</span>
+          </div>
+          <div className="nav-mega-grid">
+            {megaCategories.map((cat) => (
+              <Link
+                key={cat.slug}
+                to={`/jobs?cat=${cat.slug}`}
+                className="nav-mega-item"
+                onClick={() => setMegaOpen(false)}
+              >
+                <span className="nav-mega-icon">{cat.icon}</span>
+                <div>
+                  <div className="nav-mega-name">{cat.name}</div>
+                  <div className="nav-mega-count">{cat.count}</div>
+                </div>
+              </Link>
+            ))}
+          </div>
+          <div className="nav-mega-footer">
+            <Link to="/jobs" className="btn btn-sm btn-primary" onClick={() => setMegaOpen(false)}>
+              Xem tất cả việc làm →
+            </Link>
+          </div>
+        </div>,
+        document.body
+      )}
+
       {/* Navbar */}
       <header className={`navbar${scrolled ? ' scrolled' : ''}`}>
         <div className="nav-inner">
@@ -140,9 +216,16 @@ export default function Navbar() {
             Uni<span>Task</span>
           </Link>
           <nav className="nav-links">
-            <Link to="/jobs" className={location.pathname.startsWith('/jobs') ? 'active' : ''}>
-              Tìm việc
-            </Link>
+            <div
+              ref={megaLinkRef}
+              className="nav-link-wrap"
+              onMouseEnter={handleMegaEnter}
+              onMouseLeave={handleMegaLeave}
+            >
+              <Link to="/jobs" className={location.pathname.startsWith('/jobs') ? 'active' : ''}>
+                Tìm việc <i className="bx bx-chevron-down nav-link-chevron" />
+              </Link>
+            </div>
             {user?.role === 'business' && (
               <Link to="/post-job" className={location.pathname === '/post-job' ? 'active' : ''}>
                 Doanh nghiệp
@@ -166,7 +249,6 @@ export default function Navbar() {
             )}
           </nav>
           <div className="nav-actions">
-            {/* Theme toggle */}
             <button
               className="nav-theme-btn"
               onClick={toggleTheme}
@@ -250,7 +332,7 @@ export default function Navbar() {
             ) : (
               <>
                 <Link to="/login" className="nav-login">Đăng nhập</Link>
-                <Link to="/register" className="btn btn-cta btn-sm">Bắt đầu miễn phí</Link>
+                <Link to="/register" className="btn btn-primary btn-sm">Bắt đầu miễn phí</Link>
               </>
             )}
           </div>
