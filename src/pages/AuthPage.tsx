@@ -1,11 +1,41 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth, type UserRole } from '../contexts/AuthContext';
+
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: {
+          initialize: (config: {
+            client_id: string;
+            callback: (response: { credential: string }) => void;
+            auto_select?: boolean;
+          }) => void;
+          renderButton: (
+            parent: HTMLElement,
+            options: {
+              type?: string;
+              theme?: string;
+              size?: string;
+              text?: string;
+              shape?: string;
+              width?: number;
+              locale?: string;
+            },
+          ) => void;
+        };
+      };
+    };
+  }
+}
+
+const GOOGLE_CLIENT_ID = '308973806649-koiqv3ta5iv4fdgvlj5ckc7kvarot7sq.apps.googleusercontent.com';
 
 export default function AuthPage() {
   const location = useLocation();
   const [active, setActive] = useState(location.pathname === '/register');
-  const { login, register } = useAuth();
+  const { login, loginWithGoogle, register } = useAuth();
   const navigate = useNavigate();
 
   const [loginEmail, setLoginEmail] = useState('');
@@ -24,6 +54,74 @@ export default function AuthPage() {
   const [companyName, setCompanyName] = useState('');
   const [regError, setRegError] = useState('');
   const [regLoading, setRegLoading] = useState(false);
+
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  const loginGoogleRef = useRef<HTMLDivElement>(null);
+  const registerGoogleRef = useRef<HTMLDivElement>(null);
+
+  const handleGoogleCallback = useCallback(async (response: { credential: string }) => {
+    setGoogleLoading(true);
+    setLoginError('');
+    setRegError('');
+    const ok = await loginWithGoogle(response.credential);
+    setGoogleLoading(false);
+    if (ok) {
+      navigate('/dashboard');
+    } else {
+      setLoginError('Đăng nhập Google thất bại. Vui lòng thử lại.');
+      setRegError('Đăng nhập Google thất bại. Vui lòng thử lại.');
+    }
+  }, [loginWithGoogle, navigate]);
+
+  useEffect(() => {
+    const renderButtons = () => {
+      if (!window.google?.accounts?.id) return;
+
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleCallback,
+      });
+
+      if (loginGoogleRef.current) {
+        loginGoogleRef.current.innerHTML = '';
+        window.google.accounts.id.renderButton(loginGoogleRef.current, {
+          type: 'standard',
+          theme: 'outline',
+          size: 'large',
+          text: 'signin_with',
+          shape: 'rectangular',
+          width: 280,
+          locale: 'vi_VN',
+        });
+      }
+
+      if (registerGoogleRef.current) {
+        registerGoogleRef.current.innerHTML = '';
+        window.google.accounts.id.renderButton(registerGoogleRef.current, {
+          type: 'standard',
+          theme: 'outline',
+          size: 'large',
+          text: 'continue_with',
+          shape: 'rectangular',
+          width: 280,
+          locale: 'vi_VN',
+        });
+      }
+    };
+
+    renderButtons();
+
+    if (!window.google?.accounts?.id) {
+      const interval = setInterval(() => {
+        if (window.google?.accounts?.id) {
+          clearInterval(interval);
+          renderButtons();
+        }
+      }, 200);
+      return () => clearInterval(interval);
+    }
+  }, [handleGoogleCallback, active]);
 
   const handleLogin = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,16 +177,11 @@ export default function AuthPage() {
               <input type={showLoginPw ? 'text' : 'password'} placeholder="Mật khẩu" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} autoComplete="current-password" required />
               <i className="bx bxs-lock-alt" style={{ cursor: 'pointer' }} onClick={() => setShowLoginPw(p => !p)} />
             </div>
-            <button type="submit" className="sl-btn" disabled={loginLoading}>
+            <button type="submit" className="sl-btn" disabled={loginLoading || googleLoading}>
               {loginLoading ? 'Đang xử lý...' : 'Đăng nhập'}
             </button>
             <p>hoặc đăng nhập với</p>
-            <div className="sl-social-icons">
-              <a href="#"><i className="bx bxl-google" /></a>
-              <a href="#"><i className="bx bxl-facebook" /></a>
-              <a href="#"><i className="bx bxl-github" /></a>
-              <a href="#"><i className="bx bxl-linkedin" /></a>
-            </div>
+            <div className="sl-google-btn" ref={loginGoogleRef} />
           </form>
         </div>
 
@@ -98,8 +191,8 @@ export default function AuthPage() {
             <h1>Đăng ký</h1>
             {regError && <div className="sl-error">{regError}</div>}
             <div className="sl-role-toggle">
-              <button type="button" className={role === 'student' ? 'active' : ''} onClick={() => setRole('student')}>👨‍🎓 Sinh viên</button>
-              <button type="button" className={role === 'business' ? 'active' : ''} onClick={() => setRole('business')}>🏢 Doanh nghiệp</button>
+              <button type="button" className={role === 'student' ? 'active' : ''} onClick={() => setRole('student')}>Sinh viên</button>
+              <button type="button" className={role === 'business' ? 'active' : ''} onClick={() => setRole('business')}>Doanh nghiệp</button>
             </div>
             <div className="sl-input-box">
               <input type="text" placeholder="Họ và tên" value={regName} onChange={e => setRegName(e.target.value)} required />
@@ -131,16 +224,11 @@ export default function AuthPage() {
                 <i className="bx bxs-building-house" />
               </div>
             )}
-            <button type="submit" className="sl-btn" disabled={regLoading}>
+            <button type="submit" className="sl-btn" disabled={regLoading || googleLoading}>
               {regLoading ? 'Đang tạo...' : 'Đăng ký'}
             </button>
             <p>hoặc đăng ký với</p>
-            <div className="sl-social-icons">
-              <a href="#"><i className="bx bxl-google" /></a>
-              <a href="#"><i className="bx bxl-facebook" /></a>
-              <a href="#"><i className="bx bxl-github" /></a>
-              <a href="#"><i className="bx bxl-linkedin" /></a>
-            </div>
+            <div className="sl-google-btn" ref={registerGoogleRef} />
           </form>
         </div>
 

@@ -15,6 +15,7 @@ interface AuthState {
   /** true = đăng nhập thành công với backend thật (có JWT). false = chỉ demo local, không có token. */
   isApiAuthenticated: boolean;
   login: (email: string, password: string) => Promise<boolean>;
+  loginWithGoogle: (idToken: string) => Promise<boolean>;
   register: (data: RegisterData) => Promise<boolean>;
   logout: () => void;
   updateProfile: (data: Partial<User>) => void;
@@ -209,6 +210,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return true;
   };
 
+  const loginWithGoogle = async (idToken: string): Promise<boolean> => {
+    try {
+      const auth = await apiPost<LoginResponse>('/api/auth/google', { idToken });
+      const fromApi = mapBackendUser(auth.user);
+      persistTokens(auth.token, auth.refreshToken);
+      setIsApiAuthenticated(true);
+      let finalUser = fromApi;
+      try {
+        finalUser = await profileService.enrichUser(fromApi);
+      } catch { /* enrichUser failed — use basic data */ }
+      persist(finalUser);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const register = async (data: RegisterData): Promise<boolean> => {
     const accounts = getStoredAccounts();
     if (accounts.some((a) => a.email.toLowerCase() === data.email.toLowerCase())) {
@@ -287,7 +305,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, isApiAuthenticated, login, register, logout, updateProfile }}>
+    <AuthContext.Provider value={{ user, isLoading, isApiAuthenticated, login, loginWithGoogle, register, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );
