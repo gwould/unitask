@@ -12,10 +12,12 @@ const STATS = [
 ];
 
 const TEAM = [
-  { name: 'Trần Minh Quân', role: 'Founder & CEO', avatar: 'Q', gradient: 'linear-gradient(135deg,#7C3AED,#A78BFA)', desc: 'Cựu sinh viên BK, 5 năm kinh nghiệm trong EdTech & Marketplace.', bio: 'Minh Quân tốt nghiệp ĐH Bách Khoa TP.HCM chuyên ngành CNTT. Anh từng làm việc tại Shopee và Tiki trước khi thành lập UniTask với mục tiêu kết nối sinh viên với cơ hội việc làm thực tế.' },
-  { name: 'Nguyễn Thị Mai', role: 'CTO', avatar: 'M', gradient: 'linear-gradient(135deg,#10B981,#059669)', desc: 'Full-stack Engineer, đam mê giải quyết bài toán kết nối sinh viên - doanh nghiệp.', bio: 'Mai có hơn 7 năm kinh nghiệm phát triển phần mềm tại các startup công nghệ. Cô dẫn dắt team kỹ thuật xây dựng nền tảng UniTask với kiến trúc microservices hiện đại.' },
-  { name: 'Lê Hoàng Anh', role: 'Head of Product', avatar: 'A', gradient: 'linear-gradient(135deg,#F97316,#F43F5E)', desc: 'Product Designer với kinh nghiệm từ các startup Y Combinator.', bio: 'Hoàng Anh từng tham gia chương trình Y Combinator 2022 và có kinh nghiệm thiết kế sản phẩm tại Silicon Valley. Anh đảm bảo mỗi tính năng trên UniTask đều hướng tới trải nghiệm người dùng tốt nhất.' },
-  { name: 'Phạm Đức Long', role: 'Head of Operations', avatar: 'L', gradient: 'linear-gradient(135deg,#FFB340,#FF8E3C)', desc: 'Chuyên gia vận hành marketplace, đảm bảo chất lượng từng giao dịch.', bio: 'Đức Long chuyên về vận hành marketplace với kinh nghiệm từ Grab và Be. Anh xây dựng quy trình chất lượng đảm bảo mọi giao dịch trên UniTask đều an toàn và minh bạch.' },
+  { name: 'Ngô Minh Hạnh Dung', role: 'Founder & CEO', avatar: 'D', gradient: 'linear-gradient(135deg,#7C3AED,#A78BFA)', desc: 'Người sáng lập UniTask, định hướng chiến lược và phát triển nền tảng.', bio: 'Hạnh Dung là người khởi xướng và sáng lập UniTask với mục tiêu kết nối sinh viên với cơ hội việc làm thực tế. Cô dẫn dắt toàn bộ định hướng chiến lược và phát triển của công ty.' },
+  { name: 'Nguyễn Duy Lương', role: 'CTO', avatar: 'L', gradient: 'linear-gradient(135deg,#10B981,#059669)', desc: 'Phụ trách công nghệ, xây dựng và vận hành hệ thống kỹ thuật của UniTask.', bio: 'Duy Lương chịu trách nhiệm về kiến trúc kỹ thuật và đội ngũ phát triển, đảm bảo nền tảng UniTask hoạt động ổn định, an toàn và mở rộng được.' },
+  { name: 'Đinh Gia Huy', role: 'CPO', avatar: 'H', gradient: 'linear-gradient(135deg,#F97316,#F43F5E)', desc: 'Phụ trách sản phẩm, đảm bảo trải nghiệm người dùng tốt nhất trên UniTask.', bio: 'Gia Huy dẫn dắt định hướng sản phẩm của UniTask, từ nghiên cứu nhu cầu người dùng đến thiết kế và phát triển tính năng mới.' },
+  { name: 'Vũ Thị Lan Anh', role: 'CMO', avatar: 'A', gradient: 'linear-gradient(135deg,#FFB340,#FF8E3C)', desc: 'Phụ trách marketing, xây dựng thương hiệu và phát triển cộng đồng UniTask.', bio: 'Lan Anh chịu trách nhiệm về chiến lược marketing và truyền thông, giúp UniTask tiếp cận sinh viên và doanh nghiệp trên toàn quốc.' },
+  { name: 'Lê Thị Hà Trang', role: 'CSO', avatar: 'T', gradient: 'linear-gradient(135deg,#3B82F6,#06B6D4)', desc: 'Phụ trách chiến lược phát triển và mở rộng kinh doanh của UniTask.', bio: 'Hà Trang xây dựng và triển khai các chiến lược phát triển dài hạn, mở rộng quy mô và quan hệ đối tác cho UniTask.' },
+  { name: 'Bùi Thị Tuyết Ngân', role: 'COO', avatar: 'N', gradient: 'linear-gradient(135deg,#EC4899,#8B5CF6)', desc: 'Phụ trách vận hành, đảm bảo chất lượng và hiệu quả hoạt động hàng ngày.', bio: 'Tuyết Ngân quản lý vận hành tổng thể của UniTask, đảm bảo mọi quy trình từ tuyển dụng đến giao dịch đều diễn ra suôn sẻ và minh bạch.' },
 ];
 
 const VALUES = [
@@ -276,23 +278,6 @@ export default function AboutPage() {
               UniTask ra đời để giải quyết bài toán này — tạo cầu nối giữa sinh viên đang học và doanh nghiệp
               cần người thực hiện các công việc ngắn hạn, chuyên môn. Sinh viên tích lũy được kinh nghiệm,
               thu nhập và mối quan hệ; doanh nghiệp có sản phẩm chất lượng đúng deadline.
-            </p>
-          </div>
-        </div>
-
-        <div className="about-section fade-up">
-          <h2>💼 Mô hình kinh doanh</h2>
-          <div className="about-mission">
-            <p>
-              UniTask hoạt động theo mô hình trung gian, kết nối doanh nghiệp và sinh viên thông qua hệ thống Escrow.
-            </p>
-            <p>
-              <strong>Phí giao dịch (Commission Fee):</strong> Sinh viên được miễn phí 5 giao dịch đầu tiên.
-              Job dưới 2.000.000 VNĐ thu 10%, job từ 2.000.000 VNĐ trở lên thu 8%.
-            </p>
-            <p>
-              <strong>Ví dụ:</strong> Doanh nghiệp đăng job 1.000.000 VNĐ → sinh viên nhận 900.000 VNĐ,
-              UniTask thu 100.000 VNĐ.
             </p>
           </div>
         </div>

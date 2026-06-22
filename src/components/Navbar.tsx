@@ -5,6 +5,7 @@ import { useScrolled } from '../hooks/useScroll';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../contexts/NotificationContext';
 import { useTheme } from '../contexts/ThemeContext';
+import logoUniTask from '../assets/logo unitask.png';
 
 const megaCategories = [
   { slug: 'it', icon: 'bx-code-alt', name: 'IT / Lập trình', count: '320+ việc' },
@@ -210,8 +211,7 @@ export default function Navbar() {
       <header className={`navbar${scrolled ? ' scrolled' : ''}`}>
         <div className="nav-inner">
           <Link to="/" className="nav-logo">
-            <span className="nav-logo-icon">U</span>
-            Uni<span>Task</span>
+            <img src={logoUniTask} alt="UniTask" className="nav-logo-icon" />
           </Link>
           <nav className="nav-links">
             <div
