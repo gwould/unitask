@@ -1,5 +1,12 @@
 /* ─── RESET & TOKENS ─────────────────────────────── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html[data-theme] *,
+html[data-theme] *::before,
+html[data-theme] *::after{
+  transition:background-color .35s ease,color .25s ease,border-color .35s ease,box-shadow .35s ease,fill .25s ease,stroke .25s ease;
+}
+.hero-bg-glow,[class*="animate"]{transition:none!important}
+::-webkit-scrollbar,::-webkit-scrollbar-thumb,::-webkit-scrollbar-track{transition:none!important}
 :root{
   --p:#7C3AED;--pl:#A78BFA;--pd:#5B21B6;
   --accent:#F97316;--teal:#10B981;--gold:#F59E0B;--red:#EF4444;
@@ -20,7 +27,7 @@
   --a:var(--accent);
 }
 html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-body{font-family:var(--font-body);background:var(--bg);color:var(--t1);overflow-x:hidden;line-height:1.6;text-rendering:optimizeLegibility}
+body{font-family:var(--font-body);background:var(--bg);color:var(--t1);overflow-x:hidden;line-height:1.6;text-rendering:optimizeLegibility;transition:background-color .35s ease,color .25s ease}
 img{max-width:100%}a{text-decoration:none;color:inherit}
 button{cursor:pointer;font-family:var(--font-body);border:none;outline:none}
 input,select{font-family:var(--font-body)}
