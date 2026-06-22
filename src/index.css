@@ -3948,37 +3948,37 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
 /* ═══════════════════════════════════════════════════════
    DASHBOARD MOBILE — Deep layout fix for phone viewports
    Fixes: empty space, text truncation, card visibility,
-   stat card content invisible on dark bg
+   stat card content invisible on dark bg, sidebar overlap
    ═══════════════════════════════════════════════════════ */
 
 /* ─── 900px: Collapse sidebar, compact everything ──── */
 @media(max-width:900px){
-  /* Grid → single column; hide sidebar nav (mobile nav exists) */
-  .dash-grid{grid-template-columns:1fr}
+  .page-dashboard{padding:80px 0 40px!important}
+  .page-dashboard .container{padding-left:12px!important;padding-right:12px!important}
+  .dash-grid{grid-template-columns:1fr!important;gap:12px!important}
   .dash-nav{display:none}
   .dash-main{order:1}
-  /* Sidebar → compact horizontal strip above main */
-  .dash-aside{display:flex;flex-direction:row;flex-wrap:wrap;gap:8px;order:-1;margin-bottom:4px}
-  .dash-profile-card{flex:1;min-width:140px;margin-bottom:0;padding:14px 12px;display:flex;flex-direction:column;align-items:center;gap:4px}
+  .dash-aside{position:static!important;top:auto!important;display:flex;flex-direction:row;flex-wrap:wrap;gap:8px;order:-1;margin-bottom:4px}
+  .dash-aside>*{margin-top:0!important;margin-bottom:0!important}
+  .dash-stats{grid-template-columns:repeat(2,1fr)!important}
+  .dash-profile-card{flex:1;min-width:130px;margin-bottom:0!important;padding:14px 12px;display:flex;flex-direction:column;align-items:center;gap:4px}
   .dash-profile-card h3{font-size:14px;margin:0}
   .dash-profile-card .dash-role-badge{font-size:11px;margin:0}
   .dash-profile-card .dash-uni,.dash-profile-card .dash-major,.dash-profile-card .dash-rating{font-size:11px;margin:0}
   .dash-profile-card .btn{display:none}
   .dash-avatar{width:36px!important;height:36px!important;font-size:15px!important}
-  .dash-wallet{flex:1;min-width:140px;margin-bottom:0;padding:12px 10px;display:flex;flex-direction:column;align-items:center;gap:2px}
+  .dash-wallet{flex:1;min-width:130px;margin-bottom:0!important;padding:12px 10px;display:flex;flex-direction:column;align-items:center;gap:2px}
   .dash-wallet .btn{display:none}
   .dash-wallet-label{font-size:10px;margin:0}
   .dash-wallet-amount{font-size:17px}
   .dash-wallet .dash-uni{font-size:10px}
 
-  /* Stat cards: force visible content */
   .dash-stat-card{padding:14px 10px;min-height:auto;border:1px solid rgba(124,58,237,.25)}
   .ds-icon{width:34px;height:34px;margin:0 auto 6px;border-radius:8px}
   .ds-icon i{font-size:16px}
-  .ds-num{font-size:24px;-webkit-text-fill-color:var(--pl)!important;background:none!important}
+  .ds-num{font-size:24px;-webkit-text-fill-color:var(--pl)!important;background:none!important;-webkit-background-clip:unset!important;background-clip:unset!important}
   .ds-label{font-size:11.5px;color:var(--text-2)}
 
-  /* Sections: tight */
   .dash-section{padding:16px 12px}
   .dash-section-header h2{font-size:15px}
   .dash-empty{padding:20px 14px}
@@ -3992,38 +3992,33 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
 
 /* ─── 768px: Phone portrait — aggressive compact ───── */
 @media(max-width:768px){
-  .page-dashboard{padding-top:70px!important}
-  .page-dashboard .container{padding-left:8px;padding-right:8px}
-  .dash-grid{gap:8px!important}
+  .page-dashboard{padding:68px 0 32px!important}
+  .page-dashboard .container{padding-left:8px!important;padding-right:8px!important}
+  .dash-grid{gap:6px!important}
 
-  /* Sidebar: ultra-compact row */
   .dash-aside{gap:6px}
   .dash-profile-card{padding:10px 8px}
   .dash-wallet{padding:10px 8px}
-  .dash-wallet-amount{font-size:16px}
+  .dash-wallet-amount{font-size:15px}
 
-  /* Greeting + toolbar */
-  .dash-greeting{font-size:16px!important;line-height:1.3}
-  .dash-toolbar{margin-bottom:10px;gap:8px}
+  .dash-greeting{font-size:16px!important;line-height:1.3;margin-bottom:10px!important}
+  .dash-toolbar{margin-bottom:8px;gap:6px}
   .dash-toolbar-actions{flex-wrap:wrap;gap:6px}
   .dash-period-tabs{gap:2px}
   .dash-period-btn{padding:6px 10px;font-size:11px}
 
-  /* Stat cards: 2-col, compact with visible numbers */
-  .dash-stats{gap:6px;margin-bottom:12px;grid-template-columns:repeat(2,1fr)!important}
+  .dash-stats{gap:6px;margin-bottom:10px!important;grid-template-columns:repeat(2,1fr)!important}
   .dash-stat-card{padding:10px 8px}
   .ds-icon{width:28px;height:28px;margin:0 auto 4px;border-radius:6px}
   .ds-icon i{font-size:14px}
   .ds-num{font-size:20px;line-height:1.2}
   .ds-label{font-size:10px}
 
-  /* Quick actions: 3-col compact */
   .dash-quick-actions{gap:4px;margin-bottom:10px;grid-template-columns:repeat(3,1fr)!important}
   .dash-qa-card{padding:10px 4px;gap:4px}
   .dash-qa-icon{font-size:18px}
   .dash-qa-label{font-size:9.5px}
 
-  /* Onboarding: no text truncation */
   .dash-onboard{padding:12px 10px;margin-bottom:10px}
   .dash-onboard-header{margin-bottom:10px}
   .dash-onboard-header h2{font-size:15px}
@@ -4035,7 +4030,6 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
   .dash-ob-num{width:26px;height:26px;font-size:11px;flex-shrink:0}
   .dash-ob-arrow{display:none}
 
-  /* Student/Business flow: compact horizontal scroll */
   .dash-student-flow{padding:10px 8px;margin-bottom:10px}
   .dash-sf-header h3{font-size:13px;margin-bottom:8px}
   .dash-sf-step{min-width:90px;padding:6px;gap:4px}
@@ -4044,7 +4038,6 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
   .dash-sf-info span{font-size:9px}
   .dash-sf-connector{width:12px}
 
-  /* Sections: minimal spacing */
   .dash-section{padding:12px 10px;margin-bottom:8px}
   .dash-section-header{margin-bottom:8px;padding-bottom:6px}
   .dash-section-header h2{font-size:13.5px}
@@ -4054,24 +4047,30 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
   .dash-apps-list{gap:2px}
 }
 
-/* ─── 420px: Very small phones — stack everything ──── */
-@media(max-width:420px){
+/* ─── 425px: Small phones — stack sidebar, 2-col stats ── */
+@media(max-width:425px){
   .dash-aside{flex-direction:column}
-  .dash-profile-card,.dash-wallet{min-width:100%}
-  .dash-greeting{font-size:14px!important}
+  .dash-profile-card,.dash-wallet{min-width:100%;flex:unset}
+  .dash-greeting{font-size:15px!important}
+  .dash-stats{grid-template-columns:repeat(2,1fr)!important;gap:4px!important}
+  .dash-stat-card{padding:8px 6px}
+  .ds-num{font-size:18px}
+  .ds-label{font-size:9.5px}
+  .ds-icon{width:26px;height:26px}
+  .ds-icon i{font-size:13px}
+  .dash-quick-actions{grid-template-columns:repeat(2,1fr)!important}
+}
 
-  /* Stats: horizontal row cards */
-  .dash-stats{grid-template-columns:1fr!important;gap:4px}
+/* ─── 375px: Very small phones — compact row stats ──── */
+@media(max-width:375px){
+  .page-dashboard .container{padding-left:6px!important;padding-right:6px!important}
+  .dash-stats{grid-template-columns:1fr!important;gap:3px!important}
   .dash-stat-card{display:flex;flex-direction:row;align-items:center;gap:8px;text-align:left;padding:8px 10px}
   .dash-stat-card::before{display:none}
-  .ds-icon{margin:0;flex-shrink:0;width:28px;height:28px}
-  .ds-num{font-size:18px;margin:0}
-  .ds-label{font-size:10px;margin:0}
-
-  /* Quick actions: 2 col */
-  .dash-quick-actions{grid-template-columns:repeat(2,1fr)!important}
-
-  /* Flow: vertical stack */
+  .ds-icon{margin:0;flex-shrink:0;width:26px;height:26px}
+  .ds-num{font-size:17px;margin:0}
+  .ds-label{font-size:9.5px;margin:0}
+  .dash-greeting{font-size:14px!important}
   .dash-sf-steps{flex-direction:column;gap:2px}
   .dash-sf-connector{width:2px;height:12px;align-self:center}
   .dash-sf-step{min-width:100%;padding:8px 10px}
