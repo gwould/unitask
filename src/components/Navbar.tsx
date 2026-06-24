@@ -125,6 +125,7 @@ export default function Navbar() {
             <Link to="/messages" onClick={closeMobile}><i className="bx bx-message-rounded-dots" /> Tin nhắn</Link>
             {user.role === 'student' && (
               <>
+                <Link to="/portfolio-builder" onClick={closeMobile}><i className="bx bx-briefcase-alt-2" /> Portfolio</Link>
                 <Link to="/my-applications" onClick={closeMobile}><i className="bx bx-list-check" /> Đơn ứng tuyển</Link>
                 <Link to="/contracts" onClick={closeMobile}><i className="bx bx-file" /> Hợp đồng</Link>
               </>
@@ -300,6 +301,7 @@ export default function Navbar() {
                     <Link to="/messages" className="nav-dd-item"><i className="bx bx-message-rounded-dots" /> Tin nhắn</Link>
                     {user.role === 'student' && (
                       <>
+                        <Link to="/portfolio-builder" className="nav-dd-item"><i className="bx bx-briefcase-alt-2" /> Portfolio</Link>
                         <Link to="/my-applications" className="nav-dd-item"><i className="bx bx-list-check" /> Đơn ứng tuyển</Link>
                         <Link to="/contracts" className="nav-dd-item"><i className="bx bx-file" /> Hợp đồng</Link>
                       </>
