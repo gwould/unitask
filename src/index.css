@@ -2374,11 +2374,69 @@ input:disabled,select:disabled,textarea:disabled{opacity:.55;cursor:not-allowed}
 .adm-empty{text-align:center;padding:60px 20px;color:var(--t2)}
 .adm-empty h3{font-size:17px;font-weight:700;color:var(--t1);margin-bottom:8px}
 .adm-empty p{font-size:14px;color:var(--t2)}
+
+/* ===== Quản lý người dùng (CRUD) ===== */
+.adm-container-wide{max-width:1320px}
+.adm-header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.adm-stats-4{grid-template-columns:repeat(4,1fr)}
+.adm-stats-4 .adm-stat-card{cursor:pointer;border:1px solid var(--border);transition:border-color .2s,transform .15s,box-shadow .2s;font:inherit}
+.adm-stats-4 .adm-stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.adm-stat-active{border-color:var(--p)!important;box-shadow:0 0 0 2px rgba(124,58,237,.25)}
+.adm-stat-danger{border-color:rgba(255,77,107,.3)}
+.adm-stat-danger .adm-stat-num{color:var(--red)}
+
+.adm-filter-group{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.adm-select{padding:8px 14px;border-radius:var(--rpill);font-size:.85rem;font-weight:600;background:var(--s2);color:var(--t1);border:1px solid var(--border);cursor:pointer;outline:none}
+.adm-select:focus{border-color:var(--p)}
+.adm-search-clear{background:none;border:none;color:var(--t3);cursor:pointer;font-size:1.1rem;display:flex;padding:0}
+.adm-search-clear:hover{color:var(--t1)}
+
+.adm-role{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:var(--rpill);font-size:.8rem;font-weight:600}
+.adm-role-student{background:rgba(124,58,237,.12);color:var(--pl)}
+.adm-role-business{background:rgba(59,130,246,.12);color:#60A5FA}
+.adm-role-admin{background:rgba(245,158,11,.14);color:var(--gold)}
+.adm-rep{font-weight:700;color:var(--t1)}
+.adm-badge-danger{background:rgba(255,77,107,.12);color:var(--red)}
+.adm-self-tag{margin-left:7px;padding:1px 7px;border-radius:var(--rpill);font-size:.62rem;font-weight:700;background:rgba(124,58,237,.16);color:var(--pl);vertical-align:middle;text-transform:uppercase;letter-spacing:.3px}
+.adm-row-disabled{opacity:.55}
+
+.adm-actions{display:flex;gap:6px;justify-content:flex-end}
+.adm-icon-btn{width:34px;height:34px;border-radius:var(--r8);border:1px solid var(--border);background:var(--s2);color:var(--t2);display:inline-flex;align-items:center;justify-content:center;font-size:1.05rem;cursor:pointer;transition:.15s}
+.adm-icon-btn:hover:not(:disabled){background:var(--s3);color:var(--t1);border-color:var(--p)}
+.adm-icon-btn:disabled{opacity:.4;cursor:not-allowed}
+.adm-icon-success:hover:not(:disabled){background:rgba(16,185,129,.15);color:var(--teal);border-color:rgba(16,185,129,.4)}
+.adm-icon-warning:hover:not(:disabled){background:rgba(255,179,64,.15);color:var(--gold);border-color:rgba(255,179,64,.4)}
+.adm-icon-danger:hover:not(:disabled){background:rgba(255,77,107,.12);color:var(--red);border-color:rgba(255,77,107,.4)}
+
+.adm-pagination{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;flex-wrap:wrap}
+.adm-page-info{font-size:.85rem;color:var(--t2)}
+.adm-page-btns{display:flex;gap:8px}
+.adm-page-btn{display:inline-flex;align-items:center;gap:4px;padding:8px 16px;border-radius:var(--rpill);font-size:.85rem;font-weight:600;background:var(--s2);color:var(--t1);border:1px solid var(--border);cursor:pointer;transition:.15s}
+.adm-page-btn:hover:not(:disabled){border-color:var(--p);color:var(--pl)}
+.adm-page-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* Modal form thêm/sửa */
+.adm-form-modal{max-width:560px}
+.adm-form-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.adm-form-head h3{font-family:var(--font-display);font-size:19px;color:var(--t0);margin:0}
+.adm-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.adm-field{display:flex;flex-direction:column;gap:6px}
+.adm-field>span{font-size:.8rem;font-weight:600;color:var(--t2)}
+.adm-field-full{grid-column:1/-1}
+.adm-field .ms-form-input{width:100%}
+.adm-checkbox{display:flex;align-items:center;gap:9px;font-size:.9rem;color:var(--t1);cursor:pointer}
+.adm-checkbox input{width:17px;height:17px;accent-color:var(--p);cursor:pointer}
+.adm-form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:24px}
+
 @media(max-width:768px){
   .adm-stats{grid-template-columns:1fr}
+  .adm-stats-4{grid-template-columns:1fr 1fr}
   .adm-controls{flex-direction:column;align-items:stretch}
+  .adm-filter-group{flex-direction:column;align-items:stretch}
+  .adm-select{width:100%}
   .adm-search{min-width:unset}
   .adm-tabs{overflow-x:auto}
+  .adm-form-grid{grid-template-columns:1fr}
 }
 
 /* Light mode - Admin Accounts */
@@ -2398,6 +2456,12 @@ input:disabled,select:disabled,textarea:disabled{opacity:.55;cursor:not-allowed}
 [data-theme="light"] .adm-table tbody tr:hover{background:rgba(124,58,237,.04)}
 [data-theme="light"] .adm-chip{background:#EDEEF2;color:#52546A}
 [data-theme="light"] .adm-biz-meta{color:#9496AA}
+[data-theme="light"] .adm-select{background:#EDEEF2;border-color:#E2E3E8;color:#1C1D26}
+[data-theme="light"] .adm-icon-btn{background:#EDEEF2;border-color:#E2E3E8;color:#52546A}
+[data-theme="light"] .adm-icon-btn:hover:not(:disabled){background:#E2E3E8;color:#1C1D26}
+[data-theme="light"] .adm-page-btn{background:#EDEEF2;border-color:#E2E3E8;color:#1C1D26}
+[data-theme="light"] .adm-page-info{color:#52546A}
+[data-theme="light"] .adm-rep{color:#1C1D26}
 
 /* ─── AUTH INPUT ICONS & FEATURES ────────────────── */
 .input-icon-wrap{position:relative;display:flex;align-items:center}
