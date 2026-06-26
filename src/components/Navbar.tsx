@@ -127,6 +127,7 @@ export default function Navbar() {
               <>
                 <Link to="/portfolio-builder" onClick={closeMobile}><i className="bx bx-briefcase-alt-2" /> Portfolio</Link>
                 <Link to="/my-applications" onClick={closeMobile}><i className="bx bx-list-check" /> Đơn ứng tuyển</Link>
+                <Link to="/my-tasks" onClick={closeMobile}><i className="bx bx-task" /> Công việc</Link>
                 <Link to="/contracts" onClick={closeMobile}><i className="bx bx-file" /> Hợp đồng</Link>
               </>
             )}
@@ -134,6 +135,7 @@ export default function Navbar() {
               <>
                 <Link to="/post-job" onClick={closeMobile}><i className="bx bx-edit" /> Đăng việc</Link>
                 <Link to="/manage-jobs" onClick={closeMobile}><i className="bx bx-folder-open" /> Quản lý job</Link>
+                <Link to="/business-automation" onClick={closeMobile}><i className="bx bx-bot" /> Tự động hóa</Link>
                 <Link to="/contracts" onClick={closeMobile}><i className="bx bx-file" /> Hợp đồng</Link>
               </>
             )}
@@ -233,7 +235,7 @@ export default function Navbar() {
             <Link to="/about#pricing" className={location.pathname === '/about' ? 'active' : ''}>
               Giá cả
             </Link>
-            <Link to="/contact" className={location.pathname === '/contact' ? 'active' : ''}>
+            <Link to="/about" className={location.pathname === '/about' ? 'active' : ''}>
               Về chúng tôi
             </Link>
             {user?.role === 'admin' && (
@@ -303,6 +305,7 @@ export default function Navbar() {
                       <>
                         <Link to="/portfolio-builder" className="nav-dd-item"><i className="bx bx-briefcase-alt-2" /> Portfolio</Link>
                         <Link to="/my-applications" className="nav-dd-item"><i className="bx bx-list-check" /> Đơn ứng tuyển</Link>
+                        <Link to="/my-tasks" className="nav-dd-item"><i className="bx bx-task" /> Công việc</Link>
                         <Link to="/contracts" className="nav-dd-item"><i className="bx bx-file" /> Hợp đồng</Link>
                       </>
                     )}
@@ -310,6 +313,7 @@ export default function Navbar() {
                       <>
                         <Link to="/post-job" className="nav-dd-item"><i className="bx bx-edit" /> Đăng việc</Link>
                         <Link to="/manage-jobs" className="nav-dd-item"><i className="bx bx-folder-open" /> Quản lý job</Link>
+                        <Link to="/business-automation" className="nav-dd-item"><i className="bx bx-bot" /> Tự động hóa</Link>
                         <Link to="/contracts" className="nav-dd-item"><i className="bx bx-file" /> Hợp đồng</Link>
                       </>
                     )}

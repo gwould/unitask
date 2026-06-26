@@ -60,7 +60,7 @@ export default function CancelTaskModal({
           </>
         ) : (
           <p style={{ fontSize: 13, color: 'var(--text-2)' }}>
-            Task chưa ký quỹ — hủy sẽ không phát sinh giao dịch.
+            Task chưa ký quỹ, hủy sẽ không phát sinh giao dịch.
           </p>
         )}
 

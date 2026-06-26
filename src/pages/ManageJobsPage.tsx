@@ -67,7 +67,7 @@ function ProfileModal({ ap, onClose }: { ap: Applicant; onClose: () => void }) {
           <h4><i className="bx bx-bar-chart-alt-2" /> Thống kê</h4>
           <div className="biz-pm-stats">
             <div className="biz-pm-stat">
-              <span className="biz-pm-stat-num">{ap.rating?.toFixed(1) || '—'}</span>
+              <span className="biz-pm-stat-num">{ap.rating?.toFixed(1) || '-'}</span>
               <span className="biz-pm-stat-label">Đánh giá</span>
             </div>
             <div className="biz-pm-stat">

@@ -306,7 +306,7 @@ export default function JobDetailPage() {
                       </span>
                     ) : (
                       <span className="pd-skill-match-count pd-match-none">
-                        0/{job.skills.length} — Hãy cập nhật kỹ năng trong <Link to="/profile">hồ sơ</Link>
+                        0/{job.skills.length}. Hãy cập nhật kỹ năng trong <Link to="/profile">hồ sơ</Link>
                       </span>
                     )}
                   </div>
@@ -401,7 +401,7 @@ export default function JobDetailPage() {
                   {/* CV Upload */}
                   <div className="pd-cv-upload">
                     <label className="pd-cv-label">
-                      📎 Đính kèm CV (PDF, DOCX — tối đa 5MB)
+                      📎 Đính kèm CV (PDF, DOCX, tối đa 5MB)
                     </label>
                     <div className="pd-cv-dropzone">
                       <input
@@ -488,7 +488,7 @@ export default function JobDetailPage() {
                     </p>
                   )}
                   <div className="pd-escrow-note">
-                    <i className="bx bx-shield-quarter" /> Job này được bảo vệ bởi <strong>Escrow UniTask</strong>. Tiền đã được giữ — bạn sẽ nhận đủ khi hoàn thành.
+                    <i className="bx bx-shield-quarter" /> Job này được bảo vệ bởi <strong>Escrow UniTask</strong>. Tiền đã được giữ. Bạn sẽ nhận đủ khi hoàn thành.
                   </div>
                   {user && (
                     <button

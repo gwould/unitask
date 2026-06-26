@@ -275,7 +275,7 @@ export default function AboutPage() {
               Trong khi đó, các Startup & SME rất khó tìm được <strong>nhân lực trẻ chất lượng với chi phí hợp lý</strong>.
             </p>
             <p>
-              UniTask ra đời để giải quyết bài toán này — tạo cầu nối giữa sinh viên đang học và doanh nghiệp
+              UniTask ra đời để giải quyết bài toán này: tạo cầu nối giữa sinh viên đang học và doanh nghiệp
               cần người thực hiện các công việc ngắn hạn, chuyên môn. Sinh viên tích lũy được kinh nghiệm,
               thu nhập và mối quan hệ; doanh nghiệp có sản phẩm chất lượng đúng deadline.
             </p>

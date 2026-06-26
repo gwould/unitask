@@ -11,7 +11,7 @@ const FAQS = [
   },
   {
     q: 'Toi chua co kinh nghiem, co ung tuyen duoc khong?',
-    a: 'Duoc! Nhieu job tren UniTask la micro-task khong yeu cau kinh nghiem truoc do. He thong goi y job phu hop voi nganh hoc va ky nang cua ban — chi can dang ky va bat dau.',
+    a: 'Duoc! Nhieu job tren UniTask la micro-task khong yeu cau kinh nghiem truoc do. He thong goi y job phu hop voi nganh hoc va ky nang cua ban, chi can dang ky va bat dau.',
   },
   {
     q: 'Doanh nghiep co the dang nhung loai job nao?',

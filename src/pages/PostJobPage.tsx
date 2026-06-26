@@ -322,7 +322,7 @@ export default function PostJobPage() {
               <div>
                 <strong>Bạn đang dùng tài khoản demo (chỉ local)</strong>
                 <p>
-                  Tài khoản <code>{user?.email}</code> không tồn tại trên server thật — chức năng đăng việc sẽ bị lỗi 401/500.
+                  Tài khoản <code>{user?.email}</code> không tồn tại trên server thật, chức năng đăng việc sẽ bị lỗi 401/500.
                   Vui lòng <a href="/register">đăng ký tài khoản mới</a> hoặc <a href="/login">đăng nhập</a> bằng tài khoản đã đăng ký trên hệ thống.
                 </p>
               </div>
@@ -418,7 +418,7 @@ export default function PostJobPage() {
                 {showError('payMax') ? (
                   <span className="pj-field-err-msg">{fieldErrors.payMax}</span>
                 ) : form.payMax ? (
-                  <span className="pj-field-hint">{Number(form.payMax).toLocaleString('vi-VN')}₫ — Để trống nếu lương cố định</span>
+                  <span className="pj-field-hint">{Number(form.payMax).toLocaleString('vi-VN')}₫, để trống nếu lương cố định</span>
                 ) : (
                   <span className="pj-field-hint">Để trống nếu lương cố định</span>
                 )}
@@ -489,7 +489,7 @@ export default function PostJobPage() {
                 placeholder={'Mỗi dòng 1 yêu cầu, VD:\nThành thạo Photoshop/Illustrator\nCó portfolio thiết kế\nSinh viên năm 3 trở lên'}
               />
               <div className="pj-field-footer">
-                <span className="pj-field-hint">Mỗi dòng 1 yêu cầu — không bắt buộc nhưng giúp lọc ứng viên tốt hơn</span>
+                <span className="pj-field-hint">Mỗi dòng 1 yêu cầu, không bắt buộc nhưng giúp lọc ứng viên tốt hơn</span>
               </div>
             </div>
 
@@ -521,7 +521,7 @@ export default function PostJobPage() {
                 {showError('skills') ? (
                   <span className="pj-field-err-msg">{fieldErrors.skills}</span>
                 ) : (
-                  <span className="pj-field-hint">Phân tách bằng dấu phẩy — hiển thị dưới dạng tag trên job</span>
+                  <span className="pj-field-hint">Phân tách bằng dấu phẩy, hiển thị dưới dạng tag trên job</span>
                 )}
                 {skillCount > 0 && <span className={`pj-char-count${skillCount > 15 ? ' pj-char-warn' : ''}`}>{skillCount} kỹ năng</span>}
               </div>
@@ -537,16 +537,16 @@ export default function PostJobPage() {
                   ? form.payMax
                     ? `${Number(form.payMin).toLocaleString('vi-VN')} – ${Number(form.payMax).toLocaleString('vi-VN')}₫`
                     : `${Number(form.payMin).toLocaleString('vi-VN')}₫`
-                  : '—'}
+                  : '-'}
               </span>
             </div>
             <div className="pj-summary-item">
               <span className="pj-summary-label">Hạn:</span>
-              <span className="pj-summary-value">{form.deadline || '—'}</span>
+              <span className="pj-summary-value">{form.deadline || '-'}</span>
             </div>
             <div className="pj-summary-item">
               <span className="pj-summary-label">Loại:</span>
-              <span className="pj-summary-value">{DURATION_OPTIONS.find(d => d.value === form.duration)?.label || '—'}</span>
+              <span className="pj-summary-value">{DURATION_OPTIONS.find(d => d.value === form.duration)?.label || '-'}</span>
             </div>
           </div>
 

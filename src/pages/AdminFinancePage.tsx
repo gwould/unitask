@@ -304,7 +304,7 @@ export default function AdminFinancePage() {
                     <div>
                       <div className="admin-revenue-name">{p.status} · {p.paymentMethod ?? 'escrow'}</div>
                       <div className="admin-revenue-note">
-                        App {p.jobApplicationId.slice(0, 8)}… · {p.createdAt?.slice(0, 10) ?? '—'}
+                        App {p.jobApplicationId.slice(0, 8)}… · {p.createdAt?.slice(0, 10) ?? '-'}
                       </div>
                     </div>
                     <div className="admin-revenue-value">{formatMoney(p.amount)}</div>

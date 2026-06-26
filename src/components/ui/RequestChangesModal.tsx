@@ -41,7 +41,7 @@ export default function RequestChangesModal({
         <input
           className="ms-form-input"
           style={{ width: '100%', marginTop: 10 }}
-          placeholder="Link bằng chứng (ảnh chụp, tài liệu...) — bắt buộc"
+          placeholder="Link bằng chứng (ảnh chụp, tài liệu...), bắt buộc"
           value={evidenceUrl}
           onChange={(e) => setEvidenceUrl(e.target.value)}
           disabled={loading}

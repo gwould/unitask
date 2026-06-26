@@ -77,7 +77,7 @@ export default function PortfolioViewPage() {
               {data.title && <p className="pv-title">{data.title}</p>}
               {data.university && (
                 <p className="pv-university">
-                  🎓 {data.university}{data.major ? ` — ${data.major}` : ''}
+                  🎓 {data.university}{data.major ? ` - ${data.major}` : ''}
                 </p>
               )}
               {data.bio && <p className="pv-bio">{data.bio}</p>}
@@ -87,7 +87,7 @@ export default function PortfolioViewPage() {
                   <span>Dự án hoàn thành</span>
                 </div>
                 <div className="pv-stat">
-                  <strong>{data.averageRating > 0 ? data.averageRating.toFixed(1) : '—'}</strong>
+                  <strong>{data.averageRating > 0 ? data.averageRating.toFixed(1) : '-'}</strong>
                   <span>Đánh giá</span>
                 </div>
                 <div className="pv-stat">
@@ -157,7 +157,7 @@ export default function PortfolioViewPage() {
                     {(p.startDate || p.endDate) && (
                       <p className="pv-project-date">
                         {p.startDate ? new Date(p.startDate).toLocaleDateString('vi-VN', { month: 'short', year: 'numeric' }) : ''}
-                        {p.endDate ? ` — ${new Date(p.endDate).toLocaleDateString('vi-VN', { month: 'short', year: 'numeric' })}` : ' — Hiện tại'}
+                        {p.endDate ? ` - ${new Date(p.endDate).toLocaleDateString('vi-VN', { month: 'short', year: 'numeric' })}` : ' - Hiện tại'}
                       </p>
                     )}
                     <div className="pv-project-links">
@@ -182,10 +182,10 @@ export default function PortfolioViewPage() {
                   <div className="pv-timeline-content">
                     <h3>{e.institution}</h3>
                     <p className="pv-timeline-sub">
-                      {[e.degree, e.fieldOfStudy].filter(Boolean).join(' — ')}
+                      {[e.degree, e.fieldOfStudy].filter(Boolean).join(' - ')}
                     </p>
                     <p className="pv-timeline-date">
-                      {e.startYear ?? '?'} — {e.isCurrent ? 'Hiện tại' : (e.endYear ?? '?')}
+                      {e.startYear ?? '?'} - {e.isCurrent ? 'Hiện tại' : (e.endYear ?? '?')}
                       {e.gpa != null && <span className="pf-gpa">GPA: {e.gpa}</span>}
                     </p>
                     {e.description && <p className="pv-timeline-desc">{e.description}</p>}
@@ -209,7 +209,7 @@ export default function PortfolioViewPage() {
                     {c.issuingOrganization && <p className="pv-cert-org">{c.issuingOrganization}</p>}
                     <p className="pv-cert-date">
                       {c.issueDate ? new Date(c.issueDate).toLocaleDateString('vi-VN') : ''}
-                      {c.expirationDate && ` — ${new Date(c.expirationDate).toLocaleDateString('vi-VN')}`}
+                      {c.expirationDate && ` - ${new Date(c.expirationDate).toLocaleDateString('vi-VN')}`}
                     </p>
                     {c.credentialUrl && <a href={c.credentialUrl} target="_blank" rel="noreferrer" className="pv-cert-link">Xác thực →</a>}
                   </div>

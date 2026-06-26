@@ -1,4 +1,4 @@
-import Hero from '../components/Hero';
+import Hero, { SocialProof } from '../components/Hero';
 import JobsSection from '../components/JobsSection';
 import Categories from '../components/Categories';
 import HowItWorks from '../components/HowItWorks';
@@ -13,6 +13,7 @@ export default function HomePage() {
   return (
     <div className="home-page">
       <Hero />
+      <SocialProof />
 
       <JobsSection />
       <Categories />

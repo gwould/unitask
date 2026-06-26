@@ -368,10 +368,10 @@ export default function PortfolioBuilderPage() {
                         <div className="pf-edu-body">
                           <h3>{e.institution}</h3>
                           <p className="pf-edu-degree">
-                            {[e.degree, e.fieldOfStudy].filter(Boolean).join(' — ')}
+                            {[e.degree, e.fieldOfStudy].filter(Boolean).join(' - ')}
                           </p>
                           <p className="pf-edu-year">
-                            {e.startYear ?? '?'} — {e.isCurrent ? 'Hiện tại' : (e.endYear ?? '?')}
+                            {e.startYear ?? '?'} - {e.isCurrent ? 'Hiện tại' : (e.endYear ?? '?')}
                             {e.gpa != null && <span className="pf-gpa">GPA: {e.gpa}</span>}
                           </p>
                           {e.description && <p className="pf-desc">{e.description}</p>}
@@ -461,7 +461,7 @@ export default function PortfolioBuilderPage() {
                           {c.issuingOrganization && <p className="pf-cert-org">{c.issuingOrganization}</p>}
                           <p className="pf-cert-date">
                             {c.issueDate ? new Date(c.issueDate).toLocaleDateString('vi-VN') : ''}
-                            {c.expirationDate && ` — ${new Date(c.expirationDate).toLocaleDateString('vi-VN')}`}
+                            {c.expirationDate && ` - ${new Date(c.expirationDate).toLocaleDateString('vi-VN')}`}
                           </p>
                           {c.credentialId && <p className="pf-cert-id">ID: {c.credentialId}</p>}
                           {c.credentialUrl && <a href={c.credentialUrl} target="_blank" rel="noreferrer" className="pf-cert-link">Xem chứng chỉ →</a>}

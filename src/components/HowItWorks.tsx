@@ -54,12 +54,13 @@ export default function HowItWorks() {
   return (
     <section className="how-section" id="how">
       <div className="container">
-        <div className="section-header fade-up">
-          <div className="section-eyebrow">Quy trình</div>
-          <h2 className="section-title">Đơn giản — Minh bạch — An toàn</h2>
-          <p className="section-sub">Chỉ 4 bước để bắt đầu kiếm thu nhập từ chuyên ngành của bạn</p>
-        </div>
-        <div className="how-tabs">
+        <div className="how-header fade-up">
+          <div>
+            <div className="section-eyebrow">Quy trình</div>
+            <h2 className="section-title">Đơn giản · Minh bạch · An toàn</h2>
+            <p className="section-sub">Chỉ 4 bước để bắt đầu kiếm thu nhập từ chuyên ngành của bạn</p>
+          </div>
+          <div className="how-tabs">
           <button
             className={`how-tab${mode === 'student' ? ' active' : ''}`}
             onClick={() => setMode('student')}
@@ -72,6 +73,7 @@ export default function HowItWorks() {
           >
             <i className="bx bxs-building-house" /> Dành cho Doanh nghiệp
           </button>
+          </div>
         </div>
         {loading ? (
           <div style={{ textAlign: 'center', color: 'var(--text-2)' }}>Đang tải quy trình...</div>

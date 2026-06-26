@@ -618,7 +618,7 @@ export default function WalletPage() {
                 onChange={(e) => setWithdrawForm((f) => ({ ...f, methodId: e.target.value }))}
               >
                 {bankMethods.map((m) => (
-                  <option key={m.id} value={m.id}>{m.name} — {m.detail}</option>
+                  <option key={m.id} value={m.id}>{m.name} - {m.detail}</option>
                 ))}
               </select>
             </div>

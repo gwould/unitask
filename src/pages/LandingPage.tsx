@@ -11,11 +11,11 @@ const STATS = [
 const STUDENT_BENEFITS = [
   { icon: 'bx-wallet', title: 'Kiem tien tu ky nang', desc: 'Nhan viec thuc te tu doanh nghiep, lam tu nha hoac quan cafe. Thu nhap tu 500K - 10 trieu/thang.' },
   { icon: 'bx-list-check', title: 'Xay CV that', desc: 'Moi project hoan thanh tu dong cap nhat vao ho so so. CV cua ban se khac biet khi di xin viec.' },
-  { icon: 'bx-shield', title: '100% an toan', desc: 'Tien duoc giu trong Escrow truoc khi ban bat dau. Lam xong la nhan tien — khong so bi quit.' },
+  { icon: 'bx-shield', title: '100% an toan', desc: 'Tien duoc giu trong Escrow truoc khi ban bat dau. Lam xong la nhan tien, khong so bi quit.' },
 ];
 
 const BUSINESS_BENEFITS = [
-  { icon: 'bx-bolt-circle', title: 'Tuyen nhanh trong 24h', desc: 'Dang job — nhan don ung tuyen trong vai gio. Khong can phong van phuc tap cho micro-task.' },
+  { icon: 'bx-bolt-circle', title: 'Tuyen nhanh trong 24h', desc: 'Dang job, nhan don ung tuyen trong vai gio. Khong can phong van phuc tap cho micro-task.' },
   { icon: 'bxs-graduation', title: 'Nhan luc chat luong', desc: 'Sinh vien da xac thuc, co ky nang thuc te. He thong goi y ung vien phu hop voi yeu cau cua ban.' },
   { icon: 'bx-credit-card', title: 'Chi tra linh hoat', desc: 'Chi tra khi hai long voi san pham. Escrow bao ve ca hai ben. Ho tro MoMo, chuyen khoan.' },
 ];
@@ -27,7 +27,7 @@ const TESTIMONIALS = [
 ];
 
 const STEPS = [
-  { num: '1', title: 'Dang ky mien phi', desc: '30 giay — chi can email', icon: 'bx-edit' },
+  { num: '1', title: 'Dang ky mien phi', desc: '30 giay, chi can email', icon: 'bx-edit' },
   { num: '2', title: 'Tim & ung tuyen', desc: 'He thong goi y job phu hop', icon: 'bx-target-lock' },
   { num: '3', title: 'Lam viec & nop bai', desc: 'Lam tu bat cu dau, theo deadline', icon: 'bx-code-alt' },
   { num: '4', title: 'Nhan tien', desc: 'Rut ve MoMo hoac ngan hang', icon: 'bx-wallet' },
@@ -62,7 +62,7 @@ export default function LandingPage() {
               <>
                 <div className="landing-badge">Mien phi cho sinh vien</div>
                 <h1>Sinh vien lam them<br /><span className="highlight">kiem tien that</span></h1>
-                <p>Nhan job tu doanh nghiep, lam tu nha, thanh toan an toan qua Escrow. Khong can kinh nghiem — chi can ky nang va su san sang.</p>
+                <p>Nhan job tu doanh nghiep, lam tu nha, thanh toan an toan qua Escrow. Khong can kinh nghiem, chi can ky nang va su san sang.</p>
               </>
             ) : (
               <>
@@ -186,7 +186,7 @@ export default function LandingPage() {
               : 'Dang viec mien phi, nhan ung vien trong vai gio.'}
           </p>
           <Link to="/register" className="btn btn-accent" style={{ fontSize: 18, padding: '16px 48px' }}>
-            {isStudent ? 'Dang ky mien phi — 30 giay' : 'Bat dau dang viec mien phi'} →
+            {isStudent ? 'Dang ky mien phi, 30 giay' : 'Bat dau dang viec mien phi'} →
           </Link>
           <p style={{ marginTop: 16, fontSize: 13, color: 'var(--t3)' }}>
             Khong can the tin dung · Khong cam ket · Huy bat cu luc nao

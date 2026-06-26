@@ -10,7 +10,7 @@ const { careerAssistant: careerAssistantService } = serviceRegistry;
 const WELCOME: CareerChatMessage = {
   role: 'assistant',
   content:
-    'Xin chào! Mình là trợ lý nghề nghiệp UniTask. Bạn có thể nhắn ngắn như «react remote», «viết content 5 triệu» — mình sẽ gợi ý job phù hợp.',
+    'Xin chào! Mình là trợ lý nghề nghiệp UniTask. Bạn có thể nhắn ngắn như «react remote», «viết content 5 triệu», mình sẽ gợi ý job phù hợp.',
   followUpQuestions: ['Job IT part-time', 'Thiết kế UI/UX', 'Content marketing remote'],
 };
 

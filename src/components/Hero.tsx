@@ -12,25 +12,11 @@ const quickTags = [
   'Khảo sát thị trường',
 ];
 
-const partners = [
-  { name: 'FPT', abbr: 'FPT', color: '#E8731A' },
-  { name: 'VNG', abbr: 'VNG', color: '#1A73E8' },
-  { name: 'Tiki', abbr: 'Tiki', color: '#1A94FF' },
-  { name: 'Shopee', abbr: 'SP', color: '#EE4D2D' },
-  { name: 'MoMo', abbr: 'MM', color: '#A50064' },
-  { name: 'Grab', abbr: 'GR', color: '#00B14F' },
-];
-
 export default function Hero() {
   const [searchMode, setSearchMode] = useState<'find' | 'hire'>('find');
   const [searchValue, setSearchValue] = useState('');
   const [category, setCategory] = useState('');
-  const [stats, setStats] = useState<PlatformStats>({ totalJobs: 0, totalBusinesses: 0, totalStudents: 0 });
   const navigate = useNavigate();
-
-  useEffect(() => {
-    serviceRegistry.site.getPlatformStats().then(setStats);
-  }, []);
 
   const handleSearch = () => {
     if (searchMode === 'find') {
@@ -58,7 +44,7 @@ export default function Hero() {
       <div className="container hero-container">
         <div className="hero-content">
           <h1>
-            Bạn có kỹ năng —{' '}
+            Bạn có kỹ năng?{' '}
             <span className="highlight">Biến nó</span>
             <br />
             thành <span className="highlight">thu nhập</span>
@@ -127,30 +113,54 @@ export default function Hero() {
               </span>
             ))}
           </div>
+        </div>
+      </div>
+    </section>
+  );
+}
 
-          <div className="hero-stats">
-            <div className="hero-stat">
+export function SocialProof() {
+  const [stats, setStats] = useState<PlatformStats>({ totalJobs: 0, totalBusinesses: 0, totalStudents: 0 });
+
+  useEffect(() => {
+    serviceRegistry.site.getPlatformStats().then(setStats);
+  }, []);
+
+  const partners = [
+    { name: 'FPT', abbr: 'FPT', color: '#E8731A' },
+    { name: 'VNG', abbr: 'VNG', color: '#1A73E8' },
+    { name: 'Tiki', abbr: 'Tiki', color: '#1A94FF' },
+    { name: 'Shopee', abbr: 'SP', color: '#EE4D2D' },
+    { name: 'MoMo', abbr: 'MM', color: '#A50064' },
+    { name: 'Grab', abbr: 'GR', color: '#00B14F' },
+  ];
+
+  return (
+    <section className="social-proof">
+      <div className="container">
+        <div className="sp-inner">
+          <div className="sp-stats">
+            <div className="sp-stat">
               <strong>{stats.totalJobs > 0 ? stats.totalJobs.toLocaleString('vi-VN') + '+' : '---'}</strong>
               <span>Việc làm</span>
             </div>
-            <div className="hero-stat-divider" />
-            <div className="hero-stat">
+            <div className="sp-divider" />
+            <div className="sp-stat">
               <strong>{stats.totalBusinesses > 0 ? stats.totalBusinesses.toLocaleString('vi-VN') + '+' : '---'}</strong>
               <span>Doanh nghiệp</span>
             </div>
-            <div className="hero-stat-divider" />
-            <div className="hero-stat">
+            <div className="sp-divider" />
+            <div className="sp-stat">
               <strong>{stats.totalStudents > 0 ? stats.totalStudents.toLocaleString('vi-VN') + '+' : '---'}</strong>
               <span>Sinh viên</span>
             </div>
           </div>
-
-          <div className="hero-partners">
-            <span className="hero-partners-label">Tin tưởng bởi:</span>
-            <div className="hero-partners-logos">
+          <div className="sp-partners">
+            <span className="sp-partners-label">Tin tưởng bởi:</span>
+            <div className="sp-partners-logos">
               {partners.map((p) => (
-                <span key={p.name} className="hero-partner" style={{ color: p.color }}>
-                  <span className="hero-partner-abbr" style={{ background: `${p.color}18` }}>{p.abbr}</span>
+                <span key={p.name} className="sp-partner" style={{ color: p.color }}>
+                  <span className="sp-partner-abbr" style={{ background: `${p.color}18` }}>{p.abbr}</span>
                 </span>
               ))}
             </div>

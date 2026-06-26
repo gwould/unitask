@@ -191,7 +191,7 @@ export default function UpgradePage() {
                 <input type="radio" name="paym" checked={payMethod === 'wallet'} onChange={() => setPayMethod('wallet')} />
                 <div className="upg-pay-info">
                   <strong><i className="bx bx-wallet" /> Ví UniTask</strong>
-                  <span>Số dư hiện tại: {formatMoney(balance)}{balance < total && <em className="upg-insufficient"> — không đủ</em>}</span>
+                  <span>Số dư hiện tại: {formatMoney(balance)}{balance < total && <em className="upg-insufficient">, không đủ</em>}</span>
                 </div>
                 <span className="upg-pay-tag">Kích hoạt ngay</span>
               </label>

@@ -30,7 +30,7 @@ export default function Features() {
   return (
     <section id="features">
       <div className="container">
-        <div className="section-header fade-up">
+        <div className="section-header section-header--left fade-up">
           <div className="section-eyebrow">Tính năng cốt lõi</div>
           <h2 className="section-title">Được xây dựng vì sinh viên</h2>
           <p className="section-sub">

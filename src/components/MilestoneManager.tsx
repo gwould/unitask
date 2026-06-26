@@ -372,7 +372,7 @@ export default function MilestoneManager({ contractId }: MilestoneManagerProps) 
                   <span className="kb-col-count">{col.length}</span>
                 </div>
                 <div className="kb-col-body">
-                  {col.length === 0 ? <div className="kb-empty">—</div> : col.map(renderCard)}
+                  {col.length === 0 ? <div className="kb-empty">-</div> : col.map(renderCard)}
                 </div>
               </div>
             );

@@ -106,7 +106,7 @@ export default function RegisterPage() {
           <div className="auth-header">
             <span className="auth-logo-icon"><i className="bx bx-rocket" /></span>
             <h1>Tạo tài khoản</h1>
-            <p>Tham gia cộng đồng UniTask — hoàn toàn miễn phí</p>
+            <p>Tham gia cộng đồng UniTask, hoàn toàn miễn phí</p>
           </div>
 
           {/* role toggle */}

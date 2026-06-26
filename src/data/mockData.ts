@@ -121,7 +121,7 @@ export const jobsData: Job[] = [
     id: 4,
     logoText: 'GR',
     logoGradient: 'linear-gradient(135deg,#FFB340,#FF8C00)',
-    title: 'Chạy quảng cáo Facebook Ads — F&B',
+    title: 'Chạy quảng cáo Facebook Ads: F&B',
     company: 'GreenBowl Restaurant',
     companyId: 'biz-4',
     verified: true,
@@ -159,7 +159,7 @@ export const jobsData: Job[] = [
     id: 5,
     logoText: 'DS',
     logoGradient: 'linear-gradient(135deg,#7C72FF,#5B4FFF)',
-    title: 'Fix Bug Python Flask API — E-commerce',
+    title: 'Fix Bug Python Flask API: E-commerce',
     company: 'DevStack JSC',
     companyId: 'biz-5',
     verified: true,
@@ -307,7 +307,7 @@ export const jobsData: Job[] = [
     id: 9,
     logoText: 'SB',
     logoGradient: 'linear-gradient(135deg,#FF5722,#E91E63)',
-    title: 'Thiết kế UI/UX Mobile App — Health Tracker',
+    title: 'Thiết kế UI/UX Mobile App: Health Tracker',
     company: 'SmartBit Solutions',
     companyId: 'biz-9',
     verified: true,
@@ -347,7 +347,7 @@ export const jobsData: Job[] = [
     id: 10,
     logoText: 'EC',
     logoGradient: 'linear-gradient(135deg,#4CAF50,#8BC34A)',
-    title: 'Khảo sát thị trường Online — Ngành FMCG',
+    title: 'Khảo sát thị trường Online: Ngành FMCG',
     company: 'EcoConsult VN',
     companyId: 'biz-10',
     verified: true,
@@ -385,7 +385,7 @@ export const jobsData: Job[] = [
     id: 11,
     logoText: 'NX',
     logoGradient: 'linear-gradient(135deg,#3F51B5,#2196F3)',
-    title: 'Backend API Node.js — Chat App',
+    title: 'Backend API Node.js: Chat App',
     company: 'NextGen Labs',
     companyId: 'biz-11',
     verified: true,
@@ -515,7 +515,7 @@ export const testimonialsData: Testimonial[] = [
     avatarLetter: 'N',
     avatarGradient: 'linear-gradient(135deg,#5B4FFF,#7C72FF)',
     name: 'Nguyễn Minh Khoa',
-    role: 'SV năm 4 — CNTT, HCMUT · Frontend Dev',
+    role: 'SV năm 4, CNTT, HCMUT · Frontend Dev',
   },
   {
     stars: 5,
@@ -523,7 +523,7 @@ export const testimonialsData: Testimonial[] = [
     avatarLetter: 'T',
     avatarGradient: 'linear-gradient(135deg,#FF6B35,#FF4D6B)',
     name: 'Trần Phương Linh',
-    role: 'SV năm 3 — Ngôn ngữ Anh, ULIS · Dịch thuật',
+    role: 'SV năm 3, Ngôn ngữ Anh, ULIS · Dịch thuật',
   },
   {
     stars: 5,
@@ -531,7 +531,7 @@ export const testimonialsData: Testimonial[] = [
     avatarLetter: 'H',
     avatarGradient: 'linear-gradient(135deg,#00D4AA,#00A882)',
     name: 'Huỳnh Thanh Tùng',
-    role: 'Co-founder — BrandSpace Startup · Khách hàng DN',
+    role: 'Co-founder, BrandSpace Startup · Khách hàng DN',
   },
 ];
 
@@ -540,7 +540,7 @@ export const featuresData: Feature[] = [
   {
     icon: '🛡️',
     iconBg: 'rgba(91,79,255,.15)',
-    title: 'Hệ thống Escrow — Không bao giờ bị bùng tiền',
+    title: 'Hệ thống Escrow: Không bao giờ bị bùng tiền',
     desc: 'Doanh nghiệp nạp tiền vào hệ thống trước khi job bắt đầu. Tiền chỉ được giải phóng khi bạn hoàn thành và được duyệt. UniTask làm trung gian bảo vệ quyền lợi cả hai phía.',
     large: true,
     list: [
@@ -566,6 +566,6 @@ export const featuresData: Feature[] = [
     icon: '⭐',
     iconBg: 'rgba(255,179,64,.1)',
     title: 'Đánh giá 2 chiều & Skill Endorsement',
-    desc: 'Doanh nghiệp không chỉ chấm sao — họ xác nhận kỹ năng cụ thể của bạn. Hồ sơ ngày càng giá trị hơn.',
+    desc: 'Doanh nghiệp không chỉ chấm sao, họ xác nhận kỹ năng cụ thể của bạn. Hồ sơ ngày càng giá trị hơn.',
   },
 ];

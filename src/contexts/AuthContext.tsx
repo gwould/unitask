@@ -80,7 +80,7 @@ const DEMO_ACCOUNTS: (User & { password: string })[] = [
     role: 'business',
     avatar: 'T',
     companyName: 'BrandSpace Startup',
-    bio: 'Co-founder BrandSpace — chuyên về digital branding cho SME.',
+    bio: 'Co-founder BrandSpace, chuyên về digital branding cho SME.',
     phone: '0987654321',
     completedJobs: 15,
     rating: 4.8,

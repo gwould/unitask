@@ -25,7 +25,7 @@ interface PolicyGroup {
 const GROUPS: PolicyGroup[] = [
   {
     id: 'escrow',
-    heading: 'Chính sách Escrow — Bảo vệ tiền hai chiều',
+    heading: 'Chính sách Escrow: Bảo vệ tiền hai chiều',
     subtitle: 'Áp dụng cho mọi giao dịch trên nền tảng.',
     items: [
       { code: '1.1', rule: 'Doanh nghiệp phải nạp đủ 100% giá trị task vào Escrow trước khi task được hiển thị cho người nhận.', note: 'Mục đích: ngăn doanh nghiệp đăng task "ảo" không có ngân sách.', auto: true },
@@ -47,7 +47,7 @@ const GROUPS: PolicyGroup[] = [
   },
   {
     id: 'violation',
-    heading: 'Khung xử lý vi phạm — 3 mức độ',
+    heading: 'Khung xử lý vi phạm: 3 mức độ',
     subtitle: 'Minh bạch, nhất quán, có thể kháng cáo.',
     items: [
       { code: 'M1', title: 'Cảnh cáo chính thức', rule: 'Ghi nhận vào hồ sơ, ảnh hưởng điểm uy tín nhẹ (–5 điểm). Áp dụng cho vi phạm lần đầu, mức độ nhẹ.', note: 'Ví dụ: nộp muộn không báo trước, review thiếu khách quan, phản hồi chậm quá 48h.' },
@@ -58,10 +58,10 @@ const GROUPS: PolicyGroup[] = [
   {
     id: 'compensation',
     heading: 'Khung bồi thường thiệt hại',
-    subtitle: 'Liquidated damages — đồng ý từ trước, không cần chứng minh thiệt hại thực tế.',
+    subtitle: 'Liquidated damages, đồng ý từ trước, không cần chứng minh thiệt hại thực tế.',
     items: [
       { code: 'BT1', rule: 'Bypass giao dịch ngoài nền tảng: bồi thường 20% giá trị giao dịch ước tính, tối thiểu 500.000đ.' },
-      { code: 'BT2', rule: 'Vi phạm NDA — tiết lộ thông tin bảo mật: bồi thường tối thiểu 5.000.000đ, có thể cao hơn nếu doanh nghiệp chứng minh thiệt hại thực tế lớn hơn.' },
+      { code: 'BT2', rule: 'Vi phạm NDA, tiết lộ thông tin bảo mật: bồi thường tối thiểu 5.000.000đ, có thể cao hơn nếu doanh nghiệp chứng minh thiệt hại thực tế lớn hơn.' },
       { code: 'BT3', rule: 'Giao nộp sản phẩm vi phạm bản quyền gây thiệt hại cho doanh nghiệp: người thực hiện chịu toàn bộ trách nhiệm pháp lý và bồi thường; UniTask không chịu liên đới.' },
       { code: 'BT4', rule: 'Doanh nghiệp từ chối nghiệm thu vô lý sau khi hòa giải viên xác nhận sản phẩm đạt yêu cầu: doanh nghiệp mất toàn bộ tiền Escrow và bị cộng điểm xấu vào lịch sử.' },
     ],
@@ -78,12 +78,12 @@ const GROUPS: PolicyGroup[] = [
   },
   {
     id: 'dispute',
-    heading: 'Quy trình giải quyết tranh chấp — 4 bước',
+    heading: 'Quy trình giải quyết tranh chấp: 4 bước',
     subtitle: 'Từ thương lượng đến trọng tài chính thức.',
     items: [
-      { code: 'B1', rule: 'Thương lượng trực tiếp qua chat UniTask — tối đa 48 giờ. Hai bên tự đàm phán, UniTask không can thiệp.', note: 'Ước tính 70% tranh chấp giải quyết được ở bước này nếu hai bên thiện chí.' },
+      { code: 'B1', rule: 'Thương lượng trực tiếp qua chat UniTask, tối đa 48 giờ. Hai bên tự đàm phán, UniTask không can thiệp.', note: 'Ước tính 70% tranh chấp giải quyết được ở bước này nếu hai bên thiện chí.' },
       { code: 'B2', rule: 'Mở yêu cầu hòa giải: một bên nhấn "Yêu cầu hỗ trợ tranh chấp". UniTask chỉ định hòa giải viên trong 24 giờ.' },
-      { code: 'B3', rule: 'Hòa giải viên xem xét bằng chứng từ hai bên (mô tả task gốc, file trao đổi, sản phẩm nộp, lịch sử chat) và ra Quyết định Tạm thời trong 5 ngày làm việc.', note: 'Quyết định Tạm thời có hiệu lực ngay với Escrow — tiền được giải phóng/hoàn theo quyết định trong khi chờ kháng cáo.' },
+      { code: 'B3', rule: 'Hòa giải viên xem xét bằng chứng từ hai bên (mô tả task gốc, file trao đổi, sản phẩm nộp, lịch sử chat) và ra Quyết định Tạm thời trong 5 ngày làm việc.', note: 'Quyết định Tạm thời có hiệu lực ngay với Escrow, tiền được giải phóng/hoàn theo quyết định trong khi chờ kháng cáo.' },
       { code: 'B4', rule: 'Kháng cáo: bên không đồng ý có 7 ngày để kháng cáo lên Ban phúc thẩm UniTask (3 thành viên cấp cao). Sau đó có thể đưa lên VIAC nếu vẫn không thỏa thuận.' },
     ],
   },
@@ -144,7 +144,7 @@ export default function EscrowPolicyPage() {
                   <ul>
                     {g.items.map((it) => (
                       <li key={it.code} style={{ marginBottom: 10 }}>
-                        <strong>{it.code}{it.title ? ` — ${it.title}` : ''}{it.auto && <> <i className="bx bx-cog" /></>}:</strong>{' '}
+                        <strong>{it.code}{it.title ? `: ${it.title}` : ''}{it.auto && <> <i className="bx bx-cog" /></>}:</strong>{' '}
                         {it.rule}
                         {it.note && (
                           <div style={{ fontSize: 13, color: 'var(--text-2)', marginTop: 3 }}>{it.note}</div>
