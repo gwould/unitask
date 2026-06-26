@@ -242,7 +242,7 @@ export default function ContactPage() {
                     <strong>{faq.q}</strong>
                     <span className="faq-arrow">{openFaq === i ? '▲' : '▼'}</span>
                   </button>
-                  <div className={`faq-answer${openFaq === i ? ' show' : ''}`}>
+                  <div className="faq-answer">
                     <p>{faq.a}</p>
                   </div>
                 </div>

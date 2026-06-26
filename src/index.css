@@ -389,7 +389,7 @@ section{padding:96px 0;position:relative}
 .faq-item.open{border-color:rgba(124,58,237,.3);background:rgba(255,255,255,.03)}
 .faq-question{display:flex;justify-content:space-between;align-items:center;width:100%;padding:18px 22px;background:none;border:none;color:#fff;font:inherit;font-size:15px;font-weight:600;cursor:pointer;text-align:left;gap:16px}
 .faq-icon{font-size:20px;color:var(--p);flex-shrink:0;width:24px;text-align:center}
-.faq-answer{padding:0 22px 18px;color:var(--t2);font-size:14px;line-height:1.7}
+.faq-item .faq-answer{padding:0 22px 18px;color:var(--t2);font-size:14px;line-height:1.7}
 
 /* ─── AD LANDING PAGE ─── */
 .landing-ad{min-height:100vh}
@@ -1662,9 +1662,9 @@ input:checked + .slider:before{transform:translateX(20px)}
 .faq-toggle strong{font-size:14px}
 .faq-arrow{font-size:11px;color:var(--text-2);flex-shrink:0;transition:transform .2s}
 .contact-faq-item.open .faq-arrow{transform:rotate(180deg)}
-.faq-answer{max-height:0;overflow:hidden;transition:max-height .3s ease}
-.faq-answer.show{max-height:200px}
-.faq-answer p{padding:0 14px 12px;margin:0}
+.contact-faq-item .faq-answer{max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0}
+.contact-faq-item.open .faq-answer{max-height:200px}
+.contact-faq-item .faq-answer p{padding:0 14px 12px;margin:0;font-size:13px;color:var(--text-2);line-height:1.6}
 
 /* ─── ABOUT: TEAM BIO EXPAND & CTA HINT ──────────── */
 .about-team-toggle{margin-top:10px;width:100%;justify-content:center}
