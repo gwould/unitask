@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth, type UserRole } from '../contexts/AuthContext';
 
 export default function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
-  const [role, setRole] = useState<UserRole>('student');
+  const [searchParams] = useSearchParams();
+  const initialRole = searchParams.get('role') === 'business' ? 'business' : 'student';
+  const [role, setRole] = useState<UserRole>(initialRole);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

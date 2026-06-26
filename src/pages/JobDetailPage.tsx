@@ -502,17 +502,6 @@ export default function JobDetailPage() {
                 </div>
               )}
 
-              <div className="pd-company-card">
-                <div className="jc-logo" style={{ background: job.logoGradient, width: 40, height: 40, fontSize: 16 }}>
-                  {job.logoText}
-                </div>
-                <div>
-                  <strong>{job.company}</strong>
-                  <div style={{ fontSize: 12, color: 'var(--t3)' }}>
-                    {job.verified ? '✅ Đã xác thực' : 'Chưa xác thực'}
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>

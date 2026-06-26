@@ -25,7 +25,7 @@ export default function Hero() {
       if (category) params.set('cat', category);
       navigate(`/jobs${params.toString() ? '?' + params.toString() : ''}`);
     } else {
-      navigate('/post-job');
+      navigate('/register?role=business');
     }
   };
 
