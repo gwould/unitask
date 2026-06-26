@@ -1441,10 +1441,11 @@ a.nav-logo{text-decoration:none;color:inherit}
 
 .contact-faq{background:var(--card);border:1px solid var(--border);border-radius:var(--r14);padding:24px;margin-top:8px}
 .contact-faq h4{font-size:16px;margin-bottom:16px}
-.contact-faq-item{margin-bottom:14px}
+.contact-faq-item{border:1px solid var(--border);border-radius:var(--r10);margin-bottom:8px;overflow:hidden;transition:border-color .2s}
+.contact-faq-item.open{border-color:var(--p)}
 .contact-faq-item:last-child{margin-bottom:0}
-.contact-faq-item strong{font-size:14px;display:block;margin-bottom:4px}
-.contact-faq-item p{font-size:13px;color:var(--text-2);margin:0;line-height:1.5}
+.contact-faq-item strong{font-size:14px;display:block}
+.contact-faq-item p{font-size:13px;color:var(--text-2);margin:0;line-height:1.6}
 
 /* ─── CATEGORY CARDS as Links ─────────────────────── */
 a.cat-card{text-decoration:none;color:inherit}
@@ -1657,13 +1658,13 @@ input:checked + .slider:before{transform:translateX(20px)}
 .field-meta{display:flex;justify-content:space-between;align-items:flex-start;margin-top:4px}
 .char-counter{font-size:12px;color:var(--text-2);margin-left:auto;white-space:nowrap}
 .char-counter.over{color:#ff6b6b;font-weight:600}
-.faq-toggle{display:flex;justify-content:space-between;align-items:center;width:100%;background:none;border:none;cursor:pointer;padding:0;text-align:left;color:var(--text)}
+.faq-toggle{display:flex;justify-content:space-between;align-items:center;width:100%;background:none;border:none;cursor:pointer;padding:12px 14px;text-align:left;color:var(--text);gap:12px}
 .faq-toggle strong{font-size:14px}
 .faq-arrow{font-size:11px;color:var(--text-2);flex-shrink:0;transition:transform .2s}
 .contact-faq-item.open .faq-arrow{transform:rotate(180deg)}
 .faq-answer{max-height:0;overflow:hidden;transition:max-height .3s ease}
 .faq-answer.show{max-height:200px}
-.faq-answer p{margin-top:8px}
+.faq-answer p{padding:0 14px 12px;margin:0}
 
 /* ─── ABOUT: TEAM BIO EXPAND & CTA HINT ──────────── */
 .about-team-toggle{margin-top:10px;width:100%;justify-content:center}

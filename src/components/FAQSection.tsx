@@ -2,28 +2,28 @@ import { useState } from 'react';
 
 const FAQS = [
   {
-    q: 'UniTask co mien phi khong?',
-    a: 'Hoan toan mien phi cho sinh vien. Doanh nghiep co the bat dau voi goi Free Starter (0d/thang, 5 job/thang). Chi phi hoa hong chi tinh khi giao dich hoan tat qua Escrow.',
+    q: 'UniTask có miễn phí không?',
+    a: 'Hoàn toàn miễn phí cho sinh viên. Doanh nghiệp có thể bắt đầu với gói Free Starter (0đ/tháng, 5 job/tháng). Chi phí hoa hồng chỉ tính khi giao dịch hoàn tất qua Escrow.',
   },
   {
-    q: 'Lam sao de dam bao toi duoc tra tien?',
-    a: 'Tien luong duoc giu trong he thong Escrow truoc khi sinh vien bat dau lam. Chi giai ngan khi doanh nghiep xac nhan san pham dat yeu cau. Neu co tranh chap, UniTask dong vai tro trung gian xu ly.',
+    q: 'Làm sao để đảm bảo tôi được trả tiền?',
+    a: 'Tiền lương được giữ trong hệ thống Escrow trước khi sinh viên bắt đầu làm. Chỉ giải ngân khi doanh nghiệp xác nhận sản phẩm đạt yêu cầu. Nếu có tranh chấp, UniTask đóng vai trò trung gian xử lý.',
   },
   {
-    q: 'Toi chua co kinh nghiem, co ung tuyen duoc khong?',
-    a: 'Duoc! Nhieu job tren UniTask la micro-task khong yeu cau kinh nghiem truoc do. He thong goi y job phu hop voi nganh hoc va ky nang cua ban, chi can dang ky va bat dau.',
+    q: 'Tôi chưa có kinh nghiệm, có ứng tuyển được không?',
+    a: 'Được! Nhiều job trên UniTask là micro-task không yêu cầu kinh nghiệm trước đó. Hệ thống gợi ý job phù hợp với ngành học và kỹ năng của bạn, chỉ cần đăng ký và bắt đầu.',
   },
   {
-    q: 'Doanh nghiep co the dang nhung loai job nao?',
-    a: 'Tat ca cac loai: thiet ke logo, viet bai SEO, lap trinh web/app, dich thuat, quay video, khao sat, nhap lieu, va nhieu hon. Job co the la micro-task (1-3 ngay), ngan han (1-2 tuan), hoac project (1-3 thang).',
+    q: 'Doanh nghiệp có thể đăng những loại job nào?',
+    a: 'Tất cả các loại: thiết kế logo, viết bài SEO, lập trình web/app, dịch thuật, quay video, khảo sát, nhập liệu, và nhiều hơn. Job có thể là micro-task (1-3 ngày), ngắn hạn (1-2 tuần), hoặc project (1-3 tháng).',
   },
   {
-    q: 'Thoi gian rut tien mat bao lau?',
-    a: 'Sau khi doanh nghiep duyet san pham, tien tu dong chuyen vao vi UniTask cua ban. Rut ve tai khoan ngan hang hoac vi MoMo trong vong 24h lam viec.',
+    q: 'Thời gian rút tiền mất bao lâu?',
+    a: 'Sau khi doanh nghiệp duyệt sản phẩm, tiền tự động chuyển vào ví UniTask của bạn. Rút về tài khoản ngân hàng hoặc ví MoMo trong vòng 24h làm việc.',
   },
   {
-    q: 'UniTask co xac thuc sinh vien va doanh nghiep khong?',
-    a: 'Co. Sinh vien xac thuc bang email .edu hoac the sinh vien. Doanh nghiep xac thuc bang giay phep kinh doanh. Tai khoan da xac thuc se co dau tick xanh.',
+    q: 'UniTask có xác thực sinh viên và doanh nghiệp không?',
+    a: 'Có. Sinh viên xác thực bằng email .edu hoặc thẻ sinh viên. Doanh nghiệp xác thực bằng giấy phép kinh doanh. Tài khoản đã xác thực sẽ có dấu tick xanh.',
   },
 ];
 
@@ -34,9 +34,9 @@ export default function FAQSection() {
     <section id="faq" className="faq-section">
       <div className="container">
         <div className="section-header fade-up">
-          <div className="section-eyebrow">Cau hoi thuong gap</div>
-          <h2 className="section-title">Ban can biet gi?</h2>
-          <p className="section-sub">Nhung thac mac pho bien nhat tu sinh vien va doanh nghiep</p>
+          <div className="section-eyebrow">Câu hỏi thường gặp</div>
+          <h2 className="section-title">Bạn cần biết gì?</h2>
+          <p className="section-sub">Những thắc mắc phổ biến nhất từ sinh viên và doanh nghiệp</p>
         </div>
         <div className="faq-list fade-up">
           {FAQS.map((faq, i) => (
