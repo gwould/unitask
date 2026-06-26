@@ -14,9 +14,9 @@ interface AuthState {
   isLoading: boolean;
   /** true = đăng nhập thành công với backend thật (có JWT). false = chỉ demo local, không có token. */
   isApiAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<boolean | 'pending'>;
   loginWithGoogle: (idToken: string) => Promise<boolean>;
-  register: (data: RegisterData) => Promise<boolean>;
+  register: (data: RegisterData) => Promise<boolean | 'pending'>;
   logout: () => void;
   updateProfile: (data: Partial<User>) => void;
 }
@@ -168,7 +168,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     else localStorage.removeItem(STORAGE_KEY);
   };
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<boolean | 'pending'> => {
     const accounts = getStoredAccounts();
     const localMatch = accounts.find(
       (a) => a.email.toLowerCase() === email.toLowerCase() && a.password === password,
@@ -198,7 +198,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       persist(finalUser);
       return true;
-    } catch {
+    } catch (err: unknown) {
+      const apiErr = err as { status?: number; message?: string; body?: { message?: string } };
+      const errMsg = apiErr?.body?.message ?? apiErr?.message ?? '';
+      if (apiErr?.status === 403 && (errMsg.includes('chờ') || errMsg.includes('phê duyệt') || errMsg.includes('PENDING'))) {
+        return 'pending';
+      }
       // API unavailable or invalid credentials — fall back to local demo accounts
     }
 
@@ -227,7 +232,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const register = async (data: RegisterData): Promise<boolean> => {
+  const register = async (data: RegisterData): Promise<boolean | 'pending'> => {
     const accounts = getStoredAccounts();
     if (accounts.some((a) => a.email.toLowerCase() === data.email.toLowerCase())) {
       return false; // email already exists
@@ -262,6 +267,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         avatarUrl: undefined,
         bio: undefined,
       });
+
+      if (auth.needsApproval) {
+        persistTokens(null, null);
+        persist(null);
+        return 'pending';
+      }
+
       persistTokens(auth.token, auth.refreshToken);
       const fromApi = mapBackendUser({
         id: auth.id,
@@ -270,7 +282,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         userType: auth.userType,
       });
 
-      // Backend tự tạo profile khi register — chỉ enrich data
       const enriched = await profileService.enrichUser({ ...fromApi, ...userData });
       persist(enriched);
     } catch {

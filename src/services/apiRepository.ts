@@ -39,7 +39,12 @@ export const apiRepository = {
     complete: (appId: string | number, payload: unknown) => apiPut<Application>(`/api/applications/${appId}/complete`, payload),
   },
   users: {
-    list: () => Promise.resolve([] as ApiUser[]),
+    list: () => apiGet<ApiUser[]>('/api/users?page=1&limit=1000').then(
+      (res: unknown) => {
+        const r = res as { data?: ApiUser[] };
+        return r.data ?? (Array.isArray(res) ? res as ApiUser[] : []);
+      },
+    ).catch(() => [] as ApiUser[]),
   },
   site: {
     categories: () => apiGet<unknown[]>('/api/categories'),

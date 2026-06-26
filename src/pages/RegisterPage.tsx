@@ -15,6 +15,7 @@ export default function RegisterPage() {
   const [companyName, setCompanyName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [pendingApproval, setPendingApproval] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +29,7 @@ export default function RegisterPage() {
       return;
     }
     setLoading(true);
-    const ok = await register({
+    const result = await register({
       name,
       email,
       password,
@@ -38,12 +39,65 @@ export default function RegisterPage() {
       companyName: role === 'business' ? companyName : undefined,
     });
     setLoading(false);
-    if (ok) {
+
+    if (result === 'pending') {
+      setPendingApproval(true);
+    } else if (result === true) {
       navigate('/dashboard');
     } else {
       setError('Email đã tồn tại. Vui lòng dùng email khác.');
     }
   };
+
+  if (pendingApproval) {
+    return (
+      <section className="auth-page">
+        <div className="auth-container">
+          <div className="auth-card" style={{ textAlign: 'center' }}>
+            <div className="pending-approval-icon">
+              <i className="bx bx-time-five" />
+            </div>
+            <h1 className="pending-approval-title">Đang chờ phê duyệt</h1>
+            <p className="pending-approval-desc">
+              Tài khoản doanh nghiệp của bạn đã được tạo thành công và đang chờ admin xem xét phê duyệt.
+            </p>
+            <div className="pending-approval-info">
+              <div className="pending-info-row">
+                <i className="bx bx-envelope" />
+                <span>{email}</span>
+              </div>
+              <div className="pending-info-row">
+                <i className="bx bxs-building-house" />
+                <span>{companyName || name}</span>
+              </div>
+            </div>
+            <div className="pending-approval-steps">
+              <div className="pending-step">
+                <div className="pending-step-num done">1</div>
+                <span>Đăng ký tài khoản</span>
+              </div>
+              <div className="pending-step-connector" />
+              <div className="pending-step">
+                <div className="pending-step-num active">2</div>
+                <span>Admin xem xét</span>
+              </div>
+              <div className="pending-step-connector" />
+              <div className="pending-step">
+                <div className="pending-step-num">3</div>
+                <span>Kích hoạt tài khoản</span>
+              </div>
+            </div>
+            <p className="pending-approval-note">
+              <i className="bx bx-info-circle" /> Bạn sẽ nhận được thông báo khi tài khoản được phê duyệt. Quá trình này thường mất 1-2 ngày làm việc.
+            </p>
+            <Link to="/login" className="btn btn-primary" style={{ marginTop: 20, display: 'inline-flex' }}>
+              <i className="bx bx-log-in" style={{ marginRight: 6 }} /> Quay lại đăng nhập
+            </Link>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="auth-page">
@@ -72,6 +126,13 @@ export default function RegisterPage() {
               <i className="bx bxs-building-house" /> Doanh nghiệp
             </button>
           </div>
+
+          {role === 'business' && (
+            <div className="auth-notice">
+              <i className="bx bx-info-circle" />
+              <span>Tài khoản doanh nghiệp cần được admin phê duyệt trước khi sử dụng.</span>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="auth-form" noValidate>
             {error && <div className="auth-error"><i className="bx bx-error" /> {error}</div>}
@@ -130,7 +191,7 @@ export default function RegisterPage() {
                 <span className="field-hint field-hint-warn">Cần ít nhất 6 ký tự ({6 - password.length} nữa)</span>
               )}
               {password.length >= 6 && (
-                <span className="field-hint field-hint-ok">✓ Đủ độ dài</span>
+                <span className="field-hint field-hint-ok">Đủ độ dài</span>
               )}
             </div>
 
@@ -167,7 +228,7 @@ export default function RegisterPage() {
 
             {role === 'business' && (
               <div className="form-group">
-                <label>Tên công ty / tổ chức</label>
+                <label>Tên công ty / tổ chức *</label>
                 <div className="input-icon-wrap">
                   <span className="input-icon"><i className="bx bxs-building-house" /></span>
                   <input
@@ -188,7 +249,7 @@ export default function RegisterPage() {
                   Đang tạo tài khoản...
                 </>
               ) : (
-                'Đăng ký miễn phí →'
+                role === 'business' ? 'Gửi yêu cầu đăng ký' : 'Đăng ký miễn phí'
               )}
             </button>
           </form>

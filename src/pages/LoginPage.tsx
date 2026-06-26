@@ -10,6 +10,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [pendingApproval, setPendingApproval] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,14 +20,54 @@ export default function LoginPage() {
       return;
     }
     setLoading(true);
-    const ok = await login(email, password);
+    const result = await login(email, password);
     setLoading(false);
-    if (ok) {
+    if (result === 'pending') {
+      setPendingApproval(true);
+    } else if (result) {
       navigate('/dashboard');
     } else {
       setError('Email hoac mat khau khong dung.');
     }
   };
+
+  if (pendingApproval) {
+    return (
+      <section className="auth-page">
+        <div className="auth-container">
+          <div className="auth-card" style={{ textAlign: 'center' }}>
+            <div className="pending-approval-icon"><i className="bx bx-time-five" /></div>
+            <h1 className="pending-approval-title">Tài khoản đang chờ phê duyệt</h1>
+            <p className="pending-approval-desc">
+              Tài khoản doanh nghiệp của bạn đang được admin xem xét. Bạn sẽ nhận được thông báo khi được phê duyệt.
+            </p>
+            <div className="pending-approval-steps">
+              <div className="pending-step">
+                <div className="pending-step-num done">1</div>
+                <span>Đăng ký tài khoản</span>
+              </div>
+              <div className="pending-step-connector" />
+              <div className="pending-step">
+                <div className="pending-step-num active">2</div>
+                <span>Admin xem xét</span>
+              </div>
+              <div className="pending-step-connector" />
+              <div className="pending-step">
+                <div className="pending-step-num">3</div>
+                <span>Kích hoạt tài khoản</span>
+              </div>
+            </div>
+            <p className="pending-approval-note">
+              <i className="bx bx-info-circle" /> Quá trình phê duyệt thường mất 1-2 ngày làm việc.
+            </p>
+            <button className="btn btn-primary" style={{ marginTop: 20 }} onClick={() => setPendingApproval(false)}>
+              <i className="bx bx-arrow-back" style={{ marginRight: 6 }} /> Quay lại đăng nhập
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="auth-page">

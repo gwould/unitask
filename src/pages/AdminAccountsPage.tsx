@@ -7,14 +7,6 @@ import {
   type UserSort,
 } from '../services/adminUserService';
 
-// ============================================================
-// AdminAccountsPage — Quản lý người dùng (CRUD) cho Admin.
-//   • Tìm kiếm (tên/email/SĐT) + lọc theo vai trò & trạng thái + sắp xếp
-//   • Vô hiệu hóa / kích hoạt tài khoản
-//   • Thêm / Sửa / Xóa người dùng
-// Search/filter/phân trang chạy server-side qua /api/users.
-// ============================================================
-
 const PAGE_SIZE = 12;
 
 const ROLE_LABEL: Record<string, string> = {
@@ -42,10 +34,16 @@ function fmtDate(iso: string | null) {
 }
 
 function statusOf(u: AdminUser): { tab: Exclude<StatusTab, 'all'>; label: string; cls: string; icon: string } {
+  if (u.isActive === false && u.userType === 'business' && !u.suspendedUntil && !u.isVerified)
+    return { tab: 'disabled', label: 'Chờ duyệt', cls: 'adm-badge-pending', icon: 'bx-time-five' };
   if (u.isActive === false) return { tab: 'disabled', label: 'Vô hiệu hóa', cls: 'adm-badge-danger', icon: 'bx-block' };
   if (u.suspendedUntil && new Date(u.suspendedUntil) > new Date())
     return { tab: 'suspended', label: 'Đình chỉ', cls: 'adm-badge-pending', icon: 'bx-time' };
   return { tab: 'active', label: 'Hoạt động', cls: 'adm-badge-success', icon: 'bx-check-circle' };
+}
+
+function isPendingBusiness(u: AdminUser) {
+  return u.isActive === false && u.userType === 'business' && !u.suspendedUntil && !u.isVerified;
 }
 
 export default function AdminAccountsPage() {
@@ -58,33 +56,28 @@ export default function AdminAccountsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Bộ lọc
   const [search, setSearch] = useState('');
   const [debounced, setDebounced] = useState('');
   const [role, setRole] = useState<RoleFilter>('all');
   const [status, setStatus] = useState<StatusTab>('all');
   const [sort, setSort] = useState<UserSort>('newest');
 
-  // Hành động & modal
   const [busyId, setBusyId] = useState<string | null>(null);
   const [edit, setEdit] = useState<EditState>(null);
   const [confirmDelete, setConfirmDelete] = useState<AdminUser | null>(null);
   const [toast, setToast] = useState<{ text: string; ok: boolean } | null>(null);
 
-  // Tổng quan (lấy từ tổng số mỗi trạng thái — gọi nhẹ count khi cần)
   const [counts, setCounts] = useState({ all: 0, active: 0, disabled: 0, suspended: 0 });
 
   useEffect(() => {
     if (!user || user.role !== 'admin') navigate('/dashboard');
   }, [user, navigate]);
 
-  // Debounce ô tìm kiếm
   useEffect(() => {
     const t = setTimeout(() => setDebounced(search), 350);
     return () => clearTimeout(t);
   }, [search]);
 
-  // Reset về trang 1 khi đổi bộ lọc
   useEffect(() => { setPage(1); }, [debounced, role, status, sort]);
 
   const showToast = useCallback((text: string, ok = true) => {
@@ -106,7 +99,7 @@ export default function AdminAccountsPage() {
       const res = await adminUserService.list({
         q: debounced, role, status, sort, page, limit: PAGE_SIZE,
       });
-      if (id !== reqId.current) return; // bỏ qua kết quả cũ
+      if (id !== reqId.current) return;
       setUsers(res.data);
       setTotal(res.total);
     } catch (e) {
@@ -121,7 +114,6 @@ export default function AdminAccountsPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  // Lấy tổng quan theo trạng thái (độc lập với bộ lọc đang chọn)
   const loadCounts = useCallback(async () => {
     try {
       const [all, active, disabled, suspended] = await Promise.all([
@@ -171,7 +163,35 @@ export default function AdminAccountsPage() {
     }
   };
 
-  const stats = useMemo(() => ([
+  const handleApprove = async (u: AdminUser) => {
+    setBusyId(u.id);
+    try {
+      await adminUserService.approve(u.id);
+      showToast(`Đã phê duyệt tài khoản "${u.fullName}".`);
+      await Promise.all([load(), loadCounts()]);
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : 'Không thể phê duyệt.', false);
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const handleReject = async (u: AdminUser) => {
+    const reason = window.prompt(`Lý do từ chối "${u.fullName}":`);
+    if (reason === null) return;
+    setBusyId(u.id);
+    try {
+      await adminUserService.reject(u.id, reason || undefined);
+      showToast(`Đã từ chối tài khoản "${u.fullName}".`);
+      await Promise.all([load(), loadCounts()]);
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : 'Không thể từ chối.', false);
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const statCards = useMemo(() => ([
     { key: 'all', num: counts.all, label: 'Tổng người dùng', cls: '', icon: 'bx-group' },
     { key: 'active', num: counts.active, label: 'Đang hoạt động', cls: 'adm-stat-success', icon: 'bx-check-circle' },
     { key: 'suspended', num: counts.suspended, label: 'Bị đình chỉ', cls: 'adm-stat-warning', icon: 'bx-time' },
@@ -183,7 +203,6 @@ export default function AdminAccountsPage() {
   return (
     <div className="adm-page">
       <div className="adm-container adm-container-wide">
-        {/* Header */}
         <div className="adm-header adm-header-row">
           <div>
             <h1 className="adm-title"><i className="bx bx-group" /> Quản lý người dùng</h1>
@@ -194,9 +213,8 @@ export default function AdminAccountsPage() {
           </button>
         </div>
 
-        {/* Stats — bấm để lọc nhanh */}
         <div className="adm-stats adm-stats-4">
-          {stats.map((s) => (
+          {statCards.map((s) => (
             <button
               key={s.key}
               className={`adm-stat-card ${s.cls}${status === s.key ? ' adm-stat-active' : ''}`}
@@ -208,7 +226,6 @@ export default function AdminAccountsPage() {
           ))}
         </div>
 
-        {/* Controls */}
         <div className="adm-controls">
           <div className="adm-filter-group">
             <div className="adm-tabs">
@@ -250,7 +267,6 @@ export default function AdminAccountsPage() {
           </div>
         </div>
 
-        {/* Table */}
         {error ? (
           <div className="adm-empty">
             <div style={{ fontSize: 48, marginBottom: 12 }}><i className="bx bx-error-circle" /></div>
@@ -289,8 +305,9 @@ export default function AdminAccountsPage() {
                     const isBusy = busyId === u.id;
                     const isSelf = String(user.id) === u.id;
                     const isAdminRow = u.userType === 'admin';
+                    const pending = isPendingBusiness(u);
                     return (
-                      <tr key={u.id} className={u.isActive === false ? 'adm-row-disabled' : ''}>
+                      <tr key={u.id} className={u.isActive === false && !pending ? 'adm-row-disabled' : ''}>
                         <td>
                           <div className="adm-biz-name">
                             <div className="adm-biz-avatar">
@@ -318,30 +335,53 @@ export default function AdminAccountsPage() {
                         <td><span className="adm-no-data">{fmtDate(u.createdAt)}</span></td>
                         <td>
                           <div className="adm-actions">
-                            <button
-                              className="adm-icon-btn"
-                              title="Sửa"
-                              onClick={() => setEdit({ mode: 'edit', user: u })}
-                              disabled={isBusy}
-                            >
-                              <i className="bx bx-edit-alt" />
-                            </button>
-                            <button
-                              className={`adm-icon-btn ${u.isActive === false ? 'adm-icon-success' : 'adm-icon-warning'}`}
-                              title={u.isActive === false ? 'Kích hoạt' : 'Vô hiệu hóa'}
-                              onClick={() => handleToggleStatus(u)}
-                              disabled={isBusy || isAdminRow}
-                            >
-                              <i className={`bx ${u.isActive === false ? 'bx-play-circle' : 'bx-block'}`} />
-                            </button>
-                            <button
-                              className="adm-icon-btn adm-icon-danger"
-                              title="Xóa"
-                              onClick={() => setConfirmDelete(u)}
-                              disabled={isBusy || isAdminRow || isSelf}
-                            >
-                              <i className="bx bx-trash" />
-                            </button>
+                            {pending ? (
+                              <>
+                                <button
+                                  className="adm-icon-btn adm-icon-success"
+                                  title="Phê duyệt"
+                                  onClick={() => handleApprove(u)}
+                                  disabled={isBusy}
+                                >
+                                  <i className="bx bx-check" />
+                                </button>
+                                <button
+                                  className="adm-icon-btn adm-icon-danger"
+                                  title="Từ chối"
+                                  onClick={() => handleReject(u)}
+                                  disabled={isBusy}
+                                >
+                                  <i className="bx bx-x" />
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <button
+                                  className="adm-icon-btn"
+                                  title="Sửa"
+                                  onClick={() => setEdit({ mode: 'edit', user: u })}
+                                  disabled={isBusy}
+                                >
+                                  <i className="bx bx-edit-alt" />
+                                </button>
+                                <button
+                                  className={`adm-icon-btn ${u.isActive === false ? 'adm-icon-success' : 'adm-icon-warning'}`}
+                                  title={u.isActive === false ? 'Kích hoạt' : 'Vô hiệu hóa'}
+                                  onClick={() => handleToggleStatus(u)}
+                                  disabled={isBusy || isAdminRow}
+                                >
+                                  <i className={`bx ${u.isActive === false ? 'bx-play-circle' : 'bx-block'}`} />
+                                </button>
+                                <button
+                                  className="adm-icon-btn adm-icon-danger"
+                                  title="Xóa"
+                                  onClick={() => setConfirmDelete(u)}
+                                  disabled={isBusy || isAdminRow || isSelf}
+                                >
+                                  <i className="bx bx-trash" />
+                                </button>
+                              </>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -351,7 +391,6 @@ export default function AdminAccountsPage() {
               </table>
             </div>
 
-            {/* Pagination */}
             <div className="adm-pagination">
               <span className="adm-page-info">
                 {total} người dùng · Trang {page}/{totalPages}
@@ -369,7 +408,6 @@ export default function AdminAccountsPage() {
         )}
       </div>
 
-      {/* Modal thêm/sửa */}
       {edit && (
         <UserFormModal
           state={edit}
@@ -379,14 +417,13 @@ export default function AdminAccountsPage() {
         />
       )}
 
-      {/* Xác nhận xóa */}
       {confirmDelete && (
         <div className="modal-overlay" onClick={() => !busyId && setConfirmDelete(null)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <h3 style={{ marginBottom: 10 }}>Xóa người dùng?</h3>
             <p style={{ color: 'var(--text-2)', fontSize: 14, marginBottom: 20 }}>
               Bạn chắc chắn muốn xóa <strong>{confirmDelete.fullName}</strong> ({confirmDelete.email})?
-              Hành động này không thể hoàn tác. Nếu tài khoản còn dữ liệu liên quan, hãy dùng “Vô hiệu hóa”.
+              Hành động này không thể hoàn tác. Nếu tài khoản còn dữ liệu liên quan, hãy dùng &quot;Vô hiệu hóa&quot;.
             </p>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
               <button className="btn btn-ghost btn-sm" onClick={() => setConfirmDelete(null)} disabled={busyId === confirmDelete.id}>Hủy</button>
@@ -401,14 +438,13 @@ export default function AdminAccountsPage() {
       {toast && (
         <div className={`apps-toast ${toast.ok ? 'apps-toast-success' : 'apps-toast-error'}`}>
           <span><i className={`bx ${toast.ok ? 'bx-check-circle' : 'bx-error-circle'}`} /></span> {toast.text}
-          <button className="apps-toast-close" onClick={() => setToast(null)}>✕</button>
+          <button className="apps-toast-close" onClick={() => setToast(null)}>&times;</button>
         </div>
       )}
     </div>
   );
 }
 
-// ─── Modal thêm / sửa người dùng ──────────────────────────
 function UserFormModal({
   state, onClose, onSaved, onError,
 }: {

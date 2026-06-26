@@ -35,8 +35,8 @@ export interface RegisterData {
 export interface AuthState {
   user: User | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
-  register: (data: RegisterData) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<boolean | 'pending'>;
+  register: (data: RegisterData) => Promise<boolean | 'pending'>;
   logout: () => void;
   updateProfile: (data: Partial<User>) => void;
 }

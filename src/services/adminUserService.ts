@@ -84,4 +84,10 @@ export const adminUserService = {
   liftSanction(id: string) {
     return apiPost(`/api/users/${id}/lift-sanction`, {});
   },
+  approve(id: string) {
+    return apiPost(`/api/users/${id}/approve`, {});
+  },
+  reject(id: string, reason?: string) {
+    return apiPost(`/api/users/${id}/reject`, { reason });
+  },
 };

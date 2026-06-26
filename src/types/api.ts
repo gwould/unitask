@@ -26,6 +26,7 @@ export interface RegisterResponse {
   userType: string;
   token: string;
   refreshToken: string;
+  needsApproval?: boolean;
 }
 
 export interface RefreshTokenResponse {

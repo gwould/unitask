@@ -131,9 +131,10 @@ export default function AuthPage() {
       return;
     }
     setLoginLoading(true);
-    const ok = await login(loginEmail, loginPassword);
+    const result = await login(loginEmail, loginPassword);
     setLoginLoading(false);
-    if (ok) navigate('/dashboard');
+    if (result === 'pending') setLoginError('Tài khoản doanh nghiệp đang chờ admin phê duyệt. Vui lòng đợi thông báo.');
+    else if (result) navigate('/dashboard');
     else setLoginError('Email hoặc mật khẩu không đúng.');
   }, [loginEmail, loginPassword, login, navigate]);
 
@@ -149,14 +150,18 @@ export default function AuthPage() {
       return;
     }
     setRegLoading(true);
-    const ok = await register({
+    const result = await register({
       name: regName, email: regEmail, password: regPassword, role,
       university: role === 'student' ? university : undefined,
       major: role === 'student' ? major : undefined,
       companyName: role === 'business' ? companyName : undefined,
     });
     setRegLoading(false);
-    if (ok) navigate('/dashboard');
+    if (result === 'pending') {
+      setRegError('Tài khoản doanh nghiệp đã được tạo và đang chờ admin phê duyệt. Bạn sẽ nhận thông báo khi được kích hoạt.');
+      return;
+    }
+    else if (result) navigate('/dashboard');
     else setRegError('Email đã tồn tại. Vui lòng dùng email khác.');
   }, [regName, regEmail, regPassword, role, university, major, companyName, register, navigate]);
 
