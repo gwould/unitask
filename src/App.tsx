@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Layout from './layouts/Layout';
+import { usePageTracking } from './hooks/usePageTracking';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const AuthPage = lazy(() => import('./pages/AuthPage'));
@@ -30,6 +31,7 @@ const MyContractsPage = lazy(() => import('./pages/MyContractsPage'));
 const EscrowPolicyPage = lazy(() => import('./pages/EscrowPolicyPage'));
 const PortfolioBuilderPage = lazy(() => import('./pages/PortfolioBuilderPage'));
 const PortfolioViewPage = lazy(() => import('./pages/PortfolioViewPage'));
+const BusinessPendingPage = lazy(() => import('./pages/BusinessPendingPage'));
 
 function PageLoader() {
   return (
@@ -40,6 +42,7 @@ function PageLoader() {
 }
 
 export default function App() {
+  usePageTracking();
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>
@@ -47,6 +50,7 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/register" element={<AuthPage />} />
+          <Route path="/business-pending" element={<BusinessPendingPage />} />
           <Route path="/jobs" element={<JobsPage />} />
           <Route path="/jobs/:id" element={<JobDetailPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />

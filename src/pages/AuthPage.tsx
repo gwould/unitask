@@ -158,7 +158,7 @@ export default function AuthPage() {
     });
     setRegLoading(false);
     if (result === 'pending') {
-      setRegError('Tài khoản doanh nghiệp đã được tạo và đang chờ admin phê duyệt. Bạn sẽ nhận thông báo khi được kích hoạt.');
+      navigate('/business-pending');
       return;
     }
     else if (result) navigate('/dashboard');
