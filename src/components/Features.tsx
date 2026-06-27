@@ -31,7 +31,6 @@ export default function Features() {
     <section id="features">
       <div className="container">
         <div className="section-header section-header--left fade-up">
-          <div className="section-eyebrow">Tính năng cốt lõi</div>
           <h2 className="section-title">Được xây dựng vì sinh viên</h2>
           <p className="section-sub">
             Mọi tính năng đều giải quyết một vấn đề thực tế mà sinh viên đang gặp phải

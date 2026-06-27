@@ -34,8 +34,7 @@ export default function FAQSection() {
     <section id="faq" className="faq-section">
       <div className="container">
         <div className="section-header fade-up">
-          <div className="section-eyebrow">Câu hỏi thường gặp</div>
-          <h2 className="section-title">Bạn cần biết gì?</h2>
+          <h2 className="section-title">Câu hỏi thường gặp</h2>
           <p className="section-sub">Những thắc mắc phổ biến nhất từ sinh viên và doanh nghiệp</p>
         </div>
         <div className="faq-list fade-up">

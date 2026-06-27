@@ -101,7 +101,7 @@ export default function PricingSection() {
                   <h3>{plan.name}</h3>
                   <p>{plan.badge}</p>
                 </div>
-                {plan.highlight && <span className="pricing-chip">Recommended</span>}
+                {plan.highlight && <span className="pricing-chip">Phổ biến nhất</span>}
               </div>
 
               <div className="pricing-price">

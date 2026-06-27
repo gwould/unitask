@@ -13,10 +13,10 @@ export default function CTABanner() {
           </p>
           <div className="cta-btns">
             <Link to="/register" className="btn btn-white">
-              🎓 Đăng ký Sinh viên, miễn phí
+              Đăng ký miễn phí
             </Link>
-            <Link to="/post-job" className="btn btn-outline-white">
-              🏢 Đăng việc cho Doanh nghiệp
+            <Link to="/register?role=business" className="btn btn-outline-white">
+              Doanh nghiệp bắt đầu tại đây
             </Link>
           </div>
         </div>

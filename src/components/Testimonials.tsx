@@ -31,7 +31,6 @@ export default function Testimonials() {
     <section id="testimonials" className="testimonials-bg">
       <div className="container">
         <div className="section-header fade-up">
-          <div className="section-eyebrow">Câu chuyện thành công</div>
           <h2 className="section-title">Sinh viên nói gì?</h2>
           <p className="section-sub">
             Những trải nghiệm thực tế từ cộng đồng UniTask
