@@ -32,6 +32,7 @@ const EscrowPolicyPage = lazy(() => import('./pages/EscrowPolicyPage'));
 const PortfolioBuilderPage = lazy(() => import('./pages/PortfolioBuilderPage'));
 const PortfolioViewPage = lazy(() => import('./pages/PortfolioViewPage'));
 const BusinessPendingPage = lazy(() => import('./pages/BusinessPendingPage'));
+const AdminDisputesPage = lazy(() => import('./pages/AdminDisputesPage'));
 
 function PageLoader() {
   return (
@@ -71,6 +72,7 @@ export default function App() {
           <Route path="/admin-finance" element={<AdminFinancePage />} />
           <Route path="/admin-messages" element={<AdminMessagesPage />} />
           <Route path="/admin-accounts" element={<AdminAccountsPage />} />
+          <Route path="/admin-disputes" element={<AdminDisputesPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/terms" element={<TermsPage />} />

@@ -121,6 +121,12 @@ body::before{
 .nav-links a{font-size:14px;font-weight:500;color:var(--t2);transition:all .2s;cursor:pointer;padding:8px 16px;border-radius:var(--r8)}
 .nav-links a:hover{color:#fff;background:rgba(255,255,255,.05)}
 .nav-links a.active{color:#fff;background:rgba(255,255,255,.08)}
+.nav-policy-dd{position:fixed;min-width:210px;background:rgba(17,17,19,.95);backdrop-filter:blur(20px) saturate(1.5);-webkit-backdrop-filter:blur(20px) saturate(1.5);border:1px solid rgba(124,58,237,.18);border-radius:var(--r14);padding:8px;box-shadow:0 20px 60px rgba(0,0,0,.5);z-index:100000;animation:ddFade .2s cubic-bezier(.4,0,.2,1)}
+.nav-policy-dd a{display:block;width:100%;font-size:14px;font-weight:500;color:var(--t2);padding:10px 14px;border-radius:var(--r8);transition:all .2s}
+.nav-policy-dd a:hover{color:#fff;background:rgba(255,255,255,.06)}
+[data-theme="light"] .nav-policy-dd{background:rgba(255,255,255,.98);border-color:rgba(124,58,237,.18)}
+[data-theme="light"] .nav-policy-dd a{color:#52546A}
+[data-theme="light"] .nav-policy-dd a:hover{color:#5B4FFF;background:rgba(124,58,237,.06)}
 .nav-actions{display:flex;align-items:center;gap:12px;margin-left:20px}
 .nav-login{font-size:14px;font-weight:500;color:var(--t2);padding:9px 18px;border-radius:var(--r10);transition:all .2s;cursor:pointer}
 .nav-login:hover{color:#fff}

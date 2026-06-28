@@ -23,6 +23,8 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
+  const [policyOpen, setPolicyOpen] = useState(false);
+  const [policyPos, setPolicyPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
   const [megaPos, setMegaPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
   const [ddPos, setDdPos] = useState<{ top: number; right: number }>({ top: 0, right: 0 });
   const { user, logout } = useAuth();
@@ -34,6 +36,8 @@ export default function Navbar() {
   const megaLinkRef = useRef<HTMLDivElement>(null);
   const megaRef = useRef<HTMLDivElement>(null);
   const megaTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const policyLinkRef = useRef<HTMLDivElement>(null);
+  const policyTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const isHome = location.pathname === '/';
 
@@ -96,6 +100,19 @@ export default function Navbar() {
     megaTimeoutRef.current = setTimeout(() => setMegaOpen(false), 120);
   };
 
+  const handlePolicyEnter = () => {
+    clearTimeout(policyTimeoutRef.current);
+    if (policyLinkRef.current) {
+      const rect = policyLinkRef.current.getBoundingClientRect();
+      setPolicyPos({ top: rect.bottom + 6, left: rect.left });
+    }
+    setPolicyOpen(true);
+  };
+
+  const handlePolicyLeave = () => {
+    policyTimeoutRef.current = setTimeout(() => setPolicyOpen(false), 120);
+  };
+
   return (
     <>
       {/* Overlay */}
@@ -143,6 +160,7 @@ export default function Navbar() {
               <>
                 <Link to="/admin-finance" onClick={closeMobile}><i className="bx bx-line-chart" /> Admin Finance</Link>
                 <Link to="/admin-accounts" onClick={closeMobile}><i className="bx bx-group" /> Quản lý tài khoản</Link>
+                <Link to="/admin-disputes" onClick={closeMobile}><i className="bx bx-gavel" /> Giải quyết tranh chấp</Link>
                 <Link to="/admin-messages" onClick={closeMobile}><i className="bx bx-shield" /> Giám sát tin nhắn</Link>
               </>
             )}
@@ -155,6 +173,10 @@ export default function Navbar() {
           </>
         ) : (
           <>
+            <Link to="/contact" onClick={closeMobile}><i className="bx bx-envelope" /> Liên hệ</Link>
+            <Link to="/terms" onClick={closeMobile}><i className="bx bx-file" /> Điều khoản</Link>
+            <Link to="/policy" onClick={closeMobile}><i className="bx bx-shield-quarter" /> Chính sách UniTask</Link>
+            <Link to="/privacy" onClick={closeMobile}><i className="bx bx-lock-alt" /> Bảo mật</Link>
             <Link to="/login" style={{ marginTop: 16 }} onClick={closeMobile}>Đăng nhập</Link>
             <Link
               to="/register"
@@ -172,6 +194,21 @@ export default function Navbar() {
           </>
         )}
       </nav>
+
+      {/* Policy dropdown portal (escape header để không bị cắt) */}
+      {policyOpen && !user && createPortal(
+        <div
+          className="nav-policy-dd"
+          style={{ top: policyPos.top, left: policyPos.left }}
+          onMouseEnter={() => clearTimeout(policyTimeoutRef.current)}
+          onMouseLeave={handlePolicyLeave}
+        >
+          <Link to="/terms" onClick={() => setPolicyOpen(false)}>Điều khoản</Link>
+          <Link to="/policy" onClick={() => setPolicyOpen(false)}>Chính sách UniTask</Link>
+          <Link to="/privacy" onClick={() => setPolicyOpen(false)}>Bảo mật</Link>
+        </div>,
+        document.body
+      )}
 
       {/* Mega-menu portal */}
       {megaOpen && createPortal(
@@ -232,12 +269,29 @@ export default function Navbar() {
                 Doanh nghiệp
               </Link>
             )}
-            <Link to="/about#pricing" className={location.pathname === '/about' ? 'active' : ''}>
-              Giá cả
-            </Link>
             <Link to="/about" className={location.pathname === '/about' ? 'active' : ''}>
               Về chúng tôi
             </Link>
+            {!user && (
+              <>
+                <Link to="/contact" className={location.pathname === '/contact' ? 'active' : ''}>
+                  Liên hệ
+                </Link>
+                <div
+                  ref={policyLinkRef}
+                  className="nav-link-wrap"
+                  onMouseEnter={handlePolicyEnter}
+                  onMouseLeave={handlePolicyLeave}
+                >
+                  <Link
+                    to="/policy"
+                    className={['/policy', '/escrow-policy', '/terms', '/privacy'].includes(location.pathname) ? 'active' : ''}
+                  >
+                    Chính sách <i className="bx bx-chevron-down nav-link-chevron" />
+                  </Link>
+                </div>
+              </>
+            )}
             {user?.role === 'admin' && (
               <>
                 <Link to="/admin-finance" className={location.pathname === '/admin-finance' ? 'active' : ''}>
@@ -245,6 +299,9 @@ export default function Navbar() {
                 </Link>
                 <Link to="/admin-accounts" className={location.pathname === '/admin-accounts' ? 'active' : ''}>
                   Quản lý TK
+                </Link>
+                <Link to="/admin-disputes" className={location.pathname === '/admin-disputes' ? 'active' : ''}>
+                  Tranh chấp
                 </Link>
               </>
             )}
@@ -321,6 +378,7 @@ export default function Navbar() {
                       <>
                         <Link to="/admin-finance" className="nav-dd-item"><i className="bx bx-line-chart" /> Admin Finance</Link>
                         <Link to="/admin-accounts" className="nav-dd-item"><i className="bx bx-group" /> Quản lý tài khoản</Link>
+                        <Link to="/admin-disputes" className="nav-dd-item"><i className="bx bx-gavel" /> Giải quyết tranh chấp</Link>
                         <Link to="/admin-messages" className="nav-dd-item"><i className="bx bx-shield" /> Giám sát tin nhắn</Link>
                       </>
                     )}
