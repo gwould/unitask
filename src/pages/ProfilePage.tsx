@@ -173,8 +173,8 @@ export default function ProfilePage() {
             </div>
           )}
 
-          {/* Completion tips */}
-          {missingFields.length > 0 && completion < 100 && (
+          {/* Completion tips — chỉ dành cho Sinh viên (gợi ý "tăng cơ hội được nhận" không phù hợp với Doanh nghiệp) */}
+          {user.role === 'student' && missingFields.length > 0 && completion < 100 && (
             <div className="prof-tips fade-up">
               <div className="prof-tips-header">
                 <span><i className="bx bx-bulb" /></span>
