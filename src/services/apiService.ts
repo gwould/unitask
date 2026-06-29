@@ -145,7 +145,9 @@ export async function request<T>(path: string, options: ApiRequestOptions = {}):
   }
 
   if (!response.ok) {
-    throw new Error(await parseErrorMessage(response));
+    const err = new Error(await parseErrorMessage(response)) as Error & { status?: number };
+    err.status = response.status;
+    throw err;
   }
 
   return parseResponse<T>(response);

@@ -27,6 +27,7 @@ export interface RegisterResponse {
   token: string;
   refreshToken: string;
   needsApproval?: boolean;
+  needsEmailVerification?: boolean;
 }
 
 export interface RefreshTokenResponse {

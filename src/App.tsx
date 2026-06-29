@@ -33,6 +33,7 @@ const PortfolioBuilderPage = lazy(() => import('./pages/PortfolioBuilderPage'));
 const PortfolioViewPage = lazy(() => import('./pages/PortfolioViewPage'));
 const BusinessPendingPage = lazy(() => import('./pages/BusinessPendingPage'));
 const AdminDisputesPage = lazy(() => import('./pages/AdminDisputesPage'));
+const VerifyEmailPage = lazy(() => import('./pages/VerifyEmailPage'));
 
 function PageLoader() {
   return (
@@ -52,6 +53,7 @@ export default function App() {
           <Route path="/login" element={<AuthPage />} />
           <Route path="/register" element={<AuthPage />} />
           <Route path="/business-pending" element={<BusinessPendingPage />} />
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
           <Route path="/jobs" element={<JobsPage />} />
           <Route path="/jobs/:id" element={<JobDetailPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />

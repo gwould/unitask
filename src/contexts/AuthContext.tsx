@@ -16,7 +16,11 @@ interface AuthState {
   isApiAuthenticated: boolean;
   login: (email: string, password: string) => Promise<boolean | 'pending'>;
   loginWithGoogle: (idToken: string) => Promise<boolean>;
-  register: (data: RegisterData) => Promise<boolean | 'pending'>;
+  register: (data: RegisterData) => Promise<boolean | 'pending' | 'verify-email'>;
+  /** Xác thực email bằng OTP; thành công sẽ tự đăng nhập. */
+  verifyEmail: (email: string, code: string) => Promise<boolean>;
+  /** Gửi lại mã OTP xác thực email. */
+  resendOtp: (email: string) => Promise<void>;
   logout: () => void;
   updateProfile: (data: Partial<User>) => void;
 }
@@ -232,7 +236,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const register = async (data: RegisterData): Promise<boolean | 'pending'> => {
+  const register = async (data: RegisterData): Promise<boolean | 'pending' | 'verify-email'> => {
     const accounts = getStoredAccounts();
     if (accounts.some((a) => a.email.toLowerCase() === data.email.toLowerCase())) {
       return false; // email already exists
@@ -254,8 +258,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       rating: 0,
       balance: 0,
     };
-    accounts.push(newUser);
-    saveAccounts(accounts);
     const { password: _, ...userData } = newUser;
     try {
       const auth = await apiPost<RegisterResponse>('/api/auth/register', {
@@ -274,6 +276,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return 'pending';
       }
 
+      if (auth.needsEmailVerification) {
+        // Sinh viên mới: chưa kích hoạt, cần nhập OTP. Không lưu token.
+        persistTokens(null, null);
+        persist(null);
+        return 'verify-email';
+      }
+
       persistTokens(auth.token, auth.refreshToken);
       const fromApi = mapBackendUser({
         id: auth.id,
@@ -282,13 +291,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         userType: auth.userType,
       });
 
+      // Đăng ký API thành công → lưu vào local accounts (cho demo login offline).
+      accounts.push(newUser);
+      saveAccounts(accounts);
+
       const enriched = await profileService.enrichUser({ ...fromApi, ...userData });
       persist(enriched);
-    } catch {
+    } catch (err) {
+      // Email đã tồn tại trên server (409) → báo lỗi, KHÔNG tạo tài khoản local.
+      if ((err as { status?: number })?.status === 409) {
+        return false;
+      }
+      // Lỗi mạng/khác → fallback demo local để vẫn dùng được offline.
+      accounts.push(newUser);
+      saveAccounts(accounts);
       persistTokens(null, null);
       persist(userData);
     }
     return true;
+  };
+
+  const verifyEmail = async (email: string, code: string): Promise<boolean> => {
+    const auth = await apiPost<LoginResponse>('/api/auth/verify-email', { email, code });
+    persistTokens(auth.token, auth.refreshToken);
+    const fromApi = mapBackendUser(auth.user);
+    const enriched = await profileService.enrichUser(fromApi);
+    persist(enriched);
+    setIsApiAuthenticated(true);
+    return true;
+  };
+
+  const resendOtp = async (email: string): Promise<void> => {
+    await apiPost('/api/auth/resend-otp', { email });
   };
 
   const logout = () => {
@@ -316,7 +350,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, isApiAuthenticated, login, loginWithGoogle, register, logout, updateProfile }}>
+    <AuthContext.Provider value={{ user, isLoading, isApiAuthenticated, login, loginWithGoogle, register, verifyEmail, resendOtp, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );
