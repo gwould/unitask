@@ -855,7 +855,15 @@ a.nav-logo{text-decoration:none;color:inherit}
 .pd-list li{padding:10px 16px 10px 36px;position:relative;color:var(--text-2);font-size:14px;line-height:1.6;border-radius:var(--r8);background:transparent;border:1px solid var(--bd);transition:all .2s}
 .pd-list li:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);transform:translateX(4px)}
 .pd-list li::before{content:'✓';position:absolute;left:12px;top:10px;color:var(--teal);font-weight:800;font-size:13px}
+.pd-req-skills{margin-top:16px}
+.pd-req-skills-label{display:block;font-size:13px;font-weight:700;color:var(--t2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.3px}
 .pd-skills{display:flex;flex-wrap:wrap;gap:8px}
+/* Quyền lợi của Job */
+.pd-benefit-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+.pd-benefit-list li{display:flex;align-items:flex-start;gap:10px;font-size:14px;line-height:1.6;color:var(--text-2)}
+.pd-benefit-list li i{color:var(--teal);font-size:18px;flex-shrink:0;margin-top:1px}
+.pd-benefit-list strong{color:var(--text)}
+[data-theme="light"] .pd-benefit-list li{color:#52546A}
 .pd-skills span{padding:6px 16px;border-radius:var(--rpill);font-size:12.5px;font-weight:600;background:rgba(124,58,237,.1);color:var(--pl);border:1px solid rgba(124,58,237,.2);transition:all .2s}
 .pd-skills span:hover{background:rgba(124,58,237,.18);border-color:rgba(124,58,237,.35);transform:translateY(-1px)}
 
@@ -900,6 +908,8 @@ a.nav-logo{text-decoration:none;color:inherit}
 .pd-hint-text{font-size:12px;color:var(--gold)}
 .pd-expired{color:var(--red);font-weight:700}
 .pd-expired-notice{text-align:center;padding:14px;background:rgba(255,77,107,.06);border:1px solid rgba(255,77,107,.2);border-radius:var(--r10);color:var(--red);font-size:14px;font-weight:600}
+.pd-role-notice{text-align:center;padding:14px;background:rgba(91,79,255,.07);border:1px solid rgba(91,79,255,.22);border-radius:var(--r10);color:var(--t2);font-size:13.5px;font-weight:500;line-height:1.6}
+[data-theme="light"] .pd-role-notice{background:rgba(91,79,255,.06);border-color:rgba(91,79,255,.18);color:#52546A}
 .pd-login-hint{text-align:center;margin-top:12px;font-size:13px;color:var(--text-2)}
 .pd-login-hint a{color:var(--pl);font-weight:600}
 
@@ -3205,6 +3215,19 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
 .biz-pm-stat-label{display:block;font-size:.75rem;color:var(--text-3);margin-top:4px}
 
 .biz-pm-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.06)}
+/* Header phải của panel quản lý job (đếm ứng viên + nút Sửa) */
+.manage-panel-header-right{display:flex;align-items:center;gap:12px;flex-shrink:0}
+/* Edit Job modal */
+.biz-edit-modal{max-width:560px;width:95vw}
+.biz-edit-form{display:flex;flex-direction:column;gap:14px;margin-top:4px}
+.biz-edit-row{display:flex;gap:12px}
+.biz-edit-row .biz-edit-field{flex:1}
+.biz-edit-field{display:flex;flex-direction:column;gap:6px}
+.biz-edit-field>span{font-size:13px;font-weight:600;color:var(--t2)}
+.biz-edit-field input,.biz-edit-field textarea{padding:10px 12px;border-radius:var(--r8);border:1px solid var(--bd);background:var(--s2);color:var(--t1);font-size:14px;font-family:inherit;width:100%}
+.biz-edit-field textarea{resize:vertical}
+.biz-edit-field input:focus,.biz-edit-field textarea:focus{outline:none;border-color:var(--p)}
+[data-theme="light"] .biz-edit-field input,[data-theme="light"] .biz-edit-field textarea{background:#F4F5F7;border-color:rgba(0,0,0,.1);color:#1C1D26}
 
 /* Submission card in applicant */
 .biz-submission-card{margin:8px 16px;background:rgba(255,255,255,.03);border:1px solid var(--bd);border-radius:12px;overflow:hidden}

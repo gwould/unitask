@@ -26,6 +26,8 @@ export default function JobDetailPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { refresh: refreshBadge } = useNotifications();
+  // Phân quyền UI: tài khoản doanh nghiệp không thấy/không dùng được nút Ứng tuyển.
+  const isBusiness = user?.role === 'business';
   const [job, setJob] = useState<Job | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [relatedJobs, setRelatedJobs] = useState<Job[]>([]);
@@ -144,6 +146,11 @@ export default function JobDetailPage() {
   const handleApply = async () => {
     if (!user) {
       navigate('/login');
+      return;
+    }
+    // Phân quyền: tài khoản doanh nghiệp không được ứng tuyển (đồng bộ với chặn ở backend).
+    if (user.role !== 'student') {
+      setToast('Chỉ tài khoản Sinh viên mới có thể ứng tuyển công việc.');
       return;
     }
     if (!coverLetter.trim() || submitting) return;
@@ -267,14 +274,41 @@ export default function JobDetailPage() {
               </div>
             )}
 
-            {job.requirements.length > 0 && (
+            {/* Yêu cầu ứng viên — gộp cả "Kỹ năng cần có" vào chung 1 khung cho gọn layout */}
+            {(job.requirements.length > 0 || job.skills.length > 0) && (
               <div className="pd-section">
-                <h2>Yêu cầu</h2>
-                <ul className="pd-list">
-                  {job.requirements.map((r, i) => (
-                    <li key={i}>{r}</li>
-                  ))}
-                </ul>
+                <h2>Yêu cầu ứng viên</h2>
+                {job.requirements.length > 0 && (
+                  <ul className="pd-list">
+                    {job.requirements.map((r, i) => (
+                      <li key={i}>{r}</li>
+                    ))}
+                  </ul>
+                )}
+                {job.skills.length > 0 && (
+                  <div className="pd-req-skills">
+                    <span className="pd-req-skills-label">Kỹ năng cần có</span>
+                    <div className="pd-skills">
+                      {job.skills.map((s) => (
+                        <span key={s} className="pj-skill">{s}</span>
+                      ))}
+                    </div>
+                    {user?.role === 'student' && user.skills && user.skills.length > 0 && (
+                      <div className="pd-skill-match">
+                        <span className="pd-skill-match-label">Kỹ năng phù hợp:</span>
+                        {job.skills.filter(s => user.skills?.some(us => us.toLowerCase() === s.toLowerCase())).length > 0 ? (
+                          <span className="pd-skill-match-count pd-match-good">
+                            ✓ {job.skills.filter(s => user.skills?.some(us => us.toLowerCase() === s.toLowerCase())).length}/{job.skills.length}
+                          </span>
+                        ) : (
+                          <span className="pd-skill-match-count pd-match-none">
+                            0/{job.skills.length}. Hãy cập nhật kỹ năng trong <Link to="/profile">hồ sơ</Link>
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
@@ -289,30 +323,22 @@ export default function JobDetailPage() {
               </div>
             )}
 
-            {job.skills.length > 0 && (
-              <div className="pd-section">
-                <h2>Kỹ năng cần thiết</h2>
-                <div className="pd-skills">
-                  {job.skills.map((s) => (
-                    <span key={s} className="pj-skill">{s}</span>
-                  ))}
-                </div>
-                {user?.role === 'student' && user.skills && user.skills.length > 0 && (
-                  <div className="pd-skill-match">
-                    <span className="pd-skill-match-label">Kỹ năng phù hợp:</span>
-                    {job.skills.filter(s => user.skills?.some(us => us.toLowerCase() === s.toLowerCase())).length > 0 ? (
-                      <span className="pd-skill-match-count pd-match-good">
-                        ✓ {job.skills.filter(s => user.skills?.some(us => us.toLowerCase() === s.toLowerCase())).length}/{job.skills.length}
-                      </span>
-                    ) : (
-                      <span className="pd-skill-match-count pd-match-none">
-                        0/{job.skills.length}. Hãy cập nhật kỹ năng trong <Link to="/profile">hồ sơ</Link>
-                      </span>
-                    )}
-                  </div>
+            {/* Quyền lợi của Job — phân mục riêng để tăng độ hấp dẫn với sinh viên */}
+            <div className="pd-section pd-benefits">
+              <h2>Quyền lợi của Job</h2>
+              <ul className="pd-benefit-list">
+                <li><i className="bx bx-money" /> Thù lao: <strong>{job.pay}</strong></li>
+                <li><i className="bx bx-shield-quarter" /> Thanh toán đảm bảo qua <strong>Escrow UniTask</strong> — nhận đủ tiền khi hoàn thành</li>
+                <li><i className="bx bx-briefcase-alt-2" /> Tích lũy dự án thực tế vào <strong>Portfolio / CV điện tử</strong></li>
+                <li><i className="bx bxs-badge-check" /> Chứng nhận hoàn thành &amp; được đánh giá kỹ năng 2 chiều</li>
+                {job.location?.toLowerCase().includes('remote') && (
+                  <li><i className="bx bx-globe" /> Làm việc <strong>remote / linh hoạt</strong> thời gian</li>
                 )}
-              </div>
-            )}
+                {job.duration && (
+                  <li><i className="bx bx-time-five" /> Thời lượng dự kiến: <strong>{job.duration}</strong></li>
+                )}
+              </ul>
+            </div>
 
             {/* Related jobs */}
             {relatedJobs.length > 0 && (
@@ -453,7 +479,14 @@ export default function JobDetailPage() {
                 <div className="pd-action-box">
                   <div className="pd-action-pay"><i className="bx bx-money" /> {job.pay}</div>
                   <div className="pd-action-duration"><i className="bx bx-time-five" /> {job.duration || 'Linh hoạt'}</div>
-                  {deadlineText === 'Đã hết hạn' ? (
+                  {isBusiness ? (
+                    <div className="pd-role-notice">
+                      <i className="bx bx-briefcase" /> Bạn đang dùng tài khoản <strong>Doanh nghiệp</strong> nên không thể ứng tuyển.
+                      <Link to="/post-job" className="btn btn-accent btn-sm" style={{ width: '100%', justifyContent: 'center', marginTop: 10 }}>
+                        <i className="bx bx-edit" /> Đăng việc tuyển dụng
+                      </Link>
+                    </div>
+                  ) : deadlineText === 'Đã hết hạn' ? (
                     <div className="pd-expired-notice">
                       <i className="bx bx-time-five" /> Job này đã hết hạn ứng tuyển
                     </div>
@@ -506,7 +539,7 @@ export default function JobDetailPage() {
           </div>
         </div>
       </div>
-      {!applied && !showApply && deadlineText !== 'Đã hết hạn' && (
+      {!isBusiness && !applied && !showApply && deadlineText !== 'Đã hết hạn' && (
         <div className="pd-mobile-bar">
           <span className="pd-mobile-price">💰 {job.pay}</span>
           <button className="btn btn-accent btn-sm" onClick={() => user ? setShowApply(true) : navigate('/login')}>

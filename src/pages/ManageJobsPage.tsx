@@ -82,7 +82,94 @@ function ProfileModal({ ap, onClose }: { ap: Applicant; onClose: () => void }) {
         </div>
 
         <div className="biz-pm-actions">
+          <Link to={`/portfolio/${ap.userId}`} target="_blank" rel="noreferrer" className="btn btn-primary">
+            <i className="bx bx-user-circle" /> Xem Portfolio
+          </Link>
           <button className="btn btn-ghost" onClick={onClose}>Đóng</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── EDIT JOB MODAL ─────────────────────────────── */
+
+type EditJobForm = {
+  title: string;
+  description: string;
+  location: string;
+  payMin: number;
+  payMax: number;
+  spotsTotal: number;
+  skillsText: string;
+};
+
+function EditJobModal({ job, busy, onClose, onSave }: {
+  job: Job;
+  busy: boolean;
+  onClose: () => void;
+  onSave: (form: EditJobForm) => void;
+}) {
+  const [form, setForm] = useState<EditJobForm>({
+    title: job.title,
+    description: job.description ?? '',
+    location: job.location ?? '',
+    payMin: job.payMin ?? 0,
+    payMax: job.payMax ?? 0,
+    spotsTotal: job.spotsTotal ?? 1,
+    skillsText: (job.skills ?? []).join(', '),
+  });
+  const set = <K extends keyof EditJobForm>(k: K, v: EditJobForm[K]) => setForm((f) => ({ ...f, [k]: v }));
+  const canSave = form.title.trim().length > 0 && !busy;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-box biz-edit-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="biz-pm-header">
+          <h3><i className="bx bx-edit" /> Chỉnh sửa Job</h3>
+          <button className="stask-sm-close" onClick={onClose}>✕</button>
+        </div>
+
+        <div className="biz-edit-form">
+          <label className="biz-edit-field">
+            <span>Tên công việc *</span>
+            <input value={form.title} onChange={(e) => set('title', e.target.value)} placeholder="VD: Frontend Developer (React)" />
+          </label>
+          <label className="biz-edit-field">
+            <span>Mô tả công việc</span>
+            <textarea rows={4} value={form.description} onChange={(e) => set('description', e.target.value)} placeholder="Mô tả chi tiết công việc..." />
+          </label>
+          <div className="biz-edit-row">
+            <label className="biz-edit-field">
+              <span>Địa điểm</span>
+              <input value={form.location} onChange={(e) => set('location', e.target.value)} placeholder="Remote / Hồ Chí Minh..." />
+            </label>
+            <label className="biz-edit-field">
+              <span>Số lượng tuyển</span>
+              <input type="number" min={1} value={form.spotsTotal} onChange={(e) => set('spotsTotal', Number(e.target.value) || 1)} />
+            </label>
+          </div>
+          <div className="biz-edit-row">
+            <label className="biz-edit-field">
+              <span>Thù lao tối thiểu (₫)</span>
+              <input type="number" min={0} step={100000} value={form.payMin} onChange={(e) => set('payMin', Number(e.target.value) || 0)} />
+            </label>
+            <label className="biz-edit-field">
+              <span>Thù lao tối đa (₫)</span>
+              <input type="number" min={0} step={100000} value={form.payMax} onChange={(e) => set('payMax', Number(e.target.value) || 0)} />
+            </label>
+          </div>
+          <label className="biz-edit-field">
+            <span>Kỹ năng cần có (cách nhau bởi dấu phẩy)</span>
+            <input value={form.skillsText} onChange={(e) => set('skillsText', e.target.value)} placeholder="React, TypeScript, Git" />
+          </label>
+        </div>
+
+        <div className="biz-pm-actions">
+          <button className="btn btn-ghost" onClick={onClose} disabled={busy}>Hủy</button>
+          <button className="btn btn-primary" onClick={() => onSave(form)} disabled={!canSave}>
+            {busy ? 'Đang lưu...' : 'Lưu thay đổi'}
+          </button>
         </div>
       </div>
     </div>
@@ -249,6 +336,9 @@ export default function ManageJobsPage() {
   // Modal tạo hợp đồng (mở khi ứng viên chưa có HĐ) + cờ đang gọi API
   const [contractModal, setContractModal] = useState<Applicant | null>(null);
   const [contractBusy, setContractBusy] = useState(false);
+  // Modal chỉnh sửa Job
+  const [editJob, setEditJob] = useState<Job | null>(null);
+  const [editBusy, setEditBusy] = useState(false);
 
   // Redirect
   useEffect(() => {
@@ -497,6 +587,44 @@ export default function ManageJobsPage() {
     setProfileModal(ap);
   }, []);
 
+  // Lưu chỉnh sửa Job → PUT /api/jobs/:id, cập nhật lại danh sách job tại chỗ.
+  const handleSaveJob = useCallback(async (form: {
+    title: string; description: string; location: string;
+    payMin: number; payMax: number; spotsTotal: number; skillsText: string;
+  }) => {
+    if (!editJob) return;
+    setEditBusy(true);
+    const skills = form.skillsText.split(',').map((s) => s.trim()).filter(Boolean);
+    try {
+      await jobService.update(editJob.id, {
+        title: form.title.trim(),
+        description: form.description.trim(),
+        location: form.location.trim(),
+        payMin: form.payMin,
+        payMax: form.payMax,
+        spotsTotal: form.spotsTotal,
+        skills,
+      });
+      setJobs((prev) => prev.map((j) => j.id === editJob.id ? {
+        ...j,
+        title: form.title.trim(),
+        description: form.description.trim(),
+        location: form.location.trim(),
+        payMin: form.payMin,
+        payMax: form.payMax,
+        spotsTotal: form.spotsTotal,
+        skills,
+      } : j));
+      showToast('Đã cập nhật thông tin job.');
+      setEditJob(null);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : '';
+      showToast(msg || 'Không thể cập nhật job. Thử lại sau.', 'error');
+    } finally {
+      setEditBusy(false);
+    }
+  }, [editJob, showToast]);
+
   // Nút "Quản lý task & Milestone": nếu ứng viên đã có HĐ -> mở trang /contracts/:id,
   // chưa có -> mở modal tạo HĐ. appId chính là JobApplicationId ở backend.
   const handleManageContract = useCallback(async (ap: Applicant) => {
@@ -633,9 +761,14 @@ export default function ManageJobsPage() {
               <>
                 <div className="manage-panel-header">
                   <h2>{selectedJob.title}</h2>
-                  <span className="manage-app-count">
-                    {applicants.filter((a) => a.jobId === selectedJobId).length} ứng viên
-                  </span>
+                  <div className="manage-panel-header-right">
+                    <span className="manage-app-count">
+                      {applicants.filter((a) => a.jobId === selectedJobId).length} ứng viên
+                    </span>
+                    <button className="btn btn-outline btn-sm" onClick={() => setEditJob(selectedJob)}>
+                      <i className="bx bx-edit" /> Sửa Job
+                    </button>
+                  </div>
                 </div>
 
                 {/* Automation Suggestions */}
@@ -774,6 +907,15 @@ export default function ManageJobsPage() {
 
       {/* Profile modal */}
       {profileModal && <ProfileModal ap={profileModal} onClose={() => setProfileModal(null)} />}
+
+      {editJob && (
+        <EditJobModal
+          job={editJob}
+          busy={editBusy}
+          onClose={() => { if (!editBusy) setEditJob(null); }}
+          onSave={handleSaveJob}
+        />
+      )}
 
       {/* Create contract modal */}
       {contractModal && (
