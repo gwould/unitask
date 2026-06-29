@@ -18,6 +18,10 @@ export default function VerifyEmailPage() {
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
   const [cooldown, setCooldown] = useState(0);
+  // Demo/Sandbox: mã OTP gợi ý khi backend chưa cấu hình SMTP (Sandbox:ExposeOtp).
+  const [demoOtp, setDemoOtp] = useState<string | null>(() => {
+    try { return sessionStorage.getItem('demo_otp'); } catch { return null; }
+  });
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -36,8 +40,10 @@ export default function VerifyEmailPage() {
       }
       setLoading(true);
       try {
-        await verifyEmail(email.trim(), code.trim());
-        navigate('/dashboard');
+        const result = await verifyEmail(email.trim(), code.trim());
+        try { sessionStorage.removeItem('demo_otp'); } catch { /* ignore */ }
+        // DN: xác thực email xong nhưng còn chờ admin duyệt → sang trang chờ duyệt.
+        navigate(result === 'pending' ? '/business-pending' : '/dashboard');
       } catch {
         setError('Mã OTP không đúng hoặc đã hết hạn. Vui lòng thử lại hoặc gửi lại mã.');
         setLoading(false);
@@ -53,7 +59,11 @@ export default function VerifyEmailPage() {
     }
     setError('');
     try {
-      await resendOtp(email.trim());
+      const newDemoOtp = await resendOtp(email.trim());
+      if (newDemoOtp) {
+        setDemoOtp(newDemoOtp);
+        try { sessionStorage.setItem('demo_otp', newDemoOtp); } catch { /* ignore */ }
+      }
       setInfo('Đã gửi lại mã OTP. Vui lòng kiểm tra hộp thư (kể cả mục Spam).');
       setCooldown(30);
     } catch {
@@ -84,6 +94,26 @@ export default function VerifyEmailPage() {
           <p style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--t2)', marginBottom: 24 }}>
             Chúng tôi đã gửi mã OTP gồm 6 chữ số tới email của bạn. Nhập mã để kích hoạt tài khoản.
           </p>
+
+          {demoOtp && (
+            <div
+              style={{
+                marginBottom: 18, padding: '12px 14px', borderRadius: 'var(--r10)',
+                background: 'rgba(0,212,170,.1)', border: '1px solid rgba(0,212,170,.3)',
+                fontSize: 13.5, color: 'var(--teal)', lineHeight: 1.6,
+              }}
+            >
+              <strong>Chế độ Demo (Sandbox):</strong> mã OTP của bạn là{' '}
+              <strong style={{ letterSpacing: 2 }}>{demoOtp}</strong>.{' '}
+              <button
+                type="button"
+                onClick={() => setCode(demoOtp)}
+                style={{ background: 'none', border: 'none', color: 'var(--pl)', fontWeight: 700, cursor: 'pointer', font: 'inherit', textDecoration: 'underline' }}
+              >
+                Điền nhanh
+              </button>
+            </div>
+          )}
 
           <form onSubmit={handleVerify}>
             {!stateEmail && (

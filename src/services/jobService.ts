@@ -3,6 +3,7 @@ import { STORAGE_KEYS } from '../constants';
 import { jobsData } from '../data/siteData';
 import { apiGet, apiPost, apiPut, requestWithFallback } from './apiService';
 import { unwrapPaged, type PagedResult } from '../utils/paged';
+import { slugify } from '../utils/slug';
 
 function getCurrentUserId(): string | null {
   try {
@@ -113,10 +114,11 @@ function normalizeJob(raw: ApiJobListItem): Job {
   const spotsTotal = raw.spotsTotal ?? 0;
   const spotsFilled = raw.spotsFilled ?? 0;
   const companyName = raw.companyName ?? '';
-  const category = raw.categoryName?.toLowerCase() ?? 'all';
+  const category = raw.categoryName ? slugify(raw.categoryName) : 'all';
   return {
     ...raw,
     id: raw.id,
+    categoryId: raw.categoryId ?? undefined,
     logoText: companyName ? companyName.slice(0, 2).toUpperCase() : 'U',
     logoGradient: 'linear-gradient(135deg,#5B4FFF,#7C72FF)',
     company: raw.companyName ?? '',
@@ -170,7 +172,8 @@ function normalizeJobDetails(raw: ApiJobDetailsResponse): Job {
     payMin: raw.salaryMin ?? 0,
     payMax: raw.salaryMax ?? 0,
     deadline: raw.deadline ?? raw.createdAt ?? '',
-    category: raw.category?.slug ?? raw.category?.name?.toLowerCase() ?? 'all',
+    category: slugify(raw.category?.slug ?? raw.category?.name) || 'all',
+    categoryId: raw.category?.id ?? undefined,
     featured: false,
     description: raw.description,
     requirements: raw.requiredSkills ?? [],

@@ -25,7 +25,7 @@ const MAX_MESSAGE = 1000;
 
 const FAQ_DATA: FaqItem[] = [
   { q: 'UniTask có miễn phí cho sinh viên không?', a: 'Hoàn toàn miễn phí! Sinh viên chỉ bị trừ phí dịch vụ nhỏ (5%) khi nhận thanh toán.' },
-  { q: 'Doanh nghiệp đăng job có mất phí không?', a: 'Đăng 3 job đầu tiên miễn phí. Sau đó bạn chọn gói phù hợp từ 499.000₫/tháng.' },
+  { q: 'Doanh nghiệp đăng job có mất phí không?', a: 'Gói Free Starter miễn phí 5 job/tháng. Cần nhiều hơn, các gói trả phí từ 149.000₫/tháng (ưu đãi ra mắt, kèm 30 ngày dùng thử).' },
   { q: 'Escrow hoạt động như thế nào?', a: 'Doanh nghiệp nạp tiền vào Escrow trước. Tiền chỉ được chuyển cho sinh viên khi doanh nghiệp duyệt sản phẩm.' },
   { q: 'Làm sao để rút tiền?', a: 'Vào Ví → Rút tiền, chọn phương thức (ngân hàng/ví điện tử/thẻ) và nhập số tiền. Xử lý từ 1-3 ngày làm việc.' },
   { q: 'Có thể hủy đơn ứng tuyển không?', a: 'Có! Bạn có thể rút đơn ứng tuyển bất cứ lúc nào trước khi doanh nghiệp duyệt, trong phần "Đơn ứng tuyển".' },

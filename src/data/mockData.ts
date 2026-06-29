@@ -1,5 +1,13 @@
 import type { Job, Application, Category, HowStep, Testimonial, Feature } from '../types';
 
+/**
+ * Sinh deadline/ngày đăng động theo giờ hệ thống để demo luôn "tươi".
+ * daysFromNow(5) → 5 ngày nữa; daysFromNow(-2) → đã quá hạn 2 ngày.
+ */
+function daysFromNow(days: number): string {
+  return new Date(Date.now() + days * 86_400_000).toISOString();
+}
+
 /* ──────────────────────── JOBS ──────────────────────── */
 export const jobsData: Job[] = [
   {
@@ -21,7 +29,7 @@ export const jobsData: Job[] = [
     pay: '2.500.000 – 4.000.000 ₫',
     payMin: 2_500_000,
     payMax: 4_000_000,
-    deadline: 'Còn 5 ngày',
+    deadline: daysFromNow(5),
     category: 'it',
     featured: true,
     description:
@@ -60,7 +68,7 @@ export const jobsData: Job[] = [
     pay: '1.800.000 – 3.000.000 ₫',
     payMin: 1_800_000,
     payMax: 3_000_000,
-    deadline: 'Còn 8 ngày',
+    deadline: daysFromNow(8),
     category: 'design',
     description:
       'CreativeBox cần sinh viên thiết kế bộ nhận diện thương hiệu (logo, màu sắc, typography, namecard, bìa Facebook/Zalo) cho khách hàng F&B startup. Bạn sẽ nhận brief chi tiết và feedback trực tiếp từ Creative Director.',
@@ -98,7 +106,7 @@ export const jobsData: Job[] = [
     pay: '1.200.000 – 2.000.000 ₫',
     payMin: 1_200_000,
     payMax: 2_000_000,
-    deadline: 'Còn 12 ngày',
+    deadline: daysFromNow(12),
     category: 'content',
     description:
       'MarketHub đang mở rộng blog content cho mảng Digital Marketing. Cần 10 bài viết SEO chuẩn EEAT (Experience, Expertise, Authoritativeness, Trustworthiness), mỗi bài 1.500–2.000 từ. Topic đã có sẵn, bạn chỉ cần research và viết.',
@@ -135,7 +143,7 @@ export const jobsData: Job[] = [
     pay: '2.000.000 – 3.500.000 ₫',
     payMin: 2_000_000,
     payMax: 3_500_000,
-    deadline: 'Còn 3 ngày',
+    deadline: daysFromNow(2),
     category: 'marketing',
     description:
       'GreenBowl cần người chạy Facebook Ads cho chuỗi 3 nhà hàng tại Đà Nẵng. Budget 5 triệu/tháng, target khách hàng 18–35 tuổi. Cần setup campaign, tối ưu A/B testing, báo cáo hiệu quả hàng tuần.',
@@ -174,7 +182,7 @@ export const jobsData: Job[] = [
     pay: '3.000.000 – 5.000.000 ₫',
     payMin: 3_000_000,
     payMax: 5_000_000,
-    deadline: 'Còn 2 ngày',
+    deadline: daysFromNow(-1),
     category: 'it',
     description:
       'DevStack có một API Flask (Python) cho hệ thống e-commerce bị lỗi checkout flow. Cần debug, fix 5–7 bug đã identified, viết unit test. Codebase ~8k lines, có documentation tốt.',
@@ -211,7 +219,7 @@ export const jobsData: Job[] = [
     pay: '900.000 – 1.500.000 ₫',
     payMin: 900_000,
     payMax: 1_500_000,
-    deadline: 'Còn 15 ngày',
+    deadline: daysFromNow(15),
     category: 'language',
     description:
       'LinguaMedia cần dịch tài liệu kỹ thuật (hướng dẫn sử dụng phần mềm) từ tiếng Anh sang tiếng Việt. Yêu cầu dịch chính xác thuật ngữ, đảm bảo tự nhiên khi đọc bằng tiếng Việt.',
@@ -248,7 +256,7 @@ export const jobsData: Job[] = [
     pay: '1.500.000 – 2.500.000 ₫',
     payMin: 1_500_000,
     payMax: 2_500_000,
-    deadline: 'Còn 10 ngày',
+    deadline: daysFromNow(10),
     category: 'media',
     description:
       'ViralPeak cần sinh viên quay và edit 10 video TikTok (30–60s mỗi video) cho thương hiệu thời trang. Nội dung đã được script sẵn, bạn cần quay bằng điện thoại và edit trên CapCut/Premiere.',
@@ -285,7 +293,7 @@ export const jobsData: Job[] = [
     pay: '500.000 – 800.000 ₫',
     payMin: 500_000,
     payMax: 800_000,
-    deadline: 'Còn 7 ngày',
+    deadline: daysFromNow(3),
     category: 'business',
     description:
       'AlphaFinance cần nhập liệu từ scan PDF sang Excel (500 dòng), sau đó tạo các bảng pivot, chart cơ bản để phục vụ báo cáo nội bộ. Job đơn giản, phù hợp sinh viên mới bắt đầu.',
@@ -322,7 +330,7 @@ export const jobsData: Job[] = [
     pay: '3.000.000 – 5.000.000 ₫',
     payMin: 3_000_000,
     payMax: 5_000_000,
-    deadline: 'Còn 14 ngày',
+    deadline: daysFromNow(14),
     category: 'design',
     featured: true,
     description:
@@ -361,7 +369,7 @@ export const jobsData: Job[] = [
     pay: '600.000 – 1.000.000 ₫',
     payMin: 600_000,
     payMax: 1_000_000,
-    deadline: 'Còn 20 ngày',
+    deadline: daysFromNow(20),
     category: 'business',
     description:
       'EcoConsult cần team sinh viên thực hiện khảo sát thị trường online (Google Forms) cho ngành FMCG. Thu thập 200 responses, phân tích data, tạo báo cáo PowerPoint.',
@@ -399,7 +407,7 @@ export const jobsData: Job[] = [
     pay: '3.500.000 – 6.000.000 ₫',
     payMin: 3_500_000,
     payMax: 6_000_000,
-    deadline: 'Còn 9 ngày',
+    deadline: daysFromNow(-3),
     category: 'it',
     description:
       'NextGen Labs cần sinh viên xây dựng REST API cho ứng dụng chat real-time. Sử dụng Node.js + Express + Socket.io + MongoDB. Có wireframe và API spec sẵn.',
@@ -439,7 +447,7 @@ export const jobsData: Job[] = [
     pay: '800.000 – 1.200.000 ₫',
     payMin: 800_000,
     payMax: 1_200_000,
-    deadline: 'Còn 6 ngày',
+    deadline: daysFromNow(6),
     category: 'content',
     description:
       'CopyWave cần viết email marketing series (welcome sequence 5 emails) cho startup EdTech. Tone: thân thiện, trẻ trung. Mục tiêu: nurture leads → chuyển đổi mua khóa học.',

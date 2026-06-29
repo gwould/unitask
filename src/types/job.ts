@@ -20,7 +20,10 @@ export interface Job {
   payMin: number;
   payMax: number;
   deadline: string;
+  /** Slug ngành nghề đã chuẩn hoá (dùng cho bộ lọc). */
   category: string;
+  /** Id ngành nghề từ backend (Guid) — khoá join chính xác khi có. */
+  categoryId?: string;
   featured?: boolean;
   description: string;
   requirements: string[];

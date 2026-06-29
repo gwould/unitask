@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import type { Job } from '../types';
 import { observeFadeUpElements } from '../hooks/useScroll';
 import { serviceRegistry } from '../services';
+import { getDeadlineInfo } from '../utils';
 
 const { jobs: jobService } = serviceRegistry;
 
@@ -18,6 +19,7 @@ const JOBS_PER_PAGE = 9;
 
 function JobCard({ job }: { job: Job }) {
   const spotsPct = ((job.spotsTotal - job.spotsLeft) / job.spotsTotal) * 100;
+  const dl = getDeadlineInfo(job.deadline);
   return (
     <div className={`job-card fade-up${job.featured ? ' featured' : ''}`}>
       <div className="jc-header">
@@ -41,7 +43,9 @@ function JobCard({ job }: { job: Job }) {
       </div>
       <div className="jc-pay"><i className="bx bx-money" /> {job.pay}</div>
       <div className="jc-footer">
-        <div className="jc-deadline"><i className="bx bx-time-five" /> {job.deadline}</div>
+        <div className={`jc-deadline jc-deadline-${dl.status}`}>
+          <i className="bx bx-time-five" /> {dl.status === 'none' ? 'Không thời hạn' : dl.label}
+        </div>
         <Link to={`/jobs/${job.id}`} className="jc-btn">Xem chi tiết →</Link>
       </div>
     </div>
@@ -183,7 +187,9 @@ export default function JobsSection() {
           </>
         )}
         <div style={{ textAlign: 'center', marginTop: 44 }} className="fade-up">
-          <Link to="/jobs" className="btn btn-ghost">Xem tất cả 1.100+ job →</Link>
+          <Link to="/jobs" className="btn btn-ghost">
+            {jobs.length > 0 ? `Xem tất cả ${jobs.length} job →` : 'Xem tất cả việc làm →'}
+          </Link>
         </div>
       </div>
     </section>

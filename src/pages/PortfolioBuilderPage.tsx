@@ -55,7 +55,10 @@ export default function PortfolioBuilderPage() {
         portfolioService.getEducations(userId).catch(() => []),
         portfolioService.getCertifications(userId).catch(() => []),
       ]);
-      setProjects(p); setEducations(e); setCertifications(c);
+      // Phòng thủ: API có thể trả object/paged thay vì mảng → tránh crash khi .map().
+      setProjects(Array.isArray(p) ? p : []);
+      setEducations(Array.isArray(e) ? e : []);
+      setCertifications(Array.isArray(c) ? c : []);
     } finally { setLoading(false); }
   }
 
@@ -80,9 +83,11 @@ export default function PortfolioBuilderPage() {
 
   async function deleteProject(id: string) {
     if (!confirm('Xóa dự án này?')) return;
-    await portfolioService.deleteProject(userId, id);
-    showToast('Đã xóa dự án');
-    await loadData();
+    try {
+      await portfolioService.deleteProject(userId, id);
+      showToast('Đã xóa dự án');
+      await loadData();
+    } catch { showToast('Lỗi khi xóa dự án'); }
   }
 
   // === Education CRUD ===
@@ -106,9 +111,11 @@ export default function PortfolioBuilderPage() {
 
   async function deleteEducation(id: string) {
     if (!confirm('Xóa mục học vấn này?')) return;
-    await portfolioService.deleteEducation(userId, id);
-    showToast('Đã xóa');
-    await loadData();
+    try {
+      await portfolioService.deleteEducation(userId, id);
+      showToast('Đã xóa');
+      await loadData();
+    } catch { showToast('Lỗi khi xóa học vấn'); }
   }
 
   // === Certification CRUD ===
@@ -132,9 +139,11 @@ export default function PortfolioBuilderPage() {
 
   async function deleteCertification(id: string) {
     if (!confirm('Xóa chứng chỉ này?')) return;
-    await portfolioService.deleteCertification(userId, id);
-    showToast('Đã xóa');
-    await loadData();
+    try {
+      await portfolioService.deleteCertification(userId, id);
+      showToast('Đã xóa');
+      await loadData();
+    } catch { showToast('Lỗi khi xóa chứng chỉ'); }
   }
 
   if (!user || user.role !== 'student') return null;

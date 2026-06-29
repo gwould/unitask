@@ -5,6 +5,7 @@ import type { Category } from '../types';
 import AIMatchingPanel from '../components/AIMatchingPanel';
 import { useAuth } from '../contexts/AuthContext';
 import { serviceRegistry } from '../services';
+import { getDeadlineInfo } from '../utils';
 
 const { jobs: jobService, site: siteService, aiMatching: aiMatchingService } = serviceRegistry;
 
@@ -94,7 +95,12 @@ export default function JobsPage() {
     }
 
     if (category) {
-      list = list.filter((j) => j.category === category);
+      // Khớp theo slug đã chuẩn hoá (job.category & category.slug cùng định dạng),
+      // kèm fallback theo categoryId để chắc chắn không lệch khi backend có slug riêng.
+      const selected = categories.find((c) => c.slug === category);
+      list = list.filter(
+        (j) => j.category === category || (selected?.id != null && j.categoryId === selected.id),
+      );
     }
 
     if (location) {
@@ -122,15 +128,23 @@ export default function JobsPage() {
       case 'pay-low':
         list.sort((a, b) => a.payMin - b.payMin);
         break;
-      case 'deadline':
-        list.sort((a, b) => a.spotsLeft - b.spotsLeft);
+      case 'deadline': {
+        // Sắp hết hạn: job còn hạn gần nhất lên đầu; job đã hết hạn / không có hạn xuống cuối.
+        const rank = (d: string) => {
+          const info = getDeadlineInfo(d);
+          if (info.status === 'expired') return Number.MAX_SAFE_INTEGER - 1;
+          if (info.timestamp == null) return Number.MAX_SAFE_INTEGER;
+          return info.timestamp;
+        };
+        list.sort((a, b) => rank(a.deadline) - rank(b.deadline));
         break;
+      }
       default:
         list.sort((a, b) => new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime());
     }
 
     return list;
-  }, [jobs, query, category, location, sort, payRange, availability]);
+  }, [jobs, query, category, location, sort, payRange, availability, categories]);
 
   const displayed = useMemo(() => {
     const list = [...filtered];
@@ -304,6 +318,7 @@ export default function JobsPage() {
             <div className="pj-grid">
               {paginatedJobs.map((job) => {
                 const score = matchMap[job.id];
+                const dl = getDeadlineInfo(job.deadline);
                 return (
                   <Link to={`/jobs/${job.id}`} key={job.id} className="pj-card fade-up">
                     {score != null && score >= 60 && (
@@ -333,7 +348,11 @@ export default function JobsPage() {
                     </div>
                     <div className="pj-card-bottom">
                       <span className="pj-pay"><i className="bx bx-money" /> {job.pay}</span>
-                      <span className="pj-deadline"><i className="bx bx-time-five" /> {job.deadline}</span>
+                      {dl.status !== 'none' && (
+                        <span className={`pj-deadline pj-deadline-${dl.status}`}>
+                          <i className="bx bx-time-five" /> {dl.label}
+                        </span>
+                      )}
                     </div>
                     <div className="pj-card-spots">
                       <i className="bx bx-user" /> Còn {job.spotsLeft}/{job.spotsTotal} chỗ

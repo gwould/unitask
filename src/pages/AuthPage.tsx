@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth, type UserRole } from '../contexts/AuthContext';
+import { UNIVERSITIES as UNIVERSITY_SUGGESTIONS, MAJORS as MAJOR_SUGGESTIONS } from '../constants';
 
 declare global {
   interface Window {
@@ -31,55 +32,6 @@ declare global {
 }
 
 const GOOGLE_CLIENT_ID = '308973806649-koiqv3ta5iv4fdgvlj5ckc7kvarot7sq.apps.googleusercontent.com';
-
-// Gợi ý cho ô đăng ký sinh viên (vẫn cho phép gõ tự do).
-const UNIVERSITY_SUGGESTIONS = [
-  'Đại học Bách Khoa TP.HCM',
-  'Đại học Khoa học Tự nhiên - ĐHQG TP.HCM',
-  'Đại học Công nghệ Thông tin - ĐHQG TP.HCM',
-  'Đại học Kinh tế TP.HCM (UEH)',
-  'Đại học FPT',
-  'Đại học Sư phạm Kỹ thuật TP.HCM',
-  'Đại học Tôn Đức Thắng',
-  'Đại học Công nghiệp TP.HCM',
-  'Đại học Ngoại thương',
-  'Đại học RMIT Việt Nam',
-  'Đại học Kinh tế - Luật (UEL)',
-  'Đại học Hoa Sen',
-  'Đại học Văn Lang',
-  'Đại học Bách Khoa Hà Nội',
-  'Đại học Quốc gia Hà Nội',
-  'Học viện Công nghệ Bưu chính Viễn thông',
-  'Đại học Kinh tế Quốc dân (NEU)',
-  'Đại học Đà Nẵng',
-  'Đại học Cần Thơ',
-  'Đại học Huế',
-];
-
-const MAJOR_SUGGESTIONS = [
-  'Công nghệ thông tin',
-  'Khoa học máy tính',
-  'Kỹ thuật phần mềm',
-  'Trí tuệ nhân tạo',
-  'Khoa học dữ liệu',
-  'An toàn thông tin',
-  'Hệ thống thông tin',
-  'Thiết kế đồ họa',
-  'Thiết kế UI/UX',
-  'Marketing',
-  'Digital Marketing',
-  'Quản trị kinh doanh',
-  'Kinh tế',
-  'Tài chính - Ngân hàng',
-  'Kế toán - Kiểm toán',
-  'Ngôn ngữ Anh',
-  'Quan hệ công chúng (PR)',
-  'Báo chí - Truyền thông',
-  'Logistics & Quản lý chuỗi cung ứng',
-  'Kỹ thuật điện - điện tử',
-  'Cơ khí - Tự động hóa',
-  'Quản trị Nhân sự',
-];
 
 export default function AuthPage() {
   const location = useLocation();

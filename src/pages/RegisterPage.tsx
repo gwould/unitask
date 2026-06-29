@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth, type UserRole } from '../contexts/AuthContext';
+import { UNIVERSITIES, MAJORS } from '../constants';
 
 export default function RegisterPage() {
   const { register } = useAuth();
@@ -205,11 +206,16 @@ export default function RegisterPage() {
                     <span className="input-icon"><i className="bx bxs-school" /></span>
                     <input
                       type="text"
+                      list="university-options"
                       placeholder="VD: Đại học Bách Khoa TP.HCM"
                       value={university}
                       onChange={(e) => setUniversity(e.target.value)}
                       className="input-with-icon"
+                      autoComplete="off"
                     />
+                    <datalist id="university-options">
+                      {UNIVERSITIES.map((u) => <option key={u} value={u} />)}
+                    </datalist>
                   </div>
                 </div>
                 <div className="form-group">
@@ -218,11 +224,16 @@ export default function RegisterPage() {
                     <span className="input-icon"><i className="bx bx-book-open" /></span>
                     <input
                       type="text"
+                      list="major-options"
                       placeholder="VD: Công nghệ Thông tin"
                       value={major}
                       onChange={(e) => setMajor(e.target.value)}
                       className="input-with-icon"
+                      autoComplete="off"
                     />
+                    <datalist id="major-options">
+                      {MAJORS.map((m) => <option key={m} value={m} />)}
+                    </datalist>
                   </div>
                 </div>
               </>

@@ -5,24 +5,16 @@ import { useScrolled } from '../hooks/useScroll';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../contexts/NotificationContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { serviceRegistry } from '../services';
+import type { Category } from '../types';
 import logoUniTask from '../assets/logo unitask.png';
-
-const megaCategories = [
-  { slug: 'it', icon: 'bx-code-alt', name: 'IT / Lập trình', count: '320+ việc' },
-  { slug: 'design', icon: 'bx-palette', name: 'Thiết kế', count: '180+ việc' },
-  { slug: 'marketing', icon: 'bx-megaphone', name: 'Marketing', count: '150+ việc' },
-  { slug: 'content', icon: 'bx-pen', name: 'Content & SEO', count: '120+ việc' },
-  { slug: 'language', icon: 'bx-globe', name: 'Ngôn ngữ & Dịch thuật', count: '90+ việc' },
-  { slug: 'data', icon: 'bx-bar-chart-alt-2', name: 'Data & Phân tích', count: '75+ việc' },
-  { slug: 'business', icon: 'bx-briefcase-alt', name: 'Kinh doanh', count: '60+ việc' },
-  { slug: 'other', icon: 'bx-wrench', name: 'Khác', count: '105+ việc' },
-];
 
 export default function Navbar() {
   const scrolled = useScrolled(60);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
+  const [megaCategories, setMegaCategories] = useState<Category[]>([]);
   const [policyOpen, setPolicyOpen] = useState(false);
   const [policyPos, setPolicyPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
   const [megaPos, setMegaPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
@@ -40,6 +32,15 @@ export default function Navbar() {
   const policyTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const isHome = location.pathname === '/';
+
+  // Mega-menu ngành nghề lấy từ API (slug + số job thật), tránh số liệu fix cứng.
+  useEffect(() => {
+    let cancelled = false;
+    serviceRegistry.site.getCategories()
+      .then((data) => { if (!cancelled) setMegaCategories(data); })
+      .catch(() => { if (!cancelled) setMegaCategories([]); });
+    return () => { cancelled = true; };
+  }, []);
 
   const openMobile = () => {
     setMobileOpen(true);
@@ -230,7 +231,7 @@ export default function Navbar() {
                 className="nav-mega-item"
                 onClick={() => setMegaOpen(false)}
               >
-                <span className="nav-mega-icon"><i className={`bx ${cat.icon}`} /></span>
+                <span className="nav-mega-icon">{cat.icon}</span>
                 <div>
                   <div className="nav-mega-name">{cat.name}</div>
                   <div className="nav-mega-count">{cat.count}</div>

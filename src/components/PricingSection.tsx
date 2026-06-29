@@ -1,55 +1,10 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { SUBSCRIPTION_PLANS, type SubscriptionPlan } from '../constants';
+import { formatMoney } from '../utils/format';
 
-const HOME_PLANS = [
-  {
-    key: 'free-starter',
-    name: 'Free Starter',
-    price: '0 đ',
-    period: '/ tháng',
-    badge: 'Khởi động',
-    highlight: false,
-    features: [
-      '5 job/tháng',
-      'Hiển thị cơ bản',
-      'Gợi ý việc làm phù hợp',
-      'Hỗ trợ email',
-    ],
-    cta: 'Bắt đầu miễn phí',
-  },
-  {
-    key: 'starter',
-    name: 'Starter Package',
-    price: '299.000 đ',
-    period: '/ tháng',
-    badge: 'Linh hoạt',
-    highlight: true,
-    features: [
-      '30 job/tháng',
-      'Ưu tiên hiển thị bài đăng',
-      'Gợi ý ứng viên phù hợp',
-      'Giảm phí giao dịch',
-      'Thống kê hiệu quả tuyển dụng',
-    ],
-    cta: 'Nâng cấp Starter',
-  },
-  {
-    key: 'growth',
-    name: 'Growth Package',
-    price: '799.000 đ',
-    period: '/ tháng',
-    badge: 'Không giới hạn',
-    highlight: false,
-    features: [
-      'Job không giới hạn',
-      'Ưu tiên hiển thị bài đăng',
-      'Gợi ý ứng viên phù hợp',
-      'Giảm phí giao dịch',
-      'Thống kê hiệu quả tuyển dụng',
-    ],
-    cta: 'Nâng cấp Growth',
-  },
-] as const;
+// Nguồn dữ liệu giá dùng chung với UpgradePage (tránh lệch giá giữa các trang).
+const HOME_PLANS = SUBSCRIPTION_PLANS;
 
 export default function PricingSection() {
   const { user } = useAuth();
@@ -60,7 +15,7 @@ export default function PricingSection() {
     if (planKey === 'free-starter') return '/dashboard';
     return `/upgrade/${planKey}`;
   };
-  const ctaLabel = (plan: (typeof HOME_PLANS)[number]) => {
+  const ctaLabel = (plan: SubscriptionPlan) => {
     if (!user) return plan.cta;
     if (plan.key === 'free-starter') return 'Gói hiện tại của bạn';
     return plan.cta;
@@ -75,6 +30,9 @@ export default function PricingSection() {
           <p className="section-sub">
             Bắt đầu miễn phí, sau đó chọn gói phù hợp. Có thể nâng cấp hoặc hạ cấp linh hoạt theo tháng.
           </p>
+          <div className="pricing-launch-banner">
+            <i className="bx bx-gift" /> Ưu đãi ra mắt: <strong>giảm 50%</strong> + <strong>30 ngày dùng thử miễn phí</strong> mọi gói trả phí.
+          </div>
         </div>
 
         <div className="pricing-note fade-up">
@@ -105,9 +63,17 @@ export default function PricingSection() {
               </div>
 
               <div className="pricing-price">
-                <strong>{plan.price}</strong>
-                <span>{plan.period}</span>
+                {plan.originalPriceMonthly != null && (
+                  <span className="pricing-price-original">{formatMoney(plan.originalPriceMonthly)}</span>
+                )}
+                <strong>{plan.priceMonthly === 0 ? 'Miễn phí' : formatMoney(plan.priceMonthly)}</strong>
+                <span>{plan.priceMonthly === 0 ? '' : '/ tháng'}</span>
               </div>
+              {plan.trialDays != null && (
+                <div className="pricing-trial-badge">
+                  <i className="bx bx-check-shield" /> Dùng thử {plan.trialDays} ngày miễn phí
+                </div>
+              )}
 
               <ul className="pricing-features">
                 {plan.features.map((feature) => (

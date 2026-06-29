@@ -17,10 +17,10 @@ interface AuthState {
   login: (email: string, password: string) => Promise<boolean | 'pending'>;
   loginWithGoogle: (idToken: string) => Promise<boolean>;
   register: (data: RegisterData) => Promise<boolean | 'pending' | 'verify-email'>;
-  /** Xác thực email bằng OTP; thành công sẽ tự đăng nhập. */
-  verifyEmail: (email: string, code: string) => Promise<boolean>;
-  /** Gửi lại mã OTP xác thực email. */
-  resendOtp: (email: string) => Promise<void>;
+  /** Xác thực email bằng OTP. Trả 'pending' nếu là DN vừa xác thực và đang chờ admin duyệt; true nếu đã đăng nhập. */
+  verifyEmail: (email: string, code: string) => Promise<boolean | 'pending'>;
+  /** Gửi lại mã OTP xác thực email. Trả về mã demo nếu backend bật Sandbox:ExposeOtp. */
+  resendOtp: (email: string) => Promise<string | null>;
   logout: () => void;
   updateProfile: (data: Partial<User>) => void;
 }
@@ -270,17 +270,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         bio: undefined,
       });
 
+      // Xác thực email (OTP) luôn diễn ra TRƯỚC. DN sau khi nhập OTP mới chuyển sang bước chờ admin duyệt.
+      if (auth.needsEmailVerification) {
+        // Chưa kích hoạt, cần nhập OTP. Không lưu token.
+        persistTokens(null, null);
+        persist(null);
+        // Demo/Sandbox: lưu mã OTP để trang xác thực gợi ý (chỉ có khi backend bật ExposeOtp).
+        try {
+          if (auth.devOtp) sessionStorage.setItem('demo_otp', auth.devOtp);
+          else sessionStorage.removeItem('demo_otp');
+        } catch { /* ignore */ }
+        return 'verify-email';
+      }
+
       if (auth.needsApproval) {
         persistTokens(null, null);
         persist(null);
         return 'pending';
-      }
-
-      if (auth.needsEmailVerification) {
-        // Sinh viên mới: chưa kích hoạt, cần nhập OTP. Không lưu token.
-        persistTokens(null, null);
-        persist(null);
-        return 'verify-email';
       }
 
       persistTokens(auth.token, auth.refreshToken);
@@ -311,8 +317,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return true;
   };
 
-  const verifyEmail = async (email: string, code: string): Promise<boolean> => {
+  const verifyEmail = async (email: string, code: string): Promise<boolean | 'pending'> => {
     const auth = await apiPost<LoginResponse>('/api/auth/verify-email', { email, code });
+    try { sessionStorage.removeItem('demo_otp'); } catch { /* ignore */ }
+    // DN đã xác thực email nhưng chờ admin duyệt → KHÔNG tạo phiên đăng nhập.
+    if (auth.needsApproval) {
+      persistTokens(null, null);
+      persist(null);
+      return 'pending';
+    }
     persistTokens(auth.token, auth.refreshToken);
     const fromApi = mapBackendUser(auth.user);
     const enriched = await profileService.enrichUser(fromApi);
@@ -321,8 +334,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return true;
   };
 
-  const resendOtp = async (email: string): Promise<void> => {
-    await apiPost('/api/auth/resend-otp', { email });
+  const resendOtp = async (email: string): Promise<string | null> => {
+    const res = await apiPost<{ devOtp?: string | null }>('/api/auth/resend-otp', { email });
+    return res?.devOtp ?? null;
   };
 
   const logout = () => {

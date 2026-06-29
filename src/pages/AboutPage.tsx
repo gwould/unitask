@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { serviceRegistry } from '../services';
 
 /* ─── DATA ────────────────────────────────────────── */
 
@@ -241,6 +242,23 @@ function PlanCard({ plan }: { plan: (typeof SUBSCRIPTION_PLANS)[number] }) {
 export default function AboutPage() {
   const [ctaHover, setCtaHover] = useState<'student' | 'business' | null>(null);
 
+  // Số liệu thật từ API thay cho con số fix cứng (tránh cảm giác "ảo").
+  const [platform, setPlatform] = useState({ totalStudents: 0, totalBusinesses: 0, totalJobs: 0 });
+  useEffect(() => {
+    let cancelled = false;
+    serviceRegistry.site.getPlatformStats()
+      .then((s) => { if (!cancelled) setPlatform(s); })
+      .catch(() => { /* giữ 0 nếu lỗi */ });
+    return () => { cancelled = true; };
+  }, []);
+
+  const stats = [
+    { target: platform.totalStudents, suffix: '+', label: 'Sinh viên đã tham gia', icon: 'bxs-graduation' },
+    { target: platform.totalBusinesses, suffix: '+', label: 'Doanh nghiệp đối tác', icon: 'bxs-building-house' },
+    { target: platform.totalJobs, suffix: '+', label: 'Việc làm đang mở', icon: 'bx-check-circle' },
+    { target: 98, suffix: '%', label: 'Tỷ lệ hài lòng', icon: 'bxs-star' },
+  ];
+
   const handleCopy = useCallback((text: string) => {
     navigator.clipboard.writeText(text);
   }, []);
@@ -261,7 +279,7 @@ export default function AboutPage() {
 
         {/* animated stats */}
         <div className="about-stats fade-up">
-          {STATS.map((s, i) => (
+          {stats.map((s, i) => (
             <StatCard key={i} {...s} />
           ))}
         </div>

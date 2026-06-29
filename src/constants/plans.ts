@@ -1,14 +1,22 @@
 export interface SubscriptionPlan {
   key: string;
   name: string;
-  /** Giá / tháng (VNĐ). 0 = miễn phí */
+  /** Giá / tháng (VNĐ) — giá ưu đãi ra mắt. 0 = miễn phí */
   priceMonthly: number;
+  /** Giá gốc trước ưu đãi (để hiển thị gạch ngang). Bỏ trống nếu không giảm. */
+  originalPriceMonthly?: number;
+  /** Số ngày dùng thử miễn phí đầy đủ tính năng. */
+  trialDays?: number;
   badge: string;
   highlight: boolean;
   features: string[];
   cta: string;
 }
 
+/**
+ * Bảng giá giai đoạn ra mắt: hạ rào cản tài chính ~50% so với giá gốc
+ * và tặng 30 ngày dùng thử đầy đủ tính năng để kích cầu người dùng đầu tiên.
+ */
 export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     key: 'free-starter',
@@ -27,7 +35,9 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     key: 'starter',
     name: 'Starter Package',
-    priceMonthly: 299_000,
+    priceMonthly: 149_000,
+    originalPriceMonthly: 299_000,
+    trialDays: 30,
     badge: 'Linh hoạt',
     highlight: true,
     features: [
@@ -37,12 +47,14 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       'Giảm phí giao dịch',
       'Thống kê hiệu quả tuyển dụng',
     ],
-    cta: 'Nâng cấp Starter',
+    cta: 'Dùng thử 30 ngày',
   },
   {
     key: 'growth',
     name: 'Growth Package',
-    priceMonthly: 799_000,
+    priceMonthly: 449_000,
+    originalPriceMonthly: 799_000,
+    trialDays: 30,
     badge: 'Không giới hạn',
     highlight: false,
     features: [
@@ -52,7 +64,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       'Giảm phí giao dịch',
       'Thống kê hiệu quả tuyển dụng',
     ],
-    cta: 'Nâng cấp Growth',
+    cta: 'Dùng thử 30 ngày',
   },
 ];
 

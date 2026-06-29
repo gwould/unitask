@@ -203,7 +203,7 @@ export default function PostJobPage() {
           skills: form.skills.split(',').map((s) => s.trim()).filter(Boolean),
           postedAt: new Date().toISOString().slice(0, 10),
           category: selected?.label?.toLowerCase() || 'all',
-          categoryId,
+          categoryId: categoryId ?? undefined,
         });
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'Lỗi không xác định';

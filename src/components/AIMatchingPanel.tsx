@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { serviceRegistry, type MatchedJob } from '../services';
+import { getDeadlineInfo } from '../utils';
 
 const { aiMatching: aiMatchingService } = serviceRegistry;
 
@@ -116,7 +117,9 @@ export default function AIMatchingPanel({
                 ))}
               </div>
               <div className="jc-footer">
-                <div className="jc-deadline"><i className="bx bx-time-five" /> {job.deadline}</div>
+                <div className={`jc-deadline jc-deadline-${getDeadlineInfo(job.deadline).status}`}>
+                  <i className="bx bx-time-five" /> {getDeadlineInfo(job.deadline).label || 'Không thời hạn'}
+                </div>
                 <span className="jc-btn">Xem chi tiết →</span>
               </div>
             </Link>

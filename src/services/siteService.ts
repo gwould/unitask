@@ -7,6 +7,7 @@ import {
   featuresData,
 } from '../data/siteData';
 import { apiGet } from './apiService';
+import { slugify } from '../utils/slug';
 
 export type PlatformStats = {
   totalJobs: number;
@@ -36,7 +37,7 @@ const CATEGORY_VISUALS: Record<string, Pick<Category, 'icon' | 'bg'>> = {
 const DEFAULT_VISUAL = { icon: '📁', bg: 'rgba(91,79,255,.12)' };
 
 function mapApiCategory(raw: ApiCategory): Category {
-  const slug = (raw.slug || raw.name).toLowerCase().replace(/\s+/g, '-');
+  const slug = slugify(raw.slug || raw.name);
   const visuals = CATEGORY_VISUALS[slug] || DEFAULT_VISUAL;
   const count = raw.jobCount != null ? `${raw.jobCount} job đang mở` : 'Đang cập nhật';
   return {

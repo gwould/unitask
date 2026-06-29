@@ -174,11 +174,15 @@ export default function UpgradePage() {
                     <span className="upg-plan-badge">{plan.badge}</span>
                   </div>
                   <div className="upg-plan-price">
+                    {plan.originalPriceMonthly != null && (
+                      <span className="pricing-price-original">{formatMoney(plan.originalPriceMonthly)}</span>
+                    )}
                     <strong>{formatMoney(plan.priceMonthly)}</strong>
                     <span>/ tháng</span>
                   </div>
                 </div>
                 <ul className="upg-plan-features">
+                  {plan.trialDays != null && <li><strong>🎁 {plan.trialDays} ngày dùng thử miễn phí</strong></li>}
                   {plan.features.map((f) => <li key={f}>✓ {f}</li>)}
                 </ul>
                 <Link to="/about#pricing" className="upg-change-plan"><i className="bx bx-transfer" /> Đổi gói khác</Link>
