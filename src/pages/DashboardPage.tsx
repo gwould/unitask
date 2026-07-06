@@ -733,7 +733,7 @@ export default function DashboardPage() {
                         <div className="jc-logo" style={{ background: job.logoGradient, width: 36, height: 36, fontSize: 13 }}>
                           {job.logoText}
                         </div>
-                        <div>
+                        <div className="dash-app-info">
                           <div className="dash-app-title">{job.title}</div>
                           <div className="dash-app-company">{job.company} · <i className="bx bx-money" /> {job.pay}</div>
                         </div>
