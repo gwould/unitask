@@ -12,12 +12,7 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           manualChunks: {
-            three: ['three'],
-            'three-scenes': [
-              './src/components/three/homeSceneFactory.ts',
-              './src/components/three/globeSceneFactory.ts',
-              './src/components/three/jobsSceneFactory.ts',
-            ],
+            vendor: ['react', 'react-dom', 'react-router-dom'],
           },
         },
       },

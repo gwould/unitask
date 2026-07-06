@@ -143,23 +143,23 @@ export default function Navbar() {
             <Link to="/messages" onClick={closeMobile}><i className="bx bx-message-rounded-dots" /> Tin nhắn</Link>
             {user.role === 'student' && (
               <>
-                <Link to="/portfolio-builder" onClick={closeMobile}><i className="bx bx-briefcase-alt-2" /> Portfolio</Link>
-                <Link to="/my-applications" onClick={closeMobile}><i className="bx bx-list-check" /> Đơn ứng tuyển</Link>
+                <Link to="/my-applications" onClick={closeMobile} style={{ marginTop: 12 }}><i className="bx bx-list-check" /> Đơn ứng tuyển</Link>
                 <Link to="/my-tasks" onClick={closeMobile}><i className="bx bx-task" /> Công việc</Link>
                 <Link to="/contracts" onClick={closeMobile}><i className="bx bx-file" /> Hợp đồng</Link>
+                <Link to="/portfolio-builder" onClick={closeMobile}><i className="bx bx-briefcase-alt-2" /> Portfolio</Link>
               </>
             )}
             {user.role === 'business' && (
               <>
-                <Link to="/post-job" onClick={closeMobile}><i className="bx bx-edit" /> Đăng việc</Link>
+                <Link to="/post-job" onClick={closeMobile} style={{ marginTop: 12 }}><i className="bx bx-edit" /> Đăng việc</Link>
                 <Link to="/manage-jobs" onClick={closeMobile}><i className="bx bx-folder-open" /> Quản lý job</Link>
-                <Link to="/business-automation" onClick={closeMobile}><i className="bx bx-bot" /> Tự động hóa</Link>
+                <Link to="/business-automation" onClick={closeMobile}><i className="bx bx-bot" /> Vận hành</Link>
                 <Link to="/contracts" onClick={closeMobile}><i className="bx bx-file" /> Hợp đồng</Link>
               </>
             )}
             {user.role === 'admin' && (
               <>
-                <Link to="/admin-finance" onClick={closeMobile}><i className="bx bx-line-chart" /> Admin Finance</Link>
+                <Link to="/admin-finance" onClick={closeMobile} style={{ marginTop: 12 }}><i className="bx bx-line-chart" /> Tài chính</Link>
                 <Link to="/admin-accounts" onClick={closeMobile}><i className="bx bx-group" /> Quản lý tài khoản</Link>
                 <Link to="/admin-disputes" onClick={closeMobile}><i className="bx bx-gavel" /> Giải quyết tranh chấp</Link>
                 <Link to="/admin-messages" onClick={closeMobile}><i className="bx bx-shield" /> Giám sát tin nhắn</Link>
@@ -296,7 +296,7 @@ export default function Navbar() {
             {user?.role === 'admin' && (
               <>
                 <Link to="/admin-finance" className={location.pathname === '/admin-finance' ? 'active' : ''}>
-                  Admin Finance
+                  Tài chính
                 </Link>
                 <Link to="/admin-accounts" className={location.pathname === '/admin-accounts' ? 'active' : ''}>
                   Quản lý TK
@@ -361,23 +361,26 @@ export default function Navbar() {
                     <Link to="/messages" className="nav-dd-item"><i className="bx bx-message-rounded-dots" /> Tin nhắn</Link>
                     {user.role === 'student' && (
                       <>
-                        <Link to="/portfolio-builder" className="nav-dd-item"><i className="bx bx-briefcase-alt-2" /> Portfolio</Link>
+                        <div className="nav-dd-divider" />
                         <Link to="/my-applications" className="nav-dd-item"><i className="bx bx-list-check" /> Đơn ứng tuyển</Link>
                         <Link to="/my-tasks" className="nav-dd-item"><i className="bx bx-task" /> Công việc</Link>
                         <Link to="/contracts" className="nav-dd-item"><i className="bx bx-file" /> Hợp đồng</Link>
+                        <Link to="/portfolio-builder" className="nav-dd-item"><i className="bx bx-briefcase-alt-2" /> Portfolio</Link>
                       </>
                     )}
                     {user.role === 'business' && (
                       <>
+                        <div className="nav-dd-divider" />
                         <Link to="/post-job" className="nav-dd-item"><i className="bx bx-edit" /> Đăng việc</Link>
                         <Link to="/manage-jobs" className="nav-dd-item"><i className="bx bx-folder-open" /> Quản lý job</Link>
-                        <Link to="/business-automation" className="nav-dd-item"><i className="bx bx-bot" /> Tự động hóa</Link>
+                        <Link to="/business-automation" className="nav-dd-item"><i className="bx bx-bot" /> Vận hành</Link>
                         <Link to="/contracts" className="nav-dd-item"><i className="bx bx-file" /> Hợp đồng</Link>
                       </>
                     )}
                     {user.role === 'admin' && (
                       <>
-                        <Link to="/admin-finance" className="nav-dd-item"><i className="bx bx-line-chart" /> Admin Finance</Link>
+                        <div className="nav-dd-divider" />
+                        <Link to="/admin-finance" className="nav-dd-item"><i className="bx bx-line-chart" /> Tài chính</Link>
                         <Link to="/admin-accounts" className="nav-dd-item"><i className="bx bx-group" /> Quản lý tài khoản</Link>
                         <Link to="/admin-disputes" className="nav-dd-item"><i className="bx bx-gavel" /> Giải quyết tranh chấp</Link>
                         <Link to="/admin-messages" className="nav-dd-item"><i className="bx bx-shield" /> Giám sát tin nhắn</Link>

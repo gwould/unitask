@@ -153,20 +153,71 @@ export async function request<T>(path: string, options: ApiRequestOptions = {}):
   return parseResponse<T>(response);
 }
 
+const GET_CACHE_TTL_MS = 20_000;
+const getCache = new Map<string, { data: unknown; expiresAt: number }>();
+const inFlightGets = new Map<string, Promise<unknown>>();
+
+/** Xóa cache GET đã lưu; gọi sau khi tạo/sửa/xóa dữ liệu để tránh trả về dữ liệu cũ. */
+export function invalidateApiCache(pathPrefix?: string): void {
+  if (!pathPrefix) {
+    getCache.clear();
+    return;
+  }
+  for (const key of getCache.keys()) {
+    if (key.startsWith(pathPrefix)) {
+      getCache.delete(key);
+    }
+  }
+}
+
+/**
+ * GET có cache ngắn hạn (20s) + dedupe request trùng lặp đang bay.
+ * Giảm tải backend khi nhiều component/nhiều người dùng cùng request 1 endpoint trong thời gian ngắn.
+ */
 export async function apiGet<T>(path: string): Promise<T> {
-  return request<T>(path);
+  const cached = getCache.get(path);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.data as T;
+  }
+
+  const inFlight = inFlightGets.get(path);
+  if (inFlight) {
+    return inFlight as Promise<T>;
+  }
+
+  const promise = request<T>(path)
+    .then((data) => {
+      getCache.set(path, { data, expiresAt: Date.now() + GET_CACHE_TTL_MS });
+      return data;
+    })
+    .finally(() => {
+      inFlightGets.delete(path);
+    });
+
+  inFlightGets.set(path, promise);
+  return promise;
+}
+
+/** vd: "/api/conversations/123/messages" -> "/api/conversations" */
+function resourceRoot(path: string): string {
+  return path.split('?')[0].split('/').slice(0, 3).join('/');
 }
 
 export async function apiPost<T>(path: string, body: unknown): Promise<T> {
-  return request<T>(path, { method: 'POST', body });
+  const result = await request<T>(path, { method: 'POST', body });
+  invalidateApiCache(resourceRoot(path));
+  return result;
 }
 
 export async function apiPut<T>(path: string, body: unknown): Promise<T> {
-  return request<T>(path, { method: 'PUT', body });
+  const result = await request<T>(path, { method: 'PUT', body });
+  invalidateApiCache(resourceRoot(path));
+  return result;
 }
 
 export async function apiDelete(path: string): Promise<void> {
   await request<void>(path, { method: 'DELETE' });
+  invalidateApiCache(resourceRoot(path));
 }
 
 export async function requestWithFallback<T>(

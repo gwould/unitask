@@ -505,7 +505,25 @@ export default function WalletPage() {
             ) : filteredTxs.length === 0 ? (
               <div className="wallet-tx-empty">
                 <div style={{ fontSize: 36, marginBottom: 8 }}><i className="bx bx-inbox" /></div>
-                <p>Không có giao dịch nào{txFilter !== 'all' ? ` loại "${TX_FILTER_OPTIONS.find((f) => f.key === txFilter)?.label}"` : ''}.</p>
+                {txFilter !== 'all' ? (
+                  <>
+                    <p>Không có giao dịch nào loại "{TX_FILTER_OPTIONS.find((f) => f.key === txFilter)?.label}".</p>
+                    <button className="btn btn-ghost btn-sm" onClick={() => setTxFilter('all')} style={{ marginTop: 8 }}>
+                      Xem tất cả giao dịch
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <p>Chưa có giao dịch nào.</p>
+                    <Link
+                      to={user.role === 'student' ? '/jobs' : '/post-job'}
+                      className="btn btn-primary btn-sm"
+                      style={{ marginTop: 8 }}
+                    >
+                      {user.role === 'student' ? 'Tìm việc để bắt đầu kiếm tiền' : 'Đăng job đầu tiên'}
+                    </Link>
+                  </>
+                )}
               </div>
             ) : (
               filteredTxs.map((tx) => <TransactionRow key={tx.id} tx={tx} />)
@@ -524,7 +542,14 @@ export default function WalletPage() {
                 <div style={{ padding: 20, textAlign: 'center', color: 'var(--text-2)', fontSize: 13 }}>Đang tải...</div>
               ) : bankMethods.length === 0 ? (
                 <div className="wallet-tx-empty">
-                  <p>Chưa có phương thức rút tiền nào. Thêm ngay!</p>
+                  <p>Chưa có phương thức rút tiền nào.</p>
+                  <button
+                    className="btn btn-primary btn-sm"
+                    onClick={() => setShowAddBankModal(true)}
+                    style={{ marginTop: 8 }}
+                  >
+                    + Thêm phương thức
+                  </button>
                 </div>
               ) : (
                 bankMethods.map((m) => (

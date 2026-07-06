@@ -312,7 +312,7 @@ export default function AdminAccountsPage() {
                           <div className="adm-biz-name">
                             <div className="adm-biz-avatar">
                               {u.avatarUrl
-                                ? <img src={u.avatarUrl} alt="" style={{ width: '100%', height: '100%', borderRadius: 10, objectFit: 'cover' }} />
+                                ? <img src={u.avatarUrl} alt="" loading="lazy" style={{ width: '100%', height: '100%', borderRadius: 10, objectFit: 'cover' }} />
                                 : initials(u.fullName)}
                             </div>
                             <div>

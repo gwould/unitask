@@ -45,8 +45,10 @@ export default function MyContractsPage() {
       ) : contracts.length === 0 ? (
         <div className="ms-panel" style={{ textAlign: 'center', color: 'var(--text-2)' }}>
           Chưa có hợp đồng nào.
-          {user?.role === 'business' && (
+          {user?.role === 'business' ? (
             <> Vào <Link to="/manage-jobs" style={{ color: 'var(--pl)' }}>Quản lý job</Link> để tạo hợp đồng từ ứng viên đã nhận.</>
+          ) : (
+            <> Hợp đồng sẽ xuất hiện khi đơn <Link to="/my-applications" style={{ color: 'var(--pl)' }}>ứng tuyển</Link> của bạn được chấp nhận.</>
           )}
         </div>
       ) : (

@@ -269,7 +269,7 @@ export default function PortfolioBuilderPage() {
                   <div className="pf-items-grid">
                     {projects.map(p => (
                       <div key={p.id} className={`pf-project-card ${p.isHighlighted ? 'highlighted' : ''}`}>
-                        {p.imageUrl && <div className="pf-project-img"><img src={p.imageUrl} alt={p.title} /></div>}
+                        {p.imageUrl && <div className="pf-project-img"><img src={p.imageUrl} alt={p.title} loading="lazy" /></div>}
                         <div className="pf-project-body">
                           <h3>{p.title} {p.isHighlighted && <span className="pf-badge-star">⭐</span>}</h3>
                           {p.role && <span className="pf-role-tag">{p.role}</span>}
@@ -461,7 +461,7 @@ export default function PortfolioBuilderPage() {
                     {certifications.map(c => (
                       <div key={c.id} className="pf-cert-card">
                         {c.imageUrl ? (
-                          <div className="pf-cert-img"><img src={c.imageUrl} alt={c.name} /></div>
+                          <div className="pf-cert-img"><img src={c.imageUrl} alt={c.name} loading="lazy" /></div>
                         ) : (
                           <div className="pf-cert-icon">📜</div>
                         )}

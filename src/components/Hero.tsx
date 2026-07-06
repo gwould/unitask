@@ -43,17 +43,7 @@ export default function Hero() {
       </div>
       <div className="container hero-container">
         <div className="hero-content">
-          <h1>
-            Bạn có kỹ năng?{' '}
-            <span className="highlight">Biến nó</span>
-            <br />
-            thành <span className="highlight">thu nhập</span>
-          </h1>
-          <p className="hero-sub">
-            Nền tảng kết nối sinh viên Việt Nam với hàng trăm doanh nghiệp.
-            Micro-job thực tế, thanh toán bảo mật, AI matching thông minh.
-          </p>
-
+          <span className="hero-role-label">Bạn đang muốn:</span>
           <div className="hero-search-tabs">
             <button
               className={`hero-tab${searchMode === 'find' ? ' active' : ''}`}
@@ -68,6 +58,27 @@ export default function Hero() {
               <i className="bx bx-briefcase" /> Tuyển sinh viên
             </button>
           </div>
+
+          {searchMode === 'find' ? (
+            <h1>
+              Bạn có kỹ năng?{' '}
+              <span className="highlight">Biến nó</span>
+              <br />
+              thành <span className="highlight">thu nhập</span>
+            </h1>
+          ) : (
+            <h1>
+              Cần nhân sự trẻ?{' '}
+              <span className="highlight">Đăng job</span>
+              <br />
+              nhận hồ sơ trong <span className="highlight">48 giờ</span>
+            </h1>
+          )}
+          <p className="hero-sub">
+            {searchMode === 'find'
+              ? 'Nền tảng kết nối sinh viên Việt Nam với hàng trăm doanh nghiệp. Micro-job thực tế, thanh toán bảo mật, AI matching thông minh.'
+              : 'Tiếp cận hàng nghìn sinh viên đã xác thực kỹ năng. Đăng job miễn phí, thanh toán giữ qua ký quỹ an toàn.'}
+          </p>
 
           {searchMode === 'find' ? (
             <div className="hero-search-box">
@@ -96,8 +107,8 @@ export default function Hero() {
             <div className="hero-search-box hero-search-box--hire">
               <i className="bx bx-edit" />
               <div className="hero-hire-text">
-                <strong>Đăng job miễn phí</strong>
-                <span>Tiếp cận hàng nghìn sinh viên có kỹ năng phù hợp</span>
+                <strong>Không mất phí đăng tin</strong>
+                <span>Điền thông tin, duyệt hồ sơ, chỉ trả phí khi thuê thành công</span>
               </div>
               <button className="btn btn-primary" onClick={handleSearch}>
                 Đăng việc ngay
@@ -105,14 +116,16 @@ export default function Hero() {
             </div>
           )}
 
-          <div className="hero-quick-tags">
-            <span className="hero-tags-label">Tìm nhiều:</span>
-            {quickTags.map((tag) => (
-              <span key={tag} className="hero-tag" onClick={() => handleQuickTag(tag)}>
-                {tag}
-              </span>
-            ))}
-          </div>
+          {searchMode === 'find' && (
+            <div className="hero-quick-tags">
+              <span className="hero-tags-label">Tìm nhiều:</span>
+              {quickTags.map((tag) => (
+                <span key={tag} className="hero-tag" onClick={() => handleQuickTag(tag)}>
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>

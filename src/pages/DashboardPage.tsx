@@ -338,30 +338,6 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* stat cards */}
-              <div className="dash-stats fade-up">
-                <div className="dash-stat-card">
-                  <div className="ds-icon" style={{ background: 'rgba(91,79,255,.15)', color: '#7C3AED' }}><i className="bx bx-briefcase-alt-2" /></div>
-                  <div className="ds-num">{stats.total}</div>
-                  <div className="ds-label">{user.role === 'business' ? 'Job đã đăng' : 'Đã ứng tuyển'}</div>
-                </div>
-                <div className="dash-stat-card">
-                  <div className="ds-icon" style={{ background: 'rgba(0,212,170,.1)', color: '#10B981' }}><i className="bx bx-check-circle" /></div>
-                  <div className="ds-num">{stats.accepted}</div>
-                  <div className="ds-label">{user.role === 'business' ? 'Đã được nhận' : 'Đã được nhận'}</div>
-                </div>
-                <div className="dash-stat-card">
-                  <div className="ds-icon" style={{ background: 'rgba(255,179,64,.1)', color: '#F59E0B' }}><i className="bx bx-loader-circle" /></div>
-                  <div className="ds-num">{stats.pending}</div>
-                  <div className="ds-label">Đang chờ duyệt</div>
-                </div>
-                <div className="dash-stat-card">
-                  <div className="ds-icon" style={{ background: 'rgba(255,107,53,.1)', color: '#F97316' }}><i className="bx bx-trophy" /></div>
-                  <div className="ds-num">{stats.completed}</div>
-                  <div className="ds-label">{user.role === 'business' ? 'Đã hết hạn' : 'Hoàn thành'}</div>
-                </div>
-              </div>
-
               {/* Student onboarding checklist */}
               {user.role === 'student' && stats.total === 0 && (
                 <div className="dash-onboard fade-up">
@@ -425,48 +401,6 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {/* Student journey flow map */}
-              {user.role === 'student' && (
-                <div className="dash-student-flow fade-up">
-                  <div className="dash-sf-header">
-                    <h3><i className="bx bx-map-alt" /> Hành trình của bạn</h3>
-                  </div>
-                  <div className="dash-sf-steps">
-                    <Link to="/jobs" className={`dash-sf-step${stats.total === 0 ? ' current' : ' done'}`}>
-                      <div className="dash-sf-num">{stats.total > 0 ? '✓' : '1'}</div>
-                      <div className="dash-sf-info">
-                        <strong>Tìm việc</strong>
-                        <span>Duyệt & ứng tuyển job</span>
-                      </div>
-                    </Link>
-                    <div className="dash-sf-connector" />
-                    <Link to="/my-applications" className={`dash-sf-step${stats.total > 0 && stats.accepted === 0 ? ' current' : stats.accepted > 0 ? ' done' : ''}`}>
-                      <div className="dash-sf-num">{stats.accepted > 0 ? '✓' : '2'}</div>
-                      <div className="dash-sf-info">
-                        <strong>Chờ duyệt</strong>
-                        <span>{stats.pending > 0 ? `${stats.pending} đơn đang chờ` : 'Doanh nghiệp xét duyệt'}</span>
-                      </div>
-                    </Link>
-                    <div className="dash-sf-connector" />
-                    <Link to="/my-tasks" className={`dash-sf-step${stats.accepted > 0 && stats.completed === 0 ? ' current' : stats.completed > 0 ? ' done' : ''}`}>
-                      <div className="dash-sf-num">{stats.completed > 0 ? '✓' : '3'}</div>
-                      <div className="dash-sf-info">
-                        <strong>Làm & nộp bài</strong>
-                        <span>{stats.accepted > 0 ? `${stats.accepted} việc đang làm` : 'Nhận task & nộp sản phẩm'}</span>
-                      </div>
-                    </Link>
-                    <div className="dash-sf-connector" />
-                    <Link to="/wallet" className={`dash-sf-step${stats.completed > 0 ? ' done' : ''}`}>
-                      <div className="dash-sf-num">{stats.completed > 0 ? '✓' : '4'}</div>
-                      <div className="dash-sf-info">
-                        <strong>Nhận tiền</strong>
-                        <span>{stats.completed > 0 ? `${stats.completed} job đã hoàn thành` : 'Escrow trả tiền khi duyệt'}</span>
-                      </div>
-                    </Link>
-                  </div>
-                </div>
-              )}
-
               {/* Business onboarding checklist */}
               {user.role === 'business' && stats.total === 0 && (
                 <div className="dash-onboard fade-up">
@@ -510,8 +444,74 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {/* Business journey flow map */}
-              {user.role === 'business' && (
+              {/* stat cards */}
+              <div className="dash-stats fade-up">
+                <div className="dash-stat-card">
+                  <div className="ds-icon" style={{ background: 'rgba(91,79,255,.15)', color: '#7C3AED' }}><i className="bx bx-briefcase-alt-2" /></div>
+                  <div className="ds-num">{stats.total}</div>
+                  <div className="ds-label">{user.role === 'business' ? 'Job đã đăng' : 'Đã ứng tuyển'}</div>
+                </div>
+                <div className="dash-stat-card">
+                  <div className="ds-icon" style={{ background: 'rgba(0,212,170,.1)', color: '#10B981' }}><i className="bx bx-check-circle" /></div>
+                  <div className="ds-num">{stats.accepted}</div>
+                  <div className="ds-label">{user.role === 'business' ? 'Đã được nhận' : 'Đã được nhận'}</div>
+                </div>
+                <div className="dash-stat-card">
+                  <div className="ds-icon" style={{ background: 'rgba(255,179,64,.1)', color: '#F59E0B' }}><i className="bx bx-loader-circle" /></div>
+                  <div className="ds-num">{stats.pending}</div>
+                  <div className="ds-label">Đang chờ duyệt</div>
+                </div>
+                <div className="dash-stat-card">
+                  <div className="ds-icon" style={{ background: 'rgba(255,107,53,.1)', color: '#F97316' }}><i className="bx bx-trophy" /></div>
+                  <div className="ds-num">{stats.completed}</div>
+                  <div className="ds-label">{user.role === 'business' ? 'Đã hết hạn' : 'Hoàn thành'}</div>
+                </div>
+              </div>
+
+              {/* Student journey flow map: chỉ hiện khi đã có hoạt động, tránh trùng lặp với checklist onboarding ở trên */}
+              {user.role === 'student' && stats.total > 0 && (
+                <div className="dash-student-flow fade-up">
+                  <div className="dash-sf-header">
+                    <h3><i className="bx bx-map-alt" /> Hành trình của bạn</h3>
+                  </div>
+                  <div className="dash-sf-steps">
+                    <Link to="/jobs" className={`dash-sf-step${stats.total === 0 ? ' current' : ' done'}`}>
+                      <div className="dash-sf-num">{stats.total > 0 ? '✓' : '1'}</div>
+                      <div className="dash-sf-info">
+                        <strong>Tìm việc</strong>
+                        <span>Duyệt & ứng tuyển job</span>
+                      </div>
+                    </Link>
+                    <div className="dash-sf-connector" />
+                    <Link to="/my-applications" className={`dash-sf-step${stats.total > 0 && stats.accepted === 0 ? ' current' : stats.accepted > 0 ? ' done' : ''}`}>
+                      <div className="dash-sf-num">{stats.accepted > 0 ? '✓' : '2'}</div>
+                      <div className="dash-sf-info">
+                        <strong>Chờ duyệt</strong>
+                        <span>{stats.pending > 0 ? `${stats.pending} đơn đang chờ` : 'Doanh nghiệp xét duyệt'}</span>
+                      </div>
+                    </Link>
+                    <div className="dash-sf-connector" />
+                    <Link to="/my-tasks" className={`dash-sf-step${stats.accepted > 0 && stats.completed === 0 ? ' current' : stats.completed > 0 ? ' done' : ''}`}>
+                      <div className="dash-sf-num">{stats.completed > 0 ? '✓' : '3'}</div>
+                      <div className="dash-sf-info">
+                        <strong>Làm & nộp bài</strong>
+                        <span>{stats.accepted > 0 ? `${stats.accepted} việc đang làm` : 'Nhận task & nộp sản phẩm'}</span>
+                      </div>
+                    </Link>
+                    <div className="dash-sf-connector" />
+                    <Link to="/wallet" className={`dash-sf-step${stats.completed > 0 ? ' done' : ''}`}>
+                      <div className="dash-sf-num">{stats.completed > 0 ? '✓' : '4'}</div>
+                      <div className="dash-sf-info">
+                        <strong>Nhận tiền</strong>
+                        <span>{stats.completed > 0 ? `${stats.completed} job đã hoàn thành` : 'Escrow trả tiền khi duyệt'}</span>
+                      </div>
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {/* Business journey flow map: chỉ hiện khi đã có hoạt động, tránh trùng lặp với checklist onboarding ở trên */}
+              {user.role === 'business' && stats.total > 0 && (
                 <div className="dash-student-flow fade-up">
                   <div className="dash-sf-header">
                     <h3><i className="bx bx-bar-chart-alt-2" /> Quy trình tuyển dụng</h3>

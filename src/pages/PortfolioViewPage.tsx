@@ -141,7 +141,7 @@ export default function PortfolioViewPage() {
                 <div key={p.id} className={`pv-project-card ${p.isHighlighted ? 'highlighted' : ''}`}>
                   {p.imageUrl && (
                     <div className="pv-project-img">
-                      <img src={p.imageUrl} alt={p.title} />
+                      <img src={p.imageUrl} alt={p.title} loading="lazy" />
                       {p.isHighlighted && <span className="pv-highlight-badge">⭐ Nổi bật</span>}
                     </div>
                   )}
@@ -203,7 +203,7 @@ export default function PortfolioViewPage() {
             <div className="pv-certs-grid">
               {data.certifications.map(c => (
                 <div key={c.id} className="pv-cert-card">
-                  {c.imageUrl && <div className="pv-cert-img"><img src={c.imageUrl} alt={c.name} /></div>}
+                  {c.imageUrl && <div className="pv-cert-img"><img src={c.imageUrl} alt={c.name} loading="lazy" /></div>}
                   <div className="pv-cert-body">
                     <h3>{c.name}</h3>
                     {c.issuingOrganization && <p className="pv-cert-org">{c.issuingOrganization}</p>}
@@ -228,7 +228,7 @@ export default function PortfolioViewPage() {
                 <div key={r.id} className="pv-review-card">
                   <div className="pv-review-header">
                     <div className="pv-review-avatar">
-                      {r.reviewerAvatar ? <img src={r.reviewerAvatar} alt="" /> : <span>👤</span>}
+                      {r.reviewerAvatar ? <img src={r.reviewerAvatar} alt="" loading="lazy" /> : <span>👤</span>}
                     </div>
                     <div>
                       <strong>{r.reviewerName || 'Ẩn danh'}</strong>
