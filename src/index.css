@@ -4653,3 +4653,63 @@ img,video,iframe,canvas,svg,table,pre{max-width:100%}
   .features-grid{grid-template-columns:repeat(3,1fr);gap:16px}
   .feature-card.large{grid-column:span 2;grid-row:span 1}
 }
+
+/* ─── Visual polish pass: categories, features bento, steps, testimonials, CTA ─── */
+
+/* Categories: card ngang gọn — bỏ khoảng chết dưới card, hover accent tím */
+.cat-card{flex-direction:row;align-items:center;gap:14px;padding:18px 20px}
+.cat-card:hover{border-color:rgba(124,58,237,.5);transform:translateY(-2px);box-shadow:0 8px 24px rgba(124,58,237,.12)}
+.cat-icon{width:44px;height:44px;font-size:20px;transition:transform .25s ease}
+.cat-card:hover .cat-icon{transform:scale(1.1)}
+.cat-card:hover .cat-arrow{color:var(--pl)}
+
+/* Features bento: lấp ô trống góc phải-dưới (card cuối trải 2 cột) + tạo tương phản nền giữa các cell */
+@media(min-width:769px){
+  .features-grid{align-items:stretch}
+  .features-grid .feature-card:last-child{grid-column:span 2}
+}
+.feature-card.large{
+  background:linear-gradient(135deg,rgba(124,58,237,.16),rgba(124,58,237,.03) 55%),var(--s2);
+  border-color:rgba(124,58,237,.28);
+}
+.features-grid .feature-card:last-child{
+  background:linear-gradient(315deg,rgba(124,58,237,.09),transparent 60%),var(--s1);
+}
+.feature-card:hover{border-color:rgba(124,58,237,.45);transform:translateY(-2px)}
+[data-theme="light"] .feature-card.large{background:linear-gradient(135deg,rgba(124,58,237,.08),transparent 55%),#fff;border-color:rgba(124,58,237,.2)}
+[data-theme="light"] .features-grid .feature-card:last-child{background:linear-gradient(315deg,rgba(124,58,237,.05),transparent 60%),#fff}
+
+/* How-it-works: vòng số bước nhấn tím + đường nối gradient */
+.step-num{
+  background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(124,58,237,.04)),var(--s2);
+  border-color:rgba(124,58,237,.4);color:#fff;
+  box-shadow:0 0 0 6px rgba(124,58,237,.06);
+}
+.how-step:hover .step-num{border-color:var(--pl);box-shadow:0 0 0 9px rgba(124,58,237,.1);transform:scale(1.05)}
+.how-steps::before{background:linear-gradient(90deg,transparent,rgba(124,58,237,.35) 20%,rgba(124,58,237,.35) 80%,transparent)}
+[data-theme="light"] .step-num{background:linear-gradient(135deg,rgba(124,58,237,.12),transparent),#fff;color:#1C1D26}
+
+/* Testimonials: dấu ngoặc kép trang trí + hover accent */
+.testi-card{position:relative;overflow:hidden}
+.testi-card::after{
+  content:'\201C';
+  position:absolute;top:6px;right:20px;
+  font-family:var(--font-display);font-size:72px;line-height:1;font-weight:800;
+  color:rgba(124,58,237,.18);pointer-events:none;
+}
+.testi-card:hover{border-color:rgba(124,58,237,.4);transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,.18)}
+[data-theme="light"] .testi-card::after{color:rgba(124,58,237,.12)}
+
+/* CTA banner: thêm chiều sâu — glow trắng, bóng tối góc, nhấn cam thương hiệu + lưới mờ */
+.cta-bg-gradient{
+  background:
+    radial-gradient(ellipse 55% 70% at 18% 18%,rgba(255,255,255,.16),transparent 55%),
+    radial-gradient(ellipse 60% 60% at 88% 92%,rgba(28,4,68,.4),transparent 60%),
+    radial-gradient(ellipse 38% 45% at 68% 12%,rgba(249,115,22,.22),transparent 55%);
+}
+.cta-box::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+  background-size:44px 44px;
+  mask-image:radial-gradient(ellipse 75% 80% at 50% 45%,black 25%,transparent 90%);
+}
