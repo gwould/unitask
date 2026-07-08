@@ -490,29 +490,29 @@ export const applicationsData: Application[] = [
 
 /* ──────────────────── CATEGORIES ───────────────────── */
 export const categoriesData: Category[] = [
-  { icon: '💻', bg: 'rgba(91,79,255,.15)', name: 'IT / Lập trình', count: '284 job đang mở', slug: 'it' },
-  { icon: '🎨', bg: 'rgba(255,107,53,.12)', name: 'Thiết kế', count: '167 job đang mở', slug: 'design' },
-  { icon: '📢', bg: 'rgba(0,212,170,.1)', name: 'Marketing', count: '215 job đang mở', slug: 'marketing' },
-  { icon: '✍️', bg: 'rgba(255,179,64,.1)', name: 'Content / Viết lách', count: '143 job đang mở', slug: 'content' },
-  { icon: '📊', bg: 'rgba(91,79,255,.15)', name: 'Kinh doanh', count: '98 job đang mở', slug: 'business' },
-  { icon: '🌐', bg: 'rgba(0,212,170,.1)', name: 'Ngôn ngữ / Dịch thuật', count: '76 job đang mở', slug: 'language' },
-  { icon: '💰', bg: 'rgba(255,107,53,.12)', name: 'Kế toán / Tài chính', count: '54 job đang mở', slug: 'finance' },
-  { icon: '🎬', bg: 'rgba(255,179,64,.1)', name: 'Video / Media', count: '89 job đang mở', slug: 'media' },
+  { icon: 'bx-code-alt', bg: 'rgba(91,79,255,.15)', iconColor: '#A78BFA', name: 'IT / Lập trình', count: '284 job đang mở', slug: 'it' },
+  { icon: 'bx-palette', bg: 'rgba(255,107,53,.12)', iconColor: '#FB923C', name: 'Thiết kế', count: '167 job đang mở', slug: 'design' },
+  { icon: 'bxs-megaphone', bg: 'rgba(0,212,170,.1)', iconColor: '#34D399', name: 'Marketing', count: '215 job đang mở', slug: 'marketing' },
+  { icon: 'bx-pen', bg: 'rgba(255,179,64,.1)', iconColor: '#FBBF24', name: 'Content / Viết lách', count: '143 job đang mở', slug: 'content' },
+  { icon: 'bx-line-chart', bg: 'rgba(91,79,255,.15)', iconColor: '#A78BFA', name: 'Kinh doanh', count: '98 job đang mở', slug: 'business' },
+  { icon: 'bx-globe', bg: 'rgba(0,212,170,.1)', iconColor: '#34D399', name: 'Ngôn ngữ / Dịch thuật', count: '76 job đang mở', slug: 'language' },
+  { icon: 'bx-money', bg: 'rgba(255,107,53,.12)', iconColor: '#FB923C', name: 'Kế toán / Tài chính', count: '54 job đang mở', slug: 'finance' },
+  { icon: 'bx-movie-play', bg: 'rgba(255,179,64,.1)', iconColor: '#FBBF24', name: 'Video / Media', count: '89 job đang mở', slug: 'media' },
 ];
 
 /* ──────────────────── HOW ──────────────────────────── */
 export const studentSteps: HowStep[] = [
-  { num: '01', icon: '🎓', title: 'Đăng ký & Xác thực', desc: 'Tạo tài khoản với email .edu hoặc thẻ sinh viên. Hệ thống xác minh trong 24h.' },
-  { num: '02', icon: '🎯', title: 'Gợi ý việc làm', desc: 'Hệ thống gợi ý job phù hợp với ngành học và kỹ năng bạn đã có sẵn.' },
-  { num: '03', icon: '⚡', title: 'Làm việc & Nộp bài', desc: 'Nhận job, thực hiện, nộp sản phẩm qua hệ thống. Doanh nghiệp review trực tuyến.' },
-  { num: '04', icon: '🏆', title: 'Nhận tiền + Hồ sơ số', desc: 'Tiền Escrow tự động chuyển ví. Project tự động cập nhật vào CV điện tử của bạn.' },
+  { num: '01', icon: 'bxs-graduation', title: 'Đăng ký & Xác thực', desc: 'Tạo tài khoản với email .edu hoặc thẻ sinh viên. Hệ thống xác minh trong 24h.' },
+  { num: '02', icon: 'bx-target-lock', title: 'Gợi ý việc làm', desc: 'Hệ thống gợi ý job phù hợp với ngành học và kỹ năng bạn đã có sẵn.' },
+  { num: '03', icon: 'bx-task', title: 'Làm việc & Nộp bài', desc: 'Nhận job, thực hiện, nộp sản phẩm qua hệ thống. Doanh nghiệp review trực tuyến.' },
+  { num: '04', icon: 'bx-trophy', title: 'Nhận tiền + Hồ sơ số', desc: 'Tiền Escrow tự động chuyển ví. Project tự động cập nhật vào CV điện tử của bạn.' },
 ];
 
 export const businessSteps: HowStep[] = [
-  { num: '01', icon: '🏢', title: 'Đăng ký Doanh nghiệp', desc: 'Tạo tài khoản, xác thực thông tin DN. Quá trình nhanh chóng, hoàn thành trong ngày.' },
-  { num: '02', icon: '💰', title: 'Nạp tiền Escrow', desc: 'Nạp ngân sách vào hệ thống. Tiền chỉ trả khi bạn duyệt sản phẩm hoàn chỉnh.' },
-  { num: '03', icon: '📋', title: 'Đăng Job & Chọn ứng viên', desc: 'Mô tả job ngắn gọn. Hệ thống tự gợi ý sinh viên phù hợp, bạn chọn và phê duyệt.' },
-  { num: '04', icon: '✅', title: 'Duyệt & Thanh toán', desc: 'Review sản phẩm, đánh giá kỹ năng sinh viên. Giải phóng tiền khi hài lòng.' },
+  { num: '01', icon: 'bxs-building-house', title: 'Đăng ký Doanh nghiệp', desc: 'Tạo tài khoản, xác thực thông tin DN. Quá trình nhanh chóng, hoàn thành trong ngày.' },
+  { num: '02', icon: 'bx-wallet', title: 'Nạp tiền Escrow', desc: 'Nạp ngân sách vào hệ thống. Tiền chỉ trả khi bạn duyệt sản phẩm hoàn chỉnh.' },
+  { num: '03', icon: 'bx-edit', title: 'Đăng Job & Chọn ứng viên', desc: 'Mô tả job ngắn gọn. Hệ thống tự gợi ý sinh viên phù hợp, bạn chọn và phê duyệt.' },
+  { num: '04', icon: 'bx-check-circle', title: 'Duyệt & Thanh toán', desc: 'Review sản phẩm, đánh giá kỹ năng sinh viên. Giải phóng tiền khi hài lòng.' },
 ];
 
 /* ──────────────────── TESTIMONIALS ─────────────────── */
@@ -546,8 +546,9 @@ export const testimonialsData: Testimonial[] = [
 /* ──────────────────── FEATURES ─────────────────────── */
 export const featuresData: Feature[] = [
   {
-    icon: '🛡️',
+    icon: 'bx-shield-quarter',
     iconBg: 'rgba(91,79,255,.15)',
+    iconColor: '#A78BFA',
     title: 'Hệ thống Escrow: Không bao giờ bị bùng tiền',
     desc: 'Doanh nghiệp nạp tiền vào hệ thống trước khi job bắt đầu. Tiền chỉ được giải phóng khi bạn hoàn thành và được duyệt. UniTask làm trung gian bảo vệ quyền lợi cả hai phía.',
     large: true,
@@ -559,20 +560,23 @@ export const featuresData: Feature[] = [
     ],
   },
   {
-    icon: '🎯',
+    icon: 'bx-target-lock',
     iconBg: 'rgba(0,212,170,.1)',
+    iconColor: '#34D399',
     title: 'Gợi ý việc theo ngành học',
     desc: 'Sinh viên Ngôn ngữ Anh thấy job dịch thuật. Sinh viên IT thấy job code. Không lãng phí thời gian lọc thủ công.',
   },
   {
-    icon: '📋',
+    icon: 'bx-file',
     iconBg: 'rgba(255,107,53,.1)',
+    iconColor: '#FB923C',
     title: 'Hồ sơ số tự động (Digital CV)',
     desc: 'Mỗi project hoàn thành tự động cập nhật vào CV điện tử. Xuất PDF đẹp, chia sẻ link cho nhà tuyển dụng.',
   },
   {
-    icon: '⭐',
+    icon: 'bxs-star',
     iconBg: 'rgba(255,179,64,.1)',
+    iconColor: '#FBBF24',
     title: 'Đánh giá 2 chiều & Skill Endorsement',
     desc: 'Doanh nghiệp không chỉ chấm sao, họ xác nhận kỹ năng cụ thể của bạn. Hồ sơ ngày càng giá trị hơn.',
   },

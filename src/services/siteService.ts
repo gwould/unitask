@@ -23,18 +23,18 @@ type ApiCategory = {
   jobCount?: number | null;
 };
 
-const CATEGORY_VISUALS: Record<string, Pick<Category, 'icon' | 'bg'>> = {
-  it: { icon: '💻', bg: 'rgba(91,79,255,.15)' },
-  design: { icon: '🎨', bg: 'rgba(255,107,53,.12)' },
-  marketing: { icon: '📢', bg: 'rgba(0,212,170,.1)' },
-  content: { icon: '✍️', bg: 'rgba(255,179,64,.1)' },
-  business: { icon: '📊', bg: 'rgba(91,79,255,.15)' },
-  language: { icon: '🌐', bg: 'rgba(0,212,170,.1)' },
-  finance: { icon: '💰', bg: 'rgba(255,107,53,.12)' },
-  media: { icon: '🎬', bg: 'rgba(255,179,64,.1)' },
+const CATEGORY_VISUALS: Record<string, Pick<Category, 'icon' | 'bg' | 'iconColor'>> = {
+  it: { icon: 'bx-code-alt', bg: 'rgba(91,79,255,.15)', iconColor: '#A78BFA' },
+  design: { icon: 'bx-palette', bg: 'rgba(255,107,53,.12)', iconColor: '#FB923C' },
+  marketing: { icon: 'bxs-megaphone', bg: 'rgba(0,212,170,.1)', iconColor: '#34D399' },
+  content: { icon: 'bx-pen', bg: 'rgba(255,179,64,.1)', iconColor: '#FBBF24' },
+  business: { icon: 'bx-line-chart', bg: 'rgba(91,79,255,.15)', iconColor: '#A78BFA' },
+  language: { icon: 'bx-globe', bg: 'rgba(0,212,170,.1)', iconColor: '#34D399' },
+  finance: { icon: 'bx-money', bg: 'rgba(255,107,53,.12)', iconColor: '#FB923C' },
+  media: { icon: 'bx-movie-play', bg: 'rgba(255,179,64,.1)', iconColor: '#FBBF24' },
 };
 
-const DEFAULT_VISUAL = { icon: '📁', bg: 'rgba(91,79,255,.12)' };
+const DEFAULT_VISUAL = { icon: 'bx-folder-open', bg: 'rgba(91,79,255,.12)', iconColor: '#A78BFA' };
 
 function mapApiCategory(raw: ApiCategory): Category {
   const slug = slugify(raw.slug || raw.name);

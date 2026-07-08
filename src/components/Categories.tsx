@@ -43,7 +43,9 @@ export default function Categories() {
           <div className="cat-grid">
             {categories.map((cat, i) => (
               <Link to={`/jobs?cat=${cat.slug}`} className="cat-card fade-up" key={i}>
-                <div className="cat-icon" style={{ background: cat.bg }}>{cat.icon}</div>
+                <div className="cat-icon" style={{ background: cat.bg, color: cat.iconColor }}>
+                  <i className={`bx ${cat.icon}`} />
+                </div>
                 <div>
                   <div className="cat-name">{cat.name}</div>
                   <div className="cat-count">{cat.count}</div>

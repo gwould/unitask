@@ -231,7 +231,7 @@ export default function Navbar() {
                 className="nav-mega-item"
                 onClick={() => setMegaOpen(false)}
               >
-                <span className="nav-mega-icon">{cat.icon}</span>
+                <span className="nav-mega-icon" style={{ color: cat.iconColor }}><i className={`bx ${cat.icon}`} /></span>
                 <div>
                   <div className="nav-mega-name">{cat.name}</div>
                   <div className="nav-mega-count">{cat.count}</div>

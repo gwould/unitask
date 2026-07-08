@@ -4700,6 +4700,20 @@ img,video,iframe,canvas,svg,table,pre{max-width:100%}
 .testi-card:hover{border-color:rgba(124,58,237,.4);transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,.18)}
 [data-theme="light"] .testi-card::after{color:rgba(124,58,237,.12)}
 
+/* Icon library thay emoji: step icon tím, mega-menu icon theo màu ngành */
+.step-icon{color:var(--pl);font-size:24px;margin-bottom:10px;line-height:1}
+.step-icon i{font-size:24px}
+[data-theme="light"] .step-icon{color:var(--p)}
+.cat-icon i,.feat-icon i{font-size:22px;line-height:1}
+.nav-mega-icon i{font-size:20px;line-height:1}
+
+/* Job card: tag đồng bộ tím (bớt rối màu), chip +N cho tag tràn */
+.jc-tags .tag{background:rgba(124,58,237,.1);color:var(--pl);border:1px solid rgba(124,58,237,.22)}
+.jc-tags .tag-more{background:transparent;color:var(--t3);border:1px dashed var(--bd)}
+[data-theme="light"] .jc-tags .tag{background:rgba(124,58,237,.07);color:#5B4FFF;border-color:rgba(124,58,237,.16)}
+[data-theme="light"] .jc-tags .tag-more{background:transparent;color:#6B6D80;border:1px dashed rgba(0,0,0,.15)}
+.job-card:hover{border-color:rgba(124,58,237,.45)}
+
 /* CTA banner: thêm chiều sâu — glow trắng, bóng tối góc, nhấn cam thương hiệu + lưới mờ */
 .cta-bg-gradient{
   background:

@@ -9,7 +9,7 @@ function StepCard({ step }: { step: HowStep }) {
   return (
     <div className="how-step fade-up">
       <div className="step-num">{step.num}</div>
-      <div className="step-icon">{step.icon}</div>
+      <div className="step-icon"><i className={`bx ${step.icon}`} /></div>
       <div className="step-title">{step.title}</div>
       <div className="step-desc">{step.desc}</div>
     </div>

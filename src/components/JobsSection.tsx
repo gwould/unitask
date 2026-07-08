@@ -12,7 +12,7 @@ const TABS = [
   { label: 'IT', cat: 'it', icon: 'bx-code-alt' },
   { label: 'Thiết kế', cat: 'design', icon: 'bx-palette' },
   { label: 'Content', cat: 'content', icon: 'bx-pen' },
-  { label: 'Marketing', cat: 'marketing', icon: 'bx-megaphone' },
+  { label: 'Marketing', cat: 'marketing', icon: 'bxs-megaphone' },
 ];
 
 const JOBS_PER_PAGE = 9;
@@ -31,9 +31,12 @@ function JobCard({ job }: { job: Job }) {
         {job.company} {job.verified && <span className="verified"><i className="bx bxs-badge-check" /></span>} · {job.location}
       </div>
       <div className="jc-tags">
-        {job.tags.map((t, i) => (
+        {job.tags.slice(0, 3).map((t, i) => (
           <span key={i} className={`tag tag-${t.variant}`}>{t.label}</span>
         ))}
+        {job.tags.length > 3 && (
+          <span className="tag tag-more">+{job.tags.length - 3}</span>
+        )}
       </div>
       <div className="jc-spots">
         <span>Còn {job.spotsLeft}/{job.spotsTotal} chỗ</span>

@@ -217,7 +217,7 @@ export default function JobsPage() {
               <option value="">Tất cả ngành</option>
               {categories.map((c) => (
                 <option key={c.slug} value={c.slug}>
-                  {c.icon} {c.name}
+                  {c.name}
                 </option>
               ))}
             </select>

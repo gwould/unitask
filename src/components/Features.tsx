@@ -45,8 +45,8 @@ export default function Features() {
                 key={i}
                 className={`feature-card fade-up${feat.large ? ' large' : ''}`}
               >
-                <div className="feat-icon" style={{ background: feat.iconBg }}>
-                  {feat.icon}
+                <div className="feat-icon" style={{ background: feat.iconBg, color: feat.iconColor }}>
+                  <i className={`bx ${feat.icon}`} />
                 </div>
                 <h3 className="feat-title">{feat.title}</h3>
                 <p className="feat-desc">{feat.desc}</p>
