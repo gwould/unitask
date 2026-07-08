@@ -110,11 +110,28 @@ function buildJobsQuery(filters?: JobListFilters): string {
   return params.toString();
 }
 
+/**
+ * Map categoryId → slug THẬT của backend (cột JobCategories.Slug).
+ * Bắt buộc vì slugify(categoryName) ("Thiết Kế Đồ Họa" → "thiet-ke-do-hoa")
+ * KHÁC slug backend ("thiet-ke") → mọi bộ lọc theo slug bị lệch.
+ */
+let categorySlugById: Record<string, string> = {};
+
+async function ensureCategorySlugMap(): Promise<void> {
+  try {
+    const rows = await apiGet<Array<{ id: string; slug?: string | null; name: string }>>('/api/categories');
+    categorySlugById = Object.fromEntries(rows.map((r) => [r.id, slugify(r.slug || r.name)]));
+  } catch {
+    // Giữ map hiện có (có thể rỗng) — normalizeJob sẽ fallback slugify(categoryName).
+  }
+}
+
 function normalizeJob(raw: ApiJobListItem): Job {
   const spotsTotal = raw.spotsTotal ?? 0;
   const spotsFilled = raw.spotsFilled ?? 0;
   const companyName = raw.companyName ?? '';
-  const category = raw.categoryName ? slugify(raw.categoryName) : 'all';
+  const category = (raw.categoryId && categorySlugById[raw.categoryId])
+    || (raw.categoryName ? slugify(raw.categoryName) : 'all');
   return {
     ...raw,
     id: raw.id,
@@ -187,7 +204,10 @@ function normalizeJobDetails(raw: ApiJobDetailsResponse): Job {
 }
 
 async function fetchJobPage(filters?: JobListFilters): Promise<ApiJobListItem[]> {
-  const page = await apiGet<ApiJobListPage>(`/api/jobs?${buildJobsQuery(filters)}`);
+  const [page] = await Promise.all([
+    apiGet<ApiJobListPage>(`/api/jobs?${buildJobsQuery(filters)}`),
+    ensureCategorySlugMap(),
+  ]);
   return unwrapPaged(page);
 }
 

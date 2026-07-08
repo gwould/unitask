@@ -24,9 +24,16 @@ type ApiCategory = {
 };
 
 const CATEGORY_VISUALS: Record<string, Pick<Category, 'icon' | 'bg' | 'iconColor'>> = {
+  // Slug THẬT của backend (JobCategories.Slug)
+  'it-lap-trinh': { icon: 'bx-code-alt', bg: 'rgba(91,79,255,.15)', iconColor: '#A78BFA' },
+  'thiet-ke': { icon: 'bx-palette', bg: 'rgba(255,107,53,.12)', iconColor: '#FB923C' },
+  marketing: { icon: 'bxs-megaphone', bg: 'rgba(0,212,170,.1)', iconColor: '#34D399' },
+  'noi-dung': { icon: 'bx-pen', bg: 'rgba(255,179,64,.1)', iconColor: '#FBBF24' },
+  'dich-thuat': { icon: 'bx-globe', bg: 'rgba(0,212,170,.1)', iconColor: '#34D399' },
+  video: { icon: 'bx-movie-play', bg: 'rgba(255,179,64,.1)', iconColor: '#FBBF24' },
+  // Key cũ (mock fallback / phòng backend đổi slug)
   it: { icon: 'bx-code-alt', bg: 'rgba(91,79,255,.15)', iconColor: '#A78BFA' },
   design: { icon: 'bx-palette', bg: 'rgba(255,107,53,.12)', iconColor: '#FB923C' },
-  marketing: { icon: 'bxs-megaphone', bg: 'rgba(0,212,170,.1)', iconColor: '#34D399' },
   content: { icon: 'bx-pen', bg: 'rgba(255,179,64,.1)', iconColor: '#FBBF24' },
   business: { icon: 'bx-line-chart', bg: 'rgba(91,79,255,.15)', iconColor: '#A78BFA' },
   language: { icon: 'bx-globe', bg: 'rgba(0,212,170,.1)', iconColor: '#34D399' },

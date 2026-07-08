@@ -30,7 +30,7 @@ export const jobsData: Job[] = [
     payMin: 2_500_000,
     payMax: 4_000_000,
     deadline: daysFromNow(5),
-    category: 'it',
+    category: 'it-lap-trinh',
     featured: true,
     description:
       'TechNova VN đang tìm kiếm sinh viên có kỹ năng React để tham gia xây dựng giao diện cho sản phẩm SaaS mới. Bạn sẽ làm việc trực tiếp với team design, biến mockup Figma thành code React + Tailwind. Đây là cơ hội thực chiến, không phải internship ngồi chơi!',
@@ -69,7 +69,7 @@ export const jobsData: Job[] = [
     payMin: 1_800_000,
     payMax: 3_000_000,
     deadline: daysFromNow(8),
-    category: 'design',
+    category: 'thiet-ke',
     description:
       'CreativeBox cần sinh viên thiết kế bộ nhận diện thương hiệu (logo, màu sắc, typography, namecard, bìa Facebook/Zalo) cho khách hàng F&B startup. Bạn sẽ nhận brief chi tiết và feedback trực tiếp từ Creative Director.',
     requirements: [
@@ -107,7 +107,7 @@ export const jobsData: Job[] = [
     payMin: 1_200_000,
     payMax: 2_000_000,
     deadline: daysFromNow(12),
-    category: 'content',
+    category: 'noi-dung',
     description:
       'MarketHub đang mở rộng blog content cho mảng Digital Marketing. Cần 10 bài viết SEO chuẩn EEAT (Experience, Expertise, Authoritativeness, Trustworthiness), mỗi bài 1.500–2.000 từ. Topic đã có sẵn, bạn chỉ cần research và viết.',
     requirements: [
@@ -183,7 +183,7 @@ export const jobsData: Job[] = [
     payMin: 3_000_000,
     payMax: 5_000_000,
     deadline: daysFromNow(-1),
-    category: 'it',
+    category: 'it-lap-trinh',
     description:
       'DevStack có một API Flask (Python) cho hệ thống e-commerce bị lỗi checkout flow. Cần debug, fix 5–7 bug đã identified, viết unit test. Codebase ~8k lines, có documentation tốt.',
     requirements: [
@@ -220,7 +220,7 @@ export const jobsData: Job[] = [
     payMin: 900_000,
     payMax: 1_500_000,
     deadline: daysFromNow(15),
-    category: 'language',
+    category: 'dich-thuat',
     description:
       'LinguaMedia cần dịch tài liệu kỹ thuật (hướng dẫn sử dụng phần mềm) từ tiếng Anh sang tiếng Việt. Yêu cầu dịch chính xác thuật ngữ, đảm bảo tự nhiên khi đọc bằng tiếng Việt.',
     requirements: [
@@ -257,7 +257,7 @@ export const jobsData: Job[] = [
     payMin: 1_500_000,
     payMax: 2_500_000,
     deadline: daysFromNow(10),
-    category: 'media',
+    category: 'video',
     description:
       'ViralPeak cần sinh viên quay và edit 10 video TikTok (30–60s mỗi video) cho thương hiệu thời trang. Nội dung đã được script sẵn, bạn cần quay bằng điện thoại và edit trên CapCut/Premiere.',
     requirements: [
@@ -331,7 +331,7 @@ export const jobsData: Job[] = [
     payMin: 3_000_000,
     payMax: 5_000_000,
     deadline: daysFromNow(14),
-    category: 'design',
+    category: 'thiet-ke',
     featured: true,
     description:
       'SmartBit đang phát triển ứng dụng Health Tracker cho người Việt. Cần sinh viên thiết kế full UI/UX flow: onboarding, dashboard, tracking, profile. Làm trên Figma, có Design System sẵn.',
@@ -408,7 +408,7 @@ export const jobsData: Job[] = [
     payMin: 3_500_000,
     payMax: 6_000_000,
     deadline: daysFromNow(-3),
-    category: 'it',
+    category: 'it-lap-trinh',
     description:
       'NextGen Labs cần sinh viên xây dựng REST API cho ứng dụng chat real-time. Sử dụng Node.js + Express + Socket.io + MongoDB. Có wireframe và API spec sẵn.',
     requirements: [
@@ -448,7 +448,7 @@ export const jobsData: Job[] = [
     payMin: 800_000,
     payMax: 1_200_000,
     deadline: daysFromNow(6),
-    category: 'content',
+    category: 'noi-dung',
     description:
       'CopyWave cần viết email marketing series (welcome sequence 5 emails) cho startup EdTech. Tone: thân thiện, trẻ trung. Mục tiêu: nurture leads → chuyển đổi mua khóa học.',
     requirements: [
@@ -489,15 +489,16 @@ export const applicationsData: Application[] = [
 ];
 
 /* ──────────────────── CATEGORIES ───────────────────── */
+// Slug đồng bộ với backend JobCategories.Slug để bộ lọc hoạt động cả ở chế độ fallback.
 export const categoriesData: Category[] = [
-  { icon: 'bx-code-alt', bg: 'rgba(91,79,255,.15)', iconColor: '#A78BFA', name: 'IT / Lập trình', count: '284 job đang mở', slug: 'it' },
-  { icon: 'bx-palette', bg: 'rgba(255,107,53,.12)', iconColor: '#FB923C', name: 'Thiết kế', count: '167 job đang mở', slug: 'design' },
+  { icon: 'bx-code-alt', bg: 'rgba(91,79,255,.15)', iconColor: '#A78BFA', name: 'IT / Lập trình', count: '284 job đang mở', slug: 'it-lap-trinh' },
+  { icon: 'bx-palette', bg: 'rgba(255,107,53,.12)', iconColor: '#FB923C', name: 'Thiết kế', count: '167 job đang mở', slug: 'thiet-ke' },
   { icon: 'bxs-megaphone', bg: 'rgba(0,212,170,.1)', iconColor: '#34D399', name: 'Marketing', count: '215 job đang mở', slug: 'marketing' },
-  { icon: 'bx-pen', bg: 'rgba(255,179,64,.1)', iconColor: '#FBBF24', name: 'Content / Viết lách', count: '143 job đang mở', slug: 'content' },
+  { icon: 'bx-pen', bg: 'rgba(255,179,64,.1)', iconColor: '#FBBF24', name: 'Content / Viết lách', count: '143 job đang mở', slug: 'noi-dung' },
   { icon: 'bx-line-chart', bg: 'rgba(91,79,255,.15)', iconColor: '#A78BFA', name: 'Kinh doanh', count: '98 job đang mở', slug: 'business' },
-  { icon: 'bx-globe', bg: 'rgba(0,212,170,.1)', iconColor: '#34D399', name: 'Ngôn ngữ / Dịch thuật', count: '76 job đang mở', slug: 'language' },
+  { icon: 'bx-globe', bg: 'rgba(0,212,170,.1)', iconColor: '#34D399', name: 'Ngôn ngữ / Dịch thuật', count: '76 job đang mở', slug: 'dich-thuat' },
   { icon: 'bx-money', bg: 'rgba(255,107,53,.12)', iconColor: '#FB923C', name: 'Kế toán / Tài chính', count: '54 job đang mở', slug: 'finance' },
-  { icon: 'bx-movie-play', bg: 'rgba(255,179,64,.1)', iconColor: '#FBBF24', name: 'Video / Media', count: '89 job đang mở', slug: 'media' },
+  { icon: 'bx-movie-play', bg: 'rgba(255,179,64,.1)', iconColor: '#FBBF24', name: 'Video / Media', count: '89 job đang mở', slug: 'video' },
 ];
 
 /* ──────────────────── HOW ──────────────────────────── */

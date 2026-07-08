@@ -106,14 +106,15 @@ function scoreLocally(job: Job, request: MatchRequest): MatchedJob {
   }
 
   const majorHints = stripDiacritics(request.major || '');
+  // Slug khớp backend JobCategories.Slug (it-lap-trinh, thiet-ke...).
   const inferredCategory = majorHints.includes('cong nghe thong tin') || majorHints.includes('cntt') || skills.some((skill) => /react|typescript|javascript|python|flask|node|api/i.test(skill))
-    ? 'it'
+    ? 'it-lap-trinh'
     : majorHints.includes('thiet ke') || majorHints.includes('design')
-      ? 'design'
+      ? 'thiet-ke'
       : majorHints.includes('marketing') || majorHints.includes('seo')
         ? 'marketing'
         : majorHints.includes('ngon ngu') || majorHints.includes('translation')
-          ? 'language'
+          ? 'dich-thuat'
           : '';
 
   if (inferredCategory && inferredCategory === job.category) {

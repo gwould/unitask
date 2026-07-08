@@ -93,11 +93,11 @@ export default function Hero() {
               <div className="hero-search-divider" />
               <select value={category} onChange={(e) => setCategory(e.target.value)}>
                 <option value="">Tất cả ngành</option>
-                <option value="it">IT / Lập trình</option>
-                <option value="design">Thiết kế</option>
+                <option value="it-lap-trinh">IT / Lập trình</option>
+                <option value="thiet-ke">Thiết kế</option>
                 <option value="marketing">Marketing</option>
-                <option value="content">Content</option>
-                <option value="language">Ngôn ngữ</option>
+                <option value="noi-dung">Content</option>
+                <option value="dich-thuat">Ngôn ngữ</option>
               </select>
               <button className="btn btn-primary" onClick={handleSearch}>
                 Tìm kiếm

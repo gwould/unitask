@@ -7,11 +7,12 @@ import { getDeadlineInfo } from '../utils';
 
 const { jobs: jobService } = serviceRegistry;
 
+// cat phải khớp slug THẬT trong JobCategories.Slug của backend (it-lap-trinh, thiet-ke...).
 const TABS = [
   { label: 'Tất cả', cat: 'all', icon: '' },
-  { label: 'IT', cat: 'it', icon: 'bx-code-alt' },
-  { label: 'Thiết kế', cat: 'design', icon: 'bx-palette' },
-  { label: 'Content', cat: 'content', icon: 'bx-pen' },
+  { label: 'IT', cat: 'it-lap-trinh', icon: 'bx-code-alt' },
+  { label: 'Thiết kế', cat: 'thiet-ke', icon: 'bx-palette' },
+  { label: 'Content', cat: 'noi-dung', icon: 'bx-pen' },
   { label: 'Marketing', cat: 'marketing', icon: 'bxs-megaphone' },
 ];
 
