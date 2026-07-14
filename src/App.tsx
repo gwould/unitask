@@ -14,6 +14,7 @@ const WalletPage = lazy(() => import('./pages/WalletPage'));
 const MyApplicationsPage = lazy(() => import('./pages/MyApplicationsPage'));
 const ManageJobsPage = lazy(() => import('./pages/ManageJobsPage'));
 const AdminFinancePage = lazy(() => import('./pages/AdminFinancePage'));
+const AdminAnalyticsPage = lazy(() => import('./pages/AdminAnalyticsPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
 const BusinessAutomationPage = lazy(() => import('./pages/BusinessAutomationPage'));
@@ -72,6 +73,7 @@ export default function App() {
           <Route path="/messages" element={<MessagesPage />} />
           <Route path="/messages/:conversationId" element={<MessagesPage />} />
           <Route path="/admin-finance" element={<AdminFinancePage />} />
+          <Route path="/admin-analytics" element={<AdminAnalyticsPage />} />
           <Route path="/admin-messages" element={<AdminMessagesPage />} />
           <Route path="/admin-accounts" element={<AdminAccountsPage />} />
           <Route path="/admin-disputes" element={<AdminDisputesPage />} />

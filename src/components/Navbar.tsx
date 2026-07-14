@@ -160,6 +160,7 @@ export default function Navbar() {
             {user.role === 'admin' && (
               <>
                 <Link to="/admin-finance" onClick={closeMobile} style={{ marginTop: 12 }}><i className="bx bx-line-chart" /> Tài chính</Link>
+                <Link to="/admin-analytics" onClick={closeMobile}><i className="bx bxl-google" /> Analytics</Link>
                 <Link to="/admin-accounts" onClick={closeMobile}><i className="bx bx-group" /> Quản lý tài khoản</Link>
                 <Link to="/admin-disputes" onClick={closeMobile}><i className="bx bx-gavel" /> Giải quyết tranh chấp</Link>
                 <Link to="/admin-messages" onClick={closeMobile}><i className="bx bx-shield" /> Giám sát tin nhắn</Link>
@@ -298,6 +299,9 @@ export default function Navbar() {
                 <Link to="/admin-finance" className={location.pathname === '/admin-finance' ? 'active' : ''}>
                   Tài chính
                 </Link>
+                <Link to="/admin-analytics" className={location.pathname === '/admin-analytics' ? 'active' : ''}>
+                  Analytics
+                </Link>
                 <Link to="/admin-accounts" className={location.pathname === '/admin-accounts' ? 'active' : ''}>
                   Quản lý TK
                 </Link>
@@ -381,6 +385,7 @@ export default function Navbar() {
                       <>
                         <div className="nav-dd-divider" />
                         <Link to="/admin-finance" className="nav-dd-item"><i className="bx bx-line-chart" /> Tài chính</Link>
+                        <Link to="/admin-analytics" className="nav-dd-item"><i className="bx bxl-google" /> Analytics</Link>
                         <Link to="/admin-accounts" className="nav-dd-item"><i className="bx bx-group" /> Quản lý tài khoản</Link>
                         <Link to="/admin-disputes" className="nav-dd-item"><i className="bx bx-gavel" /> Giải quyết tranh chấp</Link>
                         <Link to="/admin-messages" className="nav-dd-item"><i className="bx bx-shield" /> Giám sát tin nhắn</Link>

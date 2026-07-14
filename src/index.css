@@ -1040,6 +1040,9 @@ a.nav-logo{text-decoration:none;color:inherit}
 .admin-chart-panel{grid-column:1/-1}
 
 .admin-bar-chart{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:12px;align-items:end;height:220px;margin-bottom:16px;padding:14px;border:1px solid var(--border);border-radius:var(--r10);background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(0,0,0,.05))}
+.admin-analytics-bar-chart{display:flex;gap:8px;align-items:end;height:220px;margin-bottom:16px;padding:14px;border:1px solid var(--border);border-radius:var(--r10);background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(0,0,0,.05));overflow-x:auto}
+.admin-analytics-bar-chart .admin-bar-item{flex:1 0 28px;min-width:28px}
+.admin-range-switch{display:flex;gap:6px}
 .admin-bar-item{display:flex;flex-direction:column;align-items:center;gap:8px;height:100%}
 .admin-bar-wrap{position:relative;flex:1;width:100%;max-width:48px;border-radius:var(--r8);border:1px solid var(--bd);background:rgba(255,255,255,.04);display:flex;align-items:flex-end;overflow:hidden}
 .admin-bar-fill{width:100%;background:linear-gradient(180deg,var(--teal),var(--p));min-height:4px;transition:height .35s ease}
