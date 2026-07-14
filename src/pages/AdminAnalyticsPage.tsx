@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { analyticsService, type AnalyticsOverview } from '../services/analyticsService';
@@ -38,24 +38,6 @@ export default function AdminAnalyticsPage() {
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, [days]);
-
-  const chartMax = useMemo(
-    () => Math.max(...(data?.dailySeries.map((d) => d.pageViews) ?? []), 1),
-    [data]
-  );
-
-  const linePoints = useMemo(() => {
-    const series = data?.dailySeries ?? [];
-    if (series.length === 0) return '';
-    const usersMax = Math.max(...series.map((d) => d.users), 1);
-    return series
-      .map((point, i) => {
-        const x = (i / Math.max(series.length - 1, 1)) * 100;
-        const y = 100 - (point.users / usersMax) * 100;
-        return `${x},${y}`;
-      })
-      .join(' ');
-  }, [data]);
 
   if (!user || user.role !== 'admin') return null;
 
@@ -140,31 +122,6 @@ export default function AdminAnalyticsPage() {
             </div>
 
             <div className="admin-finance-grid">
-              <div className="admin-panel admin-chart-panel fade-up visible">
-                <h2>Lượt xem &amp; người dùng theo ngày</h2>
-                {data.dailySeries.length === 0 ? (
-                  <p className="admin-note">Chưa có dữ liệu trong khoảng thời gian này.</p>
-                ) : (
-                  <>
-                    <div className="admin-analytics-bar-chart">
-                      {data.dailySeries.map((point) => (
-                        <div key={point.date} className="admin-bar-item" title={`${point.date}: ${point.pageViews} lượt xem, ${point.users} người dùng`}>
-                          <div className="admin-bar-wrap">
-                            <div className="admin-bar-fill" style={{ height: `${(point.pageViews / chartMax) * 100}%` }} />
-                          </div>
-                          <div className="admin-bar-date">{point.date.slice(5)}</div>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="admin-line-chart">
-                      <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="Người dùng theo ngày">
-                        <polyline points={linePoints} />
-                      </svg>
-                    </div>
-                  </>
-                )}
-              </div>
-
               <div className="admin-panel fade-up visible">
                 <h2>Trang xem nhiều nhất</h2>
                 {data.topPages.length === 0 ? (
